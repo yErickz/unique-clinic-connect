@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,35 +6,35 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 215 25% 15%;
+    --background: 0 0% 100%;
+    --foreground: 210 11% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
+    --card-foreground: 210 11% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
+    --popover-foreground: 210 11% 15%;
 
-    --primary: 210 70% 42%;
+    --primary: 160 84% 39%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 200 25% 94%;
-    --secondary-foreground: 215 25% 15%;
+    --secondary: 160 30% 96%;
+    --secondary-foreground: 160 84% 25%;
 
-    --muted: 210 15% 95%;
-    --muted-foreground: 215 10% 50%;
+    --muted: 210 20% 96%;
+    --muted-foreground: 210 10% 45%;
 
-    --accent: 175 45% 45%;
+    --accent: 200 80% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 210 20% 90%;
-    --input: 210 20% 90%;
-    --ring: 210 70% 42%;
+    --border: 210 20% 92%;
+    --input: 210 20% 92%;
+    --ring: 160 84% 39%;
 
-    --radius: 0.625rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -45,35 +45,36 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    /* Custom tokens */
-    --hero-gradient: linear-gradient(135deg, hsl(210 70% 42%) 0%, hsl(200 60% 50%) 50%, hsl(175 45% 45%) 100%);
-    --card-shadow: 0 4px 24px -4px hsl(210 70% 42% / 0.08);
-    --card-shadow-hover: 0 8px 32px -4px hsl(210 70% 42% / 0.15);
-    --glass-bg: hsl(0 0% 100% / 0.85);
+    /* Custom tokens - Sabin style */
+    --hero-gradient: linear-gradient(135deg, hsl(160 84% 39%) 0%, hsl(160 70% 45%) 50%, hsl(180 60% 40%) 100%);
+    --card-shadow: 0 2px 16px -2px hsl(160 84% 39% / 0.06);
+    --card-shadow-hover: 0 12px 32px -8px hsl(160 84% 39% / 0.12);
+    --glass-bg: hsl(0 0% 100% / 0.95);
     --whatsapp: 142 70% 45%;
     --whatsapp-hover: 142 70% 38%;
+    --soft-green: 160 40% 97%;
   }
 
   .dark {
-    --background: 215 25% 10%;
-    --foreground: 210 20% 95%;
-    --card: 215 25% 13%;
-    --card-foreground: 210 20% 95%;
-    --popover: 215 25% 13%;
-    --popover-foreground: 210 20% 95%;
-    --primary: 210 70% 55%;
+    --background: 210 15% 8%;
+    --foreground: 0 0% 95%;
+    --card: 210 15% 11%;
+    --card-foreground: 0 0% 95%;
+    --popover: 210 15% 11%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 160 70% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 215 20% 18%;
-    --secondary-foreground: 210 20% 95%;
-    --muted: 215 20% 18%;
-    --muted-foreground: 215 15% 60%;
-    --accent: 175 45% 50%;
+    --secondary: 160 20% 15%;
+    --secondary-foreground: 160 50% 80%;
+    --muted: 210 15% 15%;
+    --muted-foreground: 210 10% 60%;
+    --accent: 200 70% 55%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 215 20% 20%;
-    --input: 215 20% 20%;
-    --ring: 210 70% 55%;
+    --border: 210 15% 18%;
+    --input: 210 15% 18%;
+    --ring: 160 70% 50%;
   }
 }
 
@@ -82,11 +83,12 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
-  h1, h2, h3, h4 {
-    font-family: 'Playfair Display', serif;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    @apply font-semibold tracking-tight;
   }
 }
 
@@ -96,7 +98,7 @@
   }
   .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(16px);
   }
   .card-shadow {
     box-shadow: var(--card-shadow);
@@ -106,5 +108,8 @@
   }
   .text-balance {
     text-wrap: balance;
+  }
+  .soft-green-bg {
+    background-color: hsl(var(--soft-green));
   }
 }

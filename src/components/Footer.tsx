@@ -1,43 +1,90 @@
 import { Link } from "react-router-dom";
-import { MapPin, Phone, Clock } from "lucide-react";
+import { MapPin, Phone, Clock, Mail, Facebook, Instagram, Linkedin } from "lucide-react";
 
 const Footer = () => (
-  <footer className="bg-foreground text-primary-foreground">
-    <div className="container mx-auto px-4 py-12">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+  <footer className="bg-foreground text-background">
+    <div className="container mx-auto px-4 py-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+        {/* Brand */}
         <div>
-          <h3 className="font-display text-lg font-semibold mb-4">Grupo Unique</h3>
-          <p className="text-sm opacity-70 leading-relaxed">
-            Referência em saúde com atendimento humanizado e tecnologia de ponta.
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-lg">U</span>
+            </div>
+            <div>
+              <span className="font-bold text-lg">Grupo Unique</span>
+              <p className="text-xs opacity-60">Diagnóstico e Saúde</p>
+            </div>
+          </div>
+          <p className="text-sm opacity-70 leading-relaxed mb-6">
+            Referência em diagnóstico e saúde com atendimento humanizado e tecnologia de última geração.
           </p>
-        </div>
-        <div>
-          <h4 className="font-semibold text-sm mb-4 uppercase tracking-wider opacity-70">Navegação</h4>
-          <div className="flex flex-col gap-2 text-sm">
-            <Link to="/" className="opacity-70 hover:opacity-100 transition-opacity">Início</Link>
-            <Link to="/contato" className="opacity-70 hover:opacity-100 transition-opacity">Contato</Link>
+          <div className="flex gap-3">
+            <a href="#" className="w-9 h-9 rounded-full bg-background/10 hover:bg-primary flex items-center justify-center transition-colors">
+              <Facebook className="w-4 h-4" />
+            </a>
+            <a href="#" className="w-9 h-9 rounded-full bg-background/10 hover:bg-primary flex items-center justify-center transition-colors">
+              <Instagram className="w-4 h-4" />
+            </a>
+            <a href="#" className="w-9 h-9 rounded-full bg-background/10 hover:bg-primary flex items-center justify-center transition-colors">
+              <Linkedin className="w-4 h-4" />
+            </a>
           </div>
         </div>
+
+        {/* Navigation */}
         <div>
-          <h4 className="font-semibold text-sm mb-4 uppercase tracking-wider opacity-70">Contato</h4>
+          <h4 className="font-semibold text-sm mb-5 uppercase tracking-wider">Navegação</h4>
           <div className="flex flex-col gap-3 text-sm">
-            <div className="flex items-start gap-2 opacity-70">
-              <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
-              <span>Av. Paulista, 1000 - Bela Vista, São Paulo - SP</span>
+            <Link to="/" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Início</Link>
+            <Link to="/#institutos" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Nossos Institutos</Link>
+            <Link to="/#convenios" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Convênios</Link>
+            <Link to="/contato" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Contato</Link>
+          </div>
+        </div>
+
+        {/* Services */}
+        <div>
+          <h4 className="font-semibold text-sm mb-5 uppercase tracking-wider">Institutos</h4>
+          <div className="flex flex-col gap-3 text-sm">
+            <Link to="/instituto/cardiologia" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Cardiologia</Link>
+            <Link to="/instituto/ortopedia" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Ortopedia</Link>
+            <Link to="/instituto/dermatologia" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Dermatologia</Link>
+            <Link to="/instituto/oftalmologia" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Oftalmologia</Link>
+          </div>
+        </div>
+
+        {/* Contact */}
+        <div>
+          <h4 className="font-semibold text-sm mb-5 uppercase tracking-wider">Contato</h4>
+          <div className="flex flex-col gap-4 text-sm">
+            <div className="flex items-start gap-3 opacity-70">
+              <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+              <span>Av. Paulista, 1000<br />Bela Vista, São Paulo - SP</span>
             </div>
-            <div className="flex items-center gap-2 opacity-70">
-              <Phone className="w-4 h-4 shrink-0" />
+            <div className="flex items-center gap-3 opacity-70">
+              <Phone className="w-4 h-4 shrink-0 text-primary" />
               <span>(11) 9999-9999</span>
             </div>
-            <div className="flex items-center gap-2 opacity-70">
-              <Clock className="w-4 h-4 shrink-0" />
-              <span>Seg–Sex: 7h–19h | Sáb: 7h–13h</span>
+            <div className="flex items-center gap-3 opacity-70">
+              <Mail className="w-4 h-4 shrink-0 text-primary" />
+              <span>contato@grupounique.com.br</span>
+            </div>
+            <div className="flex items-start gap-3 opacity-70">
+              <Clock className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+              <span>Seg–Sex: 7h–19h<br />Sáb: 7h–13h</span>
             </div>
           </div>
         </div>
       </div>
-      <div className="border-t border-primary-foreground/10 mt-8 pt-6 text-center text-xs opacity-50">
-        © {new Date().getFullYear()} Grupo Unique. Todos os direitos reservados.
+    </div>
+    <div className="border-t border-background/10">
+      <div className="container mx-auto px-4 py-5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs opacity-50">
+        <span>© {new Date().getFullYear()} Grupo Unique. Todos os direitos reservados.</span>
+        <div className="flex gap-6">
+          <a href="#" className="hover:opacity-100">Política de Privacidade</a>
+          <a href="#" className="hover:opacity-100">Termos de Uso</a>
+        </div>
       </div>
     </div>
   </footer>
