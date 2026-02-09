@@ -3,6 +3,7 @@ export interface Institute {
   name: string;
   description: string;
   icon: string;
+  category: string;
   services: string[];
   doctors: string[];
 }
@@ -23,7 +24,8 @@ export const institutes: Institute[] = [
   {
     id: "cardiologia",
     name: "Instituto de Cardiologia",
-    description: "Excelência em diagnóstico e tratamento de doenças cardiovasculares com tecnologia de ponta.",
+    category: "Excelência em Cuidado",
+    description: "Diagnóstico e tratamento de doenças cardiovasculares com tecnologia de ponta e equipe altamente qualificada.",
     icon: "Heart",
     services: ["Ecocardiograma", "Teste Ergométrico", "Holter 24h", "MAPA", "Cateterismo"],
     doctors: ["dr-carlos-mendes", "dra-ana-lima"],
@@ -31,6 +33,7 @@ export const institutes: Institute[] = [
   {
     id: "ortopedia",
     name: "Instituto de Ortopedia",
+    category: "Estrutura Completa",
     description: "Tratamento especializado em lesões musculoesqueléticas, coluna e medicina esportiva.",
     icon: "Bone",
     services: ["Artroscopia", "Prótese de Quadril", "Tratamento de Coluna", "Medicina Esportiva", "Fisioterapia"],
@@ -39,6 +42,7 @@ export const institutes: Institute[] = [
   {
     id: "dermatologia",
     name: "Instituto de Dermatologia",
+    category: "Cuidados Especiais",
     description: "Cuidados completos com a saúde da pele, cabelos e unhas com abordagem personalizada.",
     icon: "Sparkles",
     services: ["Dermatoscopia", "Laser Dermatológico", "Peeling", "Biópsia de Pele", "Tricologia"],
@@ -47,10 +51,29 @@ export const institutes: Institute[] = [
   {
     id: "oftalmologia",
     name: "Instituto de Oftalmologia",
-    description: "Visão é nosso foco. Diagnóstico e cirurgias oculares com a mais alta precisão.",
+    category: "Alta Precisão",
+    description: "Visão é nosso foco. Diagnóstico e cirurgias oculares com a mais alta precisão e tecnologia.",
     icon: "Eye",
     services: ["Cirurgia de Catarata", "Tratamento de Glaucoma", "Retina", "Refração", "Lentes de Contato"],
     doctors: ["dr-fernando-alves"],
+  },
+  {
+    id: "laboratorio",
+    name: "Exames Laboratoriais",
+    category: "Agilidade para Você",
+    description: "Resultados rápidos e precisos. Coleta de exames em ambiente confortável e acolhedor.",
+    icon: "TestTube",
+    services: ["Hemograma", "Glicemia", "Colesterol", "Função Renal", "Hormônios"],
+    doctors: [],
+  },
+  {
+    id: "domiciliar",
+    name: "Atendimento Domiciliar",
+    category: "Nós Vamos Até Você",
+    description: "Cuide da sua saúde onde você estiver. Realize exames e vacinas no conforto da sua casa.",
+    icon: "Home",
+    services: ["Coleta Domiciliar", "Vacinas", "Curativos", "Acompanhamento"],
+    doctors: [],
   },
 ];
 
