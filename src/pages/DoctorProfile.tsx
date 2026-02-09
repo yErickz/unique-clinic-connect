@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Phone, User, Award, Stethoscope } from "lucide-react";
+import { ArrowLeft, Phone, User, Award, Stethoscope, GraduationCap, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { doctors, institutes, getWhatsAppLink } from "@/data/mockData";
 
@@ -11,9 +11,9 @@ const DoctorProfile = () => {
 
   if (!doctor) {
     return (
-      <div className="min-h-screen flex items-center justify-center pt-16">
+      <div className="min-h-screen flex items-center justify-center pt-32">
         <div className="text-center">
-          <h1 className="font-display text-2xl font-bold text-foreground mb-2">Médico não encontrado</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Médico não encontrado</h1>
           <Link to="/" className="text-primary hover:underline text-sm">Voltar ao início</Link>
         </div>
       </div>
@@ -21,11 +21,11 @@ const DoctorProfile = () => {
   }
 
   return (
-    <main className="pt-20 pb-16">
-      <div className="container mx-auto px-4 max-w-3xl">
+    <main className="pt-32 pb-20">
+      <div className="container mx-auto px-4 max-w-4xl">
         <Link
           to={institute ? `/instituto/${institute.id}` : "/"}
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" /> {institute ? institute.name : "Voltar"}
         </Link>
@@ -33,43 +33,61 @@ const DoctorProfile = () => {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-card rounded-2xl p-6 md:p-10 card-shadow border border-border/50"
+          className="bg-card rounded-3xl overflow-hidden card-shadow border border-border"
         >
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-8">
-            <div className="w-28 h-28 rounded-2xl bg-secondary flex items-center justify-center shrink-0">
-              <User className="w-14 h-14 text-muted-foreground" />
-            </div>
-            <div className="text-center md:text-left">
-              <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-1">
-                {doctor.name}
-              </h1>
-              <div className="flex flex-wrap justify-center md:justify-start gap-3 mb-2">
-                <span className="inline-flex items-center gap-1 text-sm text-primary font-medium">
-                  <Stethoscope className="w-4 h-4" /> {doctor.specialty}
-                </span>
-                <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-                  <Award className="w-4 h-4" /> {doctor.crm}
-                </span>
+          {/* Header */}
+          <div className="bg-gradient-to-br from-primary/10 via-secondary to-transparent p-8 md:p-10">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+              <div className="w-32 h-32 rounded-3xl bg-secondary border-4 border-card flex items-center justify-center shrink-0 shadow-lg">
+                <User className="w-16 h-16 text-muted-foreground" />
               </div>
-              {institute && (
-                <Link to={`/instituto/${institute.id}`} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  {institute.name}
-                </Link>
-              )}
+              <div className="text-center md:text-left flex-1">
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                  {doctor.name}
+                </h1>
+                <div className="flex flex-wrap justify-center md:justify-start gap-3 mb-4">
+                  <span className="inline-flex items-center gap-1.5 text-sm text-primary font-medium bg-primary/10 px-3 py-1 rounded-full">
+                    <Stethoscope className="w-4 h-4" /> {doctor.specialty}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                    <Award className="w-4 h-4" /> {doctor.crm}
+                  </span>
+                </div>
+                {institute && (
+                  <Link 
+                    to={`/instituto/${institute.id}`} 
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {institute.name}
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="mb-8">
-            <h2 className="font-display text-lg font-semibold text-foreground mb-3">Sobre</h2>
-            <p className="text-muted-foreground leading-relaxed">{doctor.bio}</p>
-          </div>
+          {/* Content */}
+          <div className="p-8 md:p-10">
+            <div className="flex items-center gap-2 mb-4">
+              <GraduationCap className="w-5 h-5 text-primary" />
+              <h2 className="text-lg font-semibold text-foreground">Sobre o Profissional</h2>
+            </div>
+            <p className="text-muted-foreground leading-relaxed mb-8">{doctor.bio}</p>
 
-          <div className="text-center">
-            <a href={getWhatsAppLink(`Olá! Gostaria de agendar uma consulta com ${doctor.name} (${doctor.specialty}).`)}>
-              <Button size="lg" className="hero-gradient border-0 text-primary-foreground">
-                <Phone className="w-5 h-5 mr-2" /> Agendar com {doctor.name.split(" ")[0]}. {doctor.name.split(" ").slice(-1)}
-              </Button>
-            </a>
+            {/* CTA */}
+            <div className="bg-secondary/50 rounded-2xl p-6">
+              <div className="flex items-center gap-3 mb-3">
+                <Calendar className="w-5 h-5 text-primary" />
+                <h3 className="font-semibold text-foreground">Agende sua Consulta</h3>
+              </div>
+              <p className="text-sm text-muted-foreground mb-5">
+                Entre em contato pelo WhatsApp para agendar uma consulta com {doctor.name.split(" ")[0]}. {doctor.name.split(" ").slice(-1)}.
+              </p>
+              <a href={getWhatsAppLink(`Olá! Gostaria de agendar uma consulta com ${doctor.name} (${doctor.specialty}).`)}>
+                <Button size="lg" className="w-full md:w-auto hero-gradient border-0 text-primary-foreground rounded-full px-8">
+                  <Phone className="w-5 h-5 mr-2" /> Agendar com {doctor.name.split(" ")[0]}. {doctor.name.split(" ").slice(-1)}
+                </Button>
+              </a>
+            </div>
           </div>
         </motion.div>
       </div>

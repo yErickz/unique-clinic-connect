@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Heart, Bone, Sparkles, Eye, ArrowRight } from "lucide-react";
+import { Heart, Bone, Sparkles, Eye, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import type { Institute } from "@/data/mockData";
 
@@ -24,15 +24,28 @@ const InstituteCard = ({ institute, index }: Props) => {
     >
       <Link
         to={`/instituto/${institute.id}`}
-        className="group block bg-card rounded-xl p-6 card-shadow hover:card-shadow-hover border border-border/50 transition-all duration-300 hover:-translate-y-1"
+        className="group block bg-card rounded-2xl p-6 card-shadow hover:card-shadow-hover border border-border/50 transition-all duration-300 hover:-translate-y-1 h-full"
       >
-        <div className="w-12 h-12 rounded-lg hero-gradient flex items-center justify-center mb-4">
-          <Icon className="w-6 h-6 text-primary-foreground" />
+        <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center mb-5 group-hover:bg-primary transition-colors">
+          <Icon className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors" />
         </div>
-        <h3 className="font-display text-lg font-semibold text-foreground mb-2">{institute.name}</h3>
-        <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{institute.description}</p>
-        <div className="flex items-center text-primary text-sm font-medium group-hover:gap-2 transition-all">
-          Ver especialidades <ArrowRight className="w-4 h-4 ml-1" />
+        <h3 className="font-semibold text-lg text-foreground mb-2">{institute.name}</h3>
+        <p className="text-sm text-muted-foreground mb-5 leading-relaxed line-clamp-2">{institute.description}</p>
+        <div className="flex flex-wrap gap-2 mb-5">
+          {institute.services.slice(0, 3).map((service) => (
+            <span key={service} className="text-xs bg-secondary text-secondary-foreground px-2.5 py-1 rounded-full">
+              {service}
+            </span>
+          ))}
+          {institute.services.length > 3 && (
+            <span className="text-xs text-muted-foreground px-2.5 py-1">
+              +{institute.services.length - 3}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center text-primary text-sm font-medium">
+          Ver especialidades 
+          <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
         </div>
       </Link>
     </motion.div>

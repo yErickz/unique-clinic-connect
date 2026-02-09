@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { getWhatsAppLink } from "@/data/mockData";
@@ -14,21 +14,46 @@ const navItems = [
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const location = useLocation();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/50">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg hero-gradient flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">U</span>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
+      {/* Top bar */}
+      <div className="bg-primary text-primary-foreground py-2">
+        <div className="container mx-auto px-4 flex items-center justify-between text-sm">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">São Paulo, SP</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Phone className="w-3.5 h-3.5" />
+              (11) 9999-9999
+            </span>
           </div>
-          <span className="font-display text-xl font-semibold text-foreground">
-            Grupo Unique
-          </span>
+          <a 
+            href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta.")}
+            className="font-medium hover:underline"
+          >
+            Agendar Consulta
+          </a>
+        </div>
+      </div>
+
+      {/* Main header */}
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl hero-gradient flex items-center justify-center">
+            <span className="text-primary-foreground font-bold text-lg">U</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-lg text-foreground leading-tight">
+              Grupo Unique
+            </span>
+            <span className="text-xs text-muted-foreground">Diagnóstico e Saúde</span>
+          </div>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-8">
           {navItems.map((item) => (
             <Link
               key={item.path}
@@ -38,15 +63,18 @@ const Header = () => {
               {item.label}
             </Link>
           ))}
-          <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta.")}>
-            <Button size="sm" className="hero-gradient border-0 text-primary-foreground">
-              <Phone className="w-4 h-4 mr-1" /> Agendar
-            </Button>
-          </a>
         </nav>
 
+        <div className="hidden md:flex items-center gap-3">
+          <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta.")}>
+            <Button className="hero-gradient border-0 text-primary-foreground rounded-full px-6">
+              <Phone className="w-4 h-4 mr-2" /> Agendar
+            </Button>
+          </a>
+        </div>
+
         <button
-          className="md:hidden text-foreground"
+          className="md:hidden text-foreground p-2"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -59,22 +87,22 @@ const Header = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-card border-b border-border"
+            className="md:hidden bg-background border-t border-border"
           >
-            <nav className="container mx-auto px-4 py-4 flex flex-col gap-3">
+            <nav className="container mx-auto px-4 py-4 flex flex-col gap-1">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
                   onClick={() => setMobileOpen(false)}
-                  className="text-sm font-medium py-2 text-muted-foreground hover:text-primary transition-colors"
+                  className="text-sm font-medium py-3 px-4 rounded-lg text-foreground hover:bg-secondary transition-colors"
                 >
                   {item.label}
                 </Link>
               ))}
-              <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta.")}>
-                <Button className="w-full hero-gradient border-0 text-primary-foreground mt-2">
-                  <Phone className="w-4 h-4 mr-1" /> Agendar Consulta
+              <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta.")} className="mt-2">
+                <Button className="w-full hero-gradient border-0 text-primary-foreground rounded-full">
+                  <Phone className="w-4 h-4 mr-2" /> Agendar Consulta
                 </Button>
               </a>
             </nav>
