@@ -1,9 +1,26 @@
 import { motion } from "framer-motion";
 import { Phone, Shield, Clock, Users, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import InstituteCard from "@/components/InstituteCard";
+import ServiceCard from "@/components/ServiceCard";
 import { institutes, convenios, getWhatsAppLink } from "@/data/mockData";
 import heroImage from "@/assets/hero-sabin-style.jpg";
+
+// Import service images
+import cardiologiaImg from "@/assets/services/cardiologia.jpg";
+import ortopediaImg from "@/assets/services/ortopedia.jpg";
+import dermatologiaImg from "@/assets/services/dermatologia.jpg";
+import oftalmologiaImg from "@/assets/services/oftalmologia.jpg";
+import laboratorioImg from "@/assets/services/laboratorio.jpg";
+import domiciliarImg from "@/assets/services/domiciliar.jpg";
+
+const serviceImages: Record<string, string> = {
+  cardiologia: cardiologiaImg,
+  ortopedia: ortopediaImg,
+  dermatologia: dermatologiaImg,
+  oftalmologia: oftalmologiaImg,
+  laboratorio: laboratorioImg,
+  domiciliar: domiciliarImg,
+};
 
 const features = [
   { icon: CheckCircle, text: "Resultado em até 24h" },
@@ -45,9 +62,9 @@ const Index = () => (
                   <Phone className="w-5 h-5 mr-2" /> Agendar pelo WhatsApp
                 </Button>
               </a>
-              <a href="#institutos">
+              <a href="#servicos">
                 <Button size="lg" variant="outline" className="rounded-full px-8 text-base border-2">
-                  Ver Especialidades <ArrowRight className="w-4 h-4 ml-2" />
+                  Ver Serviços <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </a>
             </div>
@@ -110,26 +127,30 @@ const Index = () => (
       </div>
     </section>
 
-    {/* Institutos */}
-    <section id="institutos" className="py-20">
+    {/* Serviços - Estilo Delboni */}
+    <section id="servicos" className="py-20">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-14"
+          className="mb-14"
         >
-          <span className="text-primary text-sm font-semibold uppercase tracking-wider">Especialidades</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-4">
-            Nossos Institutos
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+            Serviços para você
           </h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">
-            Centros de excelência com profissionais altamente qualificados e infraestrutura completa.
-          </p>
         </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {institutes.map((inst, i) => (
-            <InstituteCard key={inst.id} institute={inst} index={i} />
+            <ServiceCard 
+              key={inst.id} 
+              id={inst.id}
+              category={inst.category}
+              title={inst.name}
+              description={inst.description}
+              image={serviceImages[inst.id] || cardiologiaImg}
+              index={i} 
+            />
           ))}
         </div>
       </div>
