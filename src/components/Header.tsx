@@ -4,6 +4,7 @@ import { Menu, X, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { getWhatsAppLink } from "@/data/mockData";
+import logoNavy from "@/assets/logo-unique-navy-cropped.png";
 
 const navItems = [
   { label: "Início", path: "/" },
@@ -42,15 +43,11 @@ const Header = () => {
       {/* Main header */}
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl hero-gradient flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-lg">U</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-lg text-foreground leading-tight">
-              Grupo Unique
-            </span>
-            <span className="text-xs text-muted-foreground">Diagnóstico e Saúde</span>
-          </div>
+          <img 
+            src={logoNavy} 
+            alt="Clínica Unique" 
+            className="h-20 w-auto object-contain"
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
