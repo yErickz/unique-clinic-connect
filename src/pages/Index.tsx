@@ -54,10 +54,10 @@ const Index = () => (
               Sua saúde em <span className="text-primary">boas mãos</span>
             </h1>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-lg">
-              Centro de diagnóstico e saúde com atendimento humanizado, tecnologia de última geração e os melhores especialistas.
+              Saúde, bem-estar e day clinic. Atendimento humanizado, tecnologia de última geração e os melhores especialistas.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-10">
-              <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta no Grupo Unique.")}>
+              <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta na Clínica Unique.")}>
                 <Button size="lg" className="hero-gradient border-0 text-primary-foreground rounded-full px-8 text-base">
                   <Phone className="w-5 h-5 mr-2" /> Agendar pelo WhatsApp
                 </Button>
@@ -86,7 +86,7 @@ const Index = () => (
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent rounded-3xl" />
             <img 
               src={heroImage} 
-              alt="Clínica Grupo Unique" 
+              alt="Clínica Unique" 
               className="w-full h-[500px] object-cover rounded-3xl shadow-2xl"
             />
             <div className="absolute -bottom-6 -left-6 bg-card rounded-2xl p-5 card-shadow border border-border">
@@ -203,7 +203,7 @@ const Index = () => (
           <p className="opacity-70 mb-8 text-lg">
             Agende sua consulta agora mesmo pelo WhatsApp. Nossa equipe está pronta para atendê-lo com todo o cuidado que você merece.
           </p>
-          <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta no Grupo Unique.")}>
+          <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta na Clínica Unique.")}>
             <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-10 text-base">
               <Phone className="w-5 h-5 mr-2" /> Agendar Consulta
             </Button>

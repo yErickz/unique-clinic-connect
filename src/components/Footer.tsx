@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { MapPin, Phone, Clock, Mail, Facebook, Instagram, Linkedin } from "lucide-react";
+import logoLight from "@/assets/logo-unique-light.jpg";
 
 const Footer = () => (
   <footer className="bg-foreground text-background">
@@ -8,16 +9,14 @@ const Footer = () => (
         {/* Brand */}
         <div>
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">U</span>
-            </div>
-            <div>
-              <span className="font-bold text-lg">Grupo Unique</span>
-              <p className="text-xs opacity-60">Diagnóstico e Saúde</p>
-            </div>
+            <img 
+              src={logoLight} 
+              alt="Clínica Unique" 
+              className="h-12 w-auto object-contain"
+            />
           </div>
           <p className="text-sm opacity-70 leading-relaxed mb-6">
-            Referência em diagnóstico e saúde com atendimento humanizado e tecnologia de última geração.
+            Saúde, bem-estar e day clinic. Referência em atendimento humanizado e tecnologia de última geração.
           </p>
           <div className="flex gap-3">
             <a href="#" className="w-9 h-9 rounded-full bg-background/10 hover:bg-primary flex items-center justify-center transition-colors">
@@ -80,7 +79,7 @@ const Footer = () => (
     </div>
     <div className="border-t border-background/10">
       <div className="container mx-auto px-4 py-5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs opacity-50">
-        <span>© {new Date().getFullYear()} Grupo Unique. Todos os direitos reservados.</span>
+        <span>© {new Date().getFullYear()} Clínica Unique. Todos os direitos reservados.</span>
         <div className="flex gap-6">
           <a href="#" className="hover:opacity-100">Política de Privacidade</a>
           <a href="#" className="hover:opacity-100">Termos de Uso</a>
