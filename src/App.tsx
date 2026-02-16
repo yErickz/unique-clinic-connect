@@ -8,7 +8,9 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import CookieBanner from "@/components/CookieBanner";
 import Index from "./pages/Index";
+import InstitutesPage from "./pages/InstitutesPage";
 import InstitutePage from "./pages/InstitutePage";
+import DoctorsPage from "./pages/DoctorsPage";
 import DoctorProfile from "./pages/DoctorProfile";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
@@ -24,7 +26,9 @@ const App = () => (
         <Header />
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/institutos" element={<InstitutesPage />} />
           <Route path="/instituto/:id" element={<InstitutePage />} />
+          <Route path="/medicos" element={<DoctorsPage />} />
           <Route path="/medico/:id" element={<DoctorProfile />} />
           <Route path="/contato" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
