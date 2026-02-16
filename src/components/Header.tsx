@@ -15,14 +15,16 @@ const navItems = [
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+  const isHome = location.pathname === "/";
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${isHome ? "bg-transparent" : "bg-background border-b border-border"}`}>
       {/* Main header */}
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <img src={logoNavy} alt="Clínica Unique" className="h-10 w-auto object-contain" />
-          <span className="text-lg font-bold text-foreground">Clínica Unique</span>
+          <img src={logoNavy} alt="Clínica Unique" className={`h-10 w-auto object-contain ${isHome ? "brightness-0 invert" : ""}`} />
+          <span className={`text-lg font-bold ${isHome ? "text-white" : "text-foreground"}`}>Clínica Unique</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
@@ -30,7 +32,7 @@ const Header = () => {
           <Link
             key={item.path}
             to={item.path}
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            className={`text-sm font-medium transition-colors ${isHome ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-primary"}`}>
 
               {item.label}
             </Link>
