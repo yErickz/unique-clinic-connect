@@ -214,7 +214,7 @@ const Index = () => {
               <div className="bg-gradient-to-br from-secondary to-[hsl(var(--teal-light))] rounded-3xl p-8">
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { value: "6", label: "Institutos especializados", accent: false },
+                    { value: "4", label: "Institutos especializados", accent: false },
                     { value: "24h", label: "Resultados de exames", accent: true },
                     { value: "2", label: "Convênios aceitos", accent: true },
                     { value: "< 15min", label: "Tempo médio de espera", accent: false },
