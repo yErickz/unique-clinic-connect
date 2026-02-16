@@ -60,29 +60,31 @@ const FaqSection = () => (
         </p>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="max-w-3xl mx-auto"
-      >
+      <div className="max-w-3xl mx-auto">
         <Accordion type="single" collapsible className="space-y-3">
           {faqs.map((faq, i) => (
-            <AccordionItem
+            <motion.div
               key={i}
-              value={`faq-${i}`}
-              className="bg-card border border-border rounded-xl px-6 data-[state=open]:shadow-md transition-shadow"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08, duration: 0.4, ease: "easeOut" }}
             >
-              <AccordionTrigger className="text-left text-base font-medium hover:no-underline">
-                {faq.question}
-              </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground leading-relaxed">
-                {faq.answer}
-              </AccordionContent>
-            </AccordionItem>
+              <AccordionItem
+                value={`faq-${i}`}
+                className="bg-card border border-border rounded-xl px-6 data-[state=open]:shadow-md transition-all duration-300 hover:border-primary/30"
+              >
+                <AccordionTrigger className="text-left text-base font-medium hover:no-underline">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            </motion.div>
           ))}
         </Accordion>
-      </motion.div>
+      </div>
     </div>
   </section>
 );
