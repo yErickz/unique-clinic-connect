@@ -181,25 +181,27 @@ const Index = () => {
               <p className="text-muted-foreground leading-relaxed mb-8">
                 Cada paciente é único — e é assim que tratamos você. Com atendimento individualizado e um ambiente acolhedor, cuidamos da sua saúde com a seriedade e o carinho que você merece.
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 {[
-                  { icon: Target, title: "Missão", desc: "Promover saúde com excelência, humanização e responsabilidade.", color: "primary" },
-                  { icon: Eye, title: "Visão", desc: "Ser referência em confiança e qualidade para a nossa comunidade.", color: "accent" },
-                  { icon: Heart, title: "Valores", desc: "Ética, empatia, inovação e compromisso com cada paciente.", color: "primary" },
+                  { icon: Target, title: "Missão", desc: "Promover saúde com excelência, humanização e responsabilidade.", gradient: "from-primary/15 to-primary/5", iconBg: "bg-primary/15", iconColor: "text-primary", borderColor: "hover:border-primary/30" },
+                  { icon: Eye, title: "Visão", desc: "Ser referência em confiança e qualidade para a nossa comunidade.", gradient: "from-accent/15 to-accent/5", iconBg: "bg-accent/15", iconColor: "text-accent", borderColor: "hover:border-accent/30" },
+                  { icon: Heart, title: "Valores", desc: "Ética, empatia, inovação e compromisso com cada paciente.", gradient: "from-primary/15 to-accent/5", iconBg: "bg-primary/15", iconColor: "text-primary", borderColor: "hover:border-primary/30" },
                 ].map((item, i) => (
                   <motion.div
                     key={item.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, y: 30, filter: "blur(4px)" }}
+                    whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.2 + i * 0.1 }}
-                    whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                    className="bg-card border border-border rounded-2xl p-5 card-shadow hover:card-shadow-hover transition-shadow"
+                    transition={{ delay: 0.2 + i * 0.12, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    whileHover={{ y: -6, transition: { duration: 0.3 } }}
+                    className={`relative overflow-hidden bg-card border border-border rounded-2xl p-6 card-shadow hover:card-shadow-hover transition-all duration-300 ${item.borderColor}`}
                   >
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${item.color === "accent" ? "bg-accent/10" : "bg-primary/10"}`}>
-                      <item.icon className={`w-5 h-5 ${item.color === "accent" ? "text-accent" : "text-primary"}`} />
+                    {/* Gradient accent bar */}
+                    <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${item.gradient}`} />
+                    <div className={`w-12 h-12 rounded-2xl ${item.iconBg} flex items-center justify-center mb-4`}>
+                      <item.icon className={`w-6 h-6 ${item.iconColor}`} />
                     </div>
-                    <h3 className="font-semibold text-foreground mb-1.5">{item.title}</h3>
+                    <h3 className="font-bold text-foreground text-base mb-2">{item.title}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
                   </motion.div>
                 ))}
