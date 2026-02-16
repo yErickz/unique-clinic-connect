@@ -1,8 +1,8 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Phone, CheckCircle, ArrowRight, Heart, Target, Eye, Users } from "lucide-react";
+import { Phone, CheckCircle, ArrowRight, Heart, Target, Eye, Users, MapPin, Clock, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ServiceCard from "@/components/ServiceCard";
-import { institutes, getWhatsAppLink } from "@/data/mockData";
+import { institutes, convenios, getWhatsAppLink } from "@/data/mockData";
 import heroImage from "@/assets/hero-sabin-style.jpg";
 import FaqSection from "@/components/FaqSection";
 import { useRef } from "react";
@@ -242,6 +242,79 @@ const Index = () => {
                 image={serviceImages[inst.id] || cardiologiaImg}
                 index={i}
               />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Convênios Aceitos */}
+      <section id="convenios" className="py-16">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Planos de Saúde</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-3">
+              Convênios Aceitos
+            </h2>
+            <p className="text-muted-foreground">Também atendemos de forma particular.</p>
+          </motion.div>
+          <div className="flex flex-wrap justify-center gap-4 max-w-2xl mx-auto">
+            {convenios.map((conv, i) => (
+              <motion.span
+                key={conv}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ scale: 1.05, y: -2, transition: { duration: 0.2 } }}
+                className="bg-card border border-border rounded-full px-6 py-3 text-sm font-medium text-foreground card-shadow hover:border-primary hover:text-primary transition-colors cursor-default"
+              >
+                {conv}
+              </motion.span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contato Básico */}
+      <section className="py-16 bg-secondary/30">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Fale Conosco</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
+              Onde nos encontrar
+            </h2>
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {[
+              { icon: MapPin, title: "Endereço", text: "Av. Paulista, 1000\nBela Vista, São Paulo - SP" },
+              { icon: Phone, title: "Telefone", text: "(11) 9999-9999" },
+              { icon: Clock, title: "Horários", text: "Seg–Sex: 7h às 19h\nSáb: 7h às 13h" },
+            ].map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                className="bg-card border border-border rounded-2xl p-6 card-shadow text-center"
+              >
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <item.icon className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">{item.text}</p>
+              </motion.div>
             ))}
           </div>
         </div>
