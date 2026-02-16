@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,16 +15,24 @@ const navItems = [
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
+  const isTransparent = isHome && !scrolled;
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${isHome ? "bg-transparent" : "bg-background border-b border-border"}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isTransparent ? "bg-transparent" : "bg-background/95 backdrop-blur-md border-b border-border shadow-sm"}`}>
       {/* Main header */}
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <img src={logoNavy} alt="Clínica Unique" className={`h-10 w-auto object-contain ${isHome ? "brightness-0 invert" : ""}`} />
-          <span className={`text-lg font-bold ${isHome ? "text-white" : "text-foreground"}`}>Clínica Unique</span>
+          <img src={logoNavy} alt="Clínica Unique" className={`h-10 w-auto object-contain transition-all duration-300 ${isTransparent ? "brightness-0 invert" : ""}`} />
+          <span className={`text-lg font-bold transition-colors duration-300 ${isTransparent ? "text-white" : "text-foreground"}`}>Clínica Unique</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
@@ -32,7 +40,7 @@ const Header = () => {
           <Link
             key={item.path}
             to={item.path}
-            className={`text-sm font-medium transition-colors ${isHome ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-primary"}`}>
+            className={`text-sm font-medium transition-colors duration-300 ${isTransparent ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-primary"}`}>
 
               {item.label}
             </Link>
@@ -48,7 +56,7 @@ const Header = () => {
         </div>
 
         <button
-          className="md:hidden text-foreground p-2"
+          className={`md:hidden p-2 ${isTransparent ? "text-white" : "text-foreground"}`}
           onClick={() => setMobileOpen(!mobileOpen)}>
 
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
