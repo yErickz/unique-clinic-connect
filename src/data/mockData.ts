@@ -66,15 +66,6 @@ export const institutes: Institute[] = [
     services: ["Hemograma", "Glicemia", "Colesterol", "Função Renal", "Hormônios"],
     doctors: [],
   },
-  {
-    id: "domiciliar",
-    name: "Atendimento Domiciliar",
-    category: "Nós Vamos Até Você",
-    description: "Cuide da sua saúde onde você estiver. Realize exames e vacinas no conforto da sua casa.",
-    icon: "Home",
-    services: ["Coleta Domiciliar", "Vacinas", "Curativos", "Acompanhamento"],
-    doctors: [],
-  },
 ];
 
 export const doctors: Doctor[] = [
