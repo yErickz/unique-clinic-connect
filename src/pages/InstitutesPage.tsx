@@ -9,6 +9,7 @@ import ortopediaImg from "@/assets/services/ortopedia.jpg";
 import dermatologiaImg from "@/assets/services/dermatologia.jpg";
 import oftalmologiaImg from "@/assets/services/oftalmologia.jpg";
 import laboratorioImg from "@/assets/services/laboratorio.jpg";
+import ginecologiaImg from "@/assets/services/ginecologia.jpg";
 
 const serviceImages: Record<string, string> = {
   cardiologia: cardiologiaImg,
@@ -16,6 +17,7 @@ const serviceImages: Record<string, string> = {
   dermatologia: dermatologiaImg,
   oftalmologia: oftalmologiaImg,
   laboratorio: laboratorioImg,
+  ginecologia: ginecologiaImg,
 };
 
 const stagger = {
