@@ -43,11 +43,8 @@ const Header = () => {
       {/* Main header */}
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          
-
-
-
-
+          <img src={logoNavy} alt="Clínica Unique" className="h-10 w-auto object-contain" />
+          <span className="text-lg font-bold text-foreground">Clínica Unique</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
