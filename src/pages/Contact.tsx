@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { getWhatsAppLink } from "@/data/mockData";
 
 const contactInfo = [
-  { icon: MapPin, title: "Endereço", text: "Av. Paulista, 1000 - Bela Vista\nSão Paulo - SP, CEP 01310-100" },
-  { icon: Phone, title: "Telefone", text: "(11) 9999-9999" },
+  { icon: MapPin, title: "Endereço", text: "Av. Pará, 1136, Térreo, Centro\nTucumã - PA, Brasil" },
+  { icon: Phone, title: "Telefone", text: "(94) 99277-5857" },
   { icon: Mail, title: "E-mail", text: "contato@grupounique.com.br" },
-  { icon: Clock, title: "Horários", text: "Segunda a Sexta: 7h às 19h\nSábado: 7h às 13h" },
+  { icon: Clock, title: "Horários", text: "Segunda a Sexta: 8h às 18h" },
 ];
 
 const Contact = () => (
@@ -59,9 +59,9 @@ const Contact = () => (
                 <Navigation className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Como chegar</h3>
-              <p className="text-sm text-muted-foreground mb-4">Av. Paulista, 1000 - Bela Vista, São Paulo</p>
+              <p className="text-sm text-muted-foreground mb-4">Av. Pará, 1136, Térreo, Centro - Tucumã, PA</p>
               <a 
-                href="https://www.google.com/maps/search/?api=1&query=Av+Paulista+1000+Sao+Paulo" 
+                href="https://www.google.com/maps/search/?api=1&query=Av+Para+1136+Tucuma+PA+Brasil"
                 target="_blank" 
                 rel="noopener noreferrer"
               >

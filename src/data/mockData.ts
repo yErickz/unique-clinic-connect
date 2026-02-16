@@ -18,7 +18,7 @@ export interface Doctor {
   photo?: string;
 }
 
-export const WHATSAPP_NUMBER = "5511999999999";
+export const WHATSAPP_NUMBER = "5594992775857";
 
 export const institutes: Institute[] = [
   {

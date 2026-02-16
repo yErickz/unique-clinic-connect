@@ -98,11 +98,11 @@ const Footer = () => (
           <div className="flex flex-col gap-4 text-sm">
             <div className="flex items-start gap-3 opacity-70">
               <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
-              <span>Av. Paulista, 1000<br />Bela Vista, São Paulo - SP</span>
+              <span>Av. Pará, 1136, Térreo<br />Centro, Tucumã - PA</span>
             </div>
             <div className="flex items-center gap-3 opacity-70">
               <Phone className="w-4 h-4 shrink-0 text-primary" />
-              <span>(11) 9999-9999</span>
+              <span>(94) 99277-5857</span>
             </div>
             <div className="flex items-center gap-3 opacity-70">
               <Mail className="w-4 h-4 shrink-0 text-primary" />
@@ -110,7 +110,7 @@ const Footer = () => (
             </div>
             <div className="flex items-start gap-3 opacity-70">
               <Clock className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
-              <span>Seg–Sex: 7h–19h<br />Sáb: 7h–13h</span>
+              <span>Seg–Sex: 8h–18h</span>
             </div>
           </div>
         </motion.div>
