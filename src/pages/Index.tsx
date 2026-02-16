@@ -131,7 +131,7 @@ const Index = () => {
                 initial={{ opacity: 0, y: 20, x: -20 }}
                 animate={{ opacity: 1, y: 0, x: 0 }}
                 transition={{ delay: 0.9, duration: 0.5, type: "spring" }}
-                className="absolute -bottom-6 -left-6 bg-card rounded-2xl p-5 card-shadow border border-border"
+                className="absolute -bottom-6 -left-6 bg-background rounded-2xl p-5 shadow-lg border border-border z-20"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">

@@ -47,7 +47,7 @@ const Header = () => {
     >
       <div className={`container mx-auto px-6 h-14 flex items-center justify-between rounded-2xl transition-all duration-300 ${
         scrolled
-          ? "bg-background/80 backdrop-blur-xl border border-border/50 shadow-md"
+          ? "bg-background/95 backdrop-blur-xl border border-border/50 shadow-md"
           : "bg-background border border-border"
       }`}>
         <Link to="/" className="flex items-center gap-3">
