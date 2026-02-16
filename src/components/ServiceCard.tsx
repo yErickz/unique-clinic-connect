@@ -21,7 +21,7 @@ const ServiceCard = ({ id, category, title, description, image, index }: Props) 
   >
     <Link
       to={`/instituto/${id}`}
-      className="group flex gap-5 bg-card rounded-2xl p-4 card-shadow hover:card-shadow-hover border border-border/50 transition-all duration-300"
+      className="group flex gap-5 bg-card rounded-2xl p-4 card-shadow hover:card-shadow-hover border border-border/50 hover:border-accent/30 transition-all duration-300"
     >
       <div className="w-40 h-32 md:w-48 md:h-36 rounded-xl overflow-hidden shrink-0">
         <motion.img

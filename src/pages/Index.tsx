@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Phone, CheckCircle, ArrowRight, Heart, Target, Eye, Users, MapPin, Clock, Mail } from "lucide-react";
+import { Phone, CheckCircle, ArrowRight, Heart, Target, Eye, Users, MapPin, Clock, Mail, Stethoscope, Shield, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ServiceCard from "@/components/ServiceCard";
 import { institutes, convenios, getWhatsAppLink } from "@/data/mockData";
@@ -25,9 +25,9 @@ const serviceImages: Record<string, string> = {
 };
 
 const features = [
-  { icon: CheckCircle, text: "Resultado em até 24h" },
-  { icon: CheckCircle, text: "Atendimento humanizado" },
-  { icon: CheckCircle, text: "Tecnologia de ponta" },
+  { icon: Shield, text: "Resultado em até 24h" },
+  { icon: Stethoscope, text: "Atendimento humanizado" },
+  { icon: Star, text: "Tecnologia de ponta" },
 ];
 
 const stagger = {
@@ -49,24 +49,31 @@ const Index = () => {
   return (
     <main className="overflow-x-hidden">
       {/* Hero */}
-      <section ref={heroRef} className="relative min-h-[90vh] flex items-center pt-28 pb-16 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-secondary via-background to-background" />
+      <section ref={heroRef} className="relative min-h-[92vh] flex items-center pt-28 pb-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--teal-light))] via-background to-secondary" />
+        {/* Decorative blobs */}
+        <div className="absolute top-20 right-0 w-96 h-96 bg-[hsl(var(--teal)/0.06)] rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
+        
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div style={{ y: heroY, opacity: heroOpacity }}>
               <motion.div variants={stagger} initial="hidden" animate="visible">
                 <motion.span
                   variants={fadeUp}
-                  className="inline-flex items-center gap-2 bg-primary/10 text-primary text-sm font-medium px-4 py-2 rounded-full mb-6"
+                  className="inline-flex items-center gap-2 bg-accent/10 text-accent text-sm font-semibold px-4 py-2 rounded-full mb-6 border border-accent/20"
                 >
-                  <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                  <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
                   Agendamento Online
                 </motion.span>
                 <motion.h1
                   variants={fadeUp}
-                  className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6 text-balance"
+                  className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-foreground leading-[1.1] mb-6 text-balance"
                 >
-                  Sua saúde em <span className="text-primary">boas mãos</span>
+                  Sua saúde em{" "}
+                  <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                    boas mãos
+                  </span>
                 </motion.h1>
                 <motion.p
                   variants={fadeUp}
@@ -75,13 +82,13 @@ const Index = () => {
                   Saúde, bem-estar e day clinic. Atendimento humanizado, tecnologia de última geração e os melhores especialistas reunidos em um só lugar.
                 </motion.p>
                 <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 mb-10">
-                  <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta no Grupo Unique.")}>
-                    <Button size="lg" className="hero-gradient border-0 text-primary-foreground rounded-full px-8 text-base group">
+                  <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta na Clínica Unique.")}>
+                    <Button size="lg" className="hero-gradient border-0 text-primary-foreground rounded-full px-8 text-base group shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-shadow">
                       <Phone className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" /> Agendar pelo WhatsApp
                     </Button>
                   </a>
                   <a href="#servicos">
-                    <Button size="lg" variant="outline" className="rounded-full px-8 text-base border-2 group">
+                    <Button size="lg" variant="outline" className="rounded-full px-8 text-base border-2 group hover:bg-accent/5 hover:border-accent hover:text-accent transition-all">
                       Nossos Serviços <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </a>
@@ -93,9 +100,11 @@ const Index = () => {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.8 + i * 0.15 }}
-                      className="flex items-center gap-2 text-sm text-muted-foreground"
+                      className="flex items-center gap-2.5 text-sm text-muted-foreground"
                     >
-                      <feat.icon className="w-5 h-5 text-primary" />
+                      <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                        <feat.icon className="w-4 h-4 text-accent" />
+                      </div>
                       {feat.text}
                     </motion.div>
                   ))}
@@ -103,19 +112,21 @@ const Index = () => {
               </motion.div>
             </motion.div>
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, rotate: -2 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="relative hidden lg:block"
             >
-              <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent rounded-3xl" />
-              <motion.img
-                src={heroImage}
-                alt="Grupo Unique — Ambiente moderno e acolhedor"
-                className="w-full h-[500px] object-cover rounded-3xl shadow-2xl"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.4 }}
-              />
+              <div className="relative rounded-[2rem] overflow-hidden shadow-2xl shadow-primary/10">
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/30 via-transparent to-transparent z-10" />
+                <motion.img
+                  src={heroImage}
+                  alt="Clínica Unique — Ambiente moderno e acolhedor"
+                  className="w-full h-[520px] object-cover"
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ duration: 0.6 }}
+                />
+              </div>
               <motion.div
                 initial={{ opacity: 0, y: 20, x: -20 }}
                 animate={{ opacity: 1, y: 0, x: 0 }}
@@ -123,13 +134,25 @@ const Index = () => {
                 className="absolute -bottom-6 -left-6 bg-card rounded-2xl p-5 card-shadow border border-border"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Users className="w-6 h-6 text-primary" />
+                  <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+                    <Users className="w-6 h-6 text-accent" />
                   </div>
                   <div>
                     <div className="text-lg font-bold text-foreground">Tudo em um só lugar</div>
                     <div className="text-sm text-muted-foreground">6 institutos especializados</div>
                   </div>
+                </div>
+              </motion.div>
+              {/* Floating badge top-right */}
+              <motion.div
+                initial={{ opacity: 0, y: -20, x: 20 }}
+                animate={{ opacity: 1, y: 0, x: 0 }}
+                transition={{ delay: 1.1, duration: 0.5, type: "spring" }}
+                className="absolute -top-3 -right-3 bg-accent text-accent-foreground rounded-2xl px-4 py-2.5 shadow-lg"
+              >
+                <div className="flex items-center gap-2">
+                  <Star className="w-4 h-4" />
+                  <span className="text-sm font-bold">Referência em Tucumã</span>
                 </div>
               </motion.div>
             </motion.div>
@@ -138,7 +161,7 @@ const Index = () => {
       </section>
 
       {/* Sobre o Grupo Unique */}
-      <section id="sobre" className="py-20">
+      <section id="sobre" className="py-24 section-divider">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -147,7 +170,7 @@ const Index = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <span className="text-primary text-sm font-semibold uppercase tracking-wider">Quem Somos</span>
+              <span className="text-accent text-sm font-semibold uppercase tracking-wider">Quem Somos</span>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-6">
                 Sobre o Grupo Unique
               </h2>
@@ -159,9 +182,9 @@ const Index = () => {
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 {[
-                  { icon: Target, title: "Missão", desc: "Promover saúde com excelência, humanização e responsabilidade." },
-                  { icon: Eye, title: "Visão", desc: "Ser referência em confiança e qualidade para a nossa comunidade." },
-                  { icon: Heart, title: "Valores", desc: "Ética, empatia, inovação e compromisso com cada paciente." },
+                  { icon: Target, title: "Missão", desc: "Promover saúde com excelência, humanização e responsabilidade.", color: "primary" },
+                  { icon: Eye, title: "Visão", desc: "Ser referência em confiança e qualidade para a nossa comunidade.", color: "accent" },
+                  { icon: Heart, title: "Valores", desc: "Ética, empatia, inovação e compromisso com cada paciente.", color: "primary" },
                 ].map((item, i) => (
                   <motion.div
                     key={item.title}
@@ -170,10 +193,10 @@ const Index = () => {
                     viewport={{ once: true }}
                     transition={{ delay: 0.2 + i * 0.1 }}
                     whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                    className="bg-card border border-border rounded-2xl p-5 card-shadow"
+                    className="bg-card border border-border rounded-2xl p-5 card-shadow hover:card-shadow-hover transition-shadow"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-                      <item.icon className="w-5 h-5 text-primary" />
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${item.color === "accent" ? "bg-accent/10" : "bg-primary/10"}`}>
+                      <item.icon className={`w-5 h-5 ${item.color === "accent" ? "text-accent" : "text-primary"}`} />
                     </div>
                     <h3 className="font-semibold text-foreground mb-1.5">{item.title}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
@@ -188,13 +211,13 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="relative hidden lg:block"
             >
-              <div className="bg-secondary rounded-3xl p-8">
+              <div className="bg-gradient-to-br from-secondary to-[hsl(var(--teal-light))] rounded-3xl p-8">
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { value: "6", label: "Institutos especializados" },
-                    { value: "24h", label: "Resultados de exames" },
-                    { value: "2", label: "Convênios aceitos" },
-                    { value: "< 15min", label: "Tempo médio de espera" },
+                    { value: "6", label: "Institutos especializados", accent: false },
+                    { value: "24h", label: "Resultados de exames", accent: true },
+                    { value: "2", label: "Convênios aceitos", accent: true },
+                    { value: "< 15min", label: "Tempo médio de espera", accent: false },
                   ].map((item, i) => (
                     <motion.div
                       key={item.label}
@@ -203,9 +226,9 @@ const Index = () => {
                       viewport={{ once: true }}
                       transition={{ delay: 0.3 + i * 0.1 }}
                       whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
-                      className="bg-card rounded-2xl p-6 card-shadow border border-border text-center cursor-default"
+                      className="bg-card rounded-2xl p-6 card-shadow border border-border text-center cursor-default hover:card-shadow-hover transition-shadow"
                     >
-                      <div className="text-3xl font-bold text-primary mb-1">{item.value}</div>
+                      <div className={`text-3xl font-bold mb-1 ${item.accent ? "text-accent" : "text-primary"}`}>{item.value}</div>
                       <div className="text-sm text-muted-foreground">{item.label}</div>
                     </motion.div>
                   ))}
@@ -217,7 +240,7 @@ const Index = () => {
       </section>
 
       {/* Serviços */}
-      <section id="servicos" className="py-20 bg-secondary/30">
+      <section id="servicos" className="py-24 bg-secondary/40">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -226,10 +249,13 @@ const Index = () => {
             transition={{ duration: 0.5 }}
             className="mb-14"
           >
-            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Especialidades</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
+            <span className="text-accent text-sm font-semibold uppercase tracking-wider">Especialidades</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-3">
               Todos os cuidados que você precisa
             </h2>
+            <p className="text-muted-foreground max-w-xl">
+              Especialistas dedicados em cada área para oferecer o melhor diagnóstico e tratamento.
+            </p>
           </motion.div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {institutes.map((inst, i) => (
@@ -248,7 +274,7 @@ const Index = () => {
       </section>
 
       {/* Convênios Aceitos */}
-      <section id="convenios" className="py-16">
+      <section id="convenios" className="py-20 section-divider">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -256,7 +282,7 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Planos de Saúde</span>
+            <span className="text-accent text-sm font-semibold uppercase tracking-wider">Planos de Saúde</span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-3">
               Convênios Aceitos
             </h2>
@@ -271,7 +297,7 @@ const Index = () => {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 whileHover={{ scale: 1.05, y: -2, transition: { duration: 0.2 } }}
-                className="bg-card border border-border rounded-full px-6 py-3 text-sm font-medium text-foreground card-shadow hover:border-primary hover:text-primary transition-colors cursor-default"
+                className="bg-card border border-border rounded-full px-6 py-3 text-sm font-medium text-foreground card-shadow hover:border-accent hover:text-accent hover:card-shadow-hover transition-all cursor-default"
               >
                 {conv}
               </motion.span>
@@ -281,7 +307,7 @@ const Index = () => {
       </section>
 
       {/* Contato Básico */}
-      <section className="py-16 bg-secondary/30">
+      <section className="py-20 bg-secondary/40">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -289,16 +315,16 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Fale Conosco</span>
+            <span className="text-accent text-sm font-semibold uppercase tracking-wider">Fale Conosco</span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
               Onde nos encontrar
             </h2>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
-              { icon: MapPin, title: "Endereço", text: "Av. Paulista, 1000\nBela Vista, São Paulo - SP" },
-              { icon: Phone, title: "Telefone", text: "(11) 9999-9999" },
-              { icon: Clock, title: "Horários", text: "Seg–Sex: 7h às 19h\nSáb: 7h às 13h" },
+              { icon: MapPin, title: "Endereço", text: "Av. Pará, 1136, Térreo\nCentro, Tucumã - PA" },
+              { icon: Phone, title: "Telefone", text: "(94) 99277-5857" },
+              { icon: Clock, title: "Horários", text: "Seg–Sex: 8h às 18h" },
             ].map((item, i) => (
               <motion.div
                 key={item.title}
@@ -307,10 +333,10 @@ const Index = () => {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="bg-card border border-border rounded-2xl p-6 card-shadow text-center"
+                className="bg-card border border-border rounded-2xl p-6 card-shadow text-center hover:card-shadow-hover transition-shadow"
               >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4">
+                  <item.icon className="w-6 h-6 text-accent" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">{item.text}</p>
@@ -324,8 +350,10 @@ const Index = () => {
       <FaqSection />
 
       {/* CTA Final */}
-      <section className="py-20 bg-foreground text-background">
-        <div className="container mx-auto px-4 text-center">
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 hero-gradient" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] " />
+        <div className="container mx-auto px-4 text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -338,7 +366,7 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="text-3xl md:text-4xl font-bold mb-4"
+              className="text-3xl md:text-4xl font-bold mb-4 text-primary-foreground"
             >
               Pronto para cuidar da sua saúde?
             </motion.h2>
@@ -347,7 +375,7 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="opacity-70 mb-8 text-lg"
+              className="text-primary-foreground/70 mb-8 text-lg"
             >
               Agende sua consulta agora mesmo pelo WhatsApp. Nossa equipe está pronta para atendê-lo com todo o cuidado que você merece.
             </motion.p>
@@ -357,8 +385,8 @@ const Index = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
             >
-              <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta no Grupo Unique.")}>
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-10 text-base group">
+              <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta na Clínica Unique.")}>
+                <Button size="lg" variant="secondary" className="rounded-full px-10 text-base font-semibold text-primary group shadow-lg hover:shadow-xl transition-shadow">
                   <Phone className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" /> Agendar Consulta
                 </Button>
               </a>
