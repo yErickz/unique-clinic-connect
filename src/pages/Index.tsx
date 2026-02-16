@@ -36,7 +36,7 @@ const stats = [
 ];
 
 const Index = () => (
-  <main>
+  <main className="overflow-x-hidden">
     {/* Hero */}
     <section className="relative min-h-[90vh] flex items-center pt-28 pb-16 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-secondary via-background to-background" />
