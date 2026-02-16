@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import ServiceCard from "@/components/ServiceCard";
 import { institutes, convenios, getWhatsAppLink } from "@/data/mockData";
 import heroImage from "@/assets/hero-sabin-style.jpg";
+import FaqSection from "@/components/FaqSection";
 
 // Import service images
 import cardiologiaImg from "@/assets/services/cardiologia.jpg";
@@ -187,6 +188,9 @@ const Index = () => (
         </div>
       </div>
     </section>
+
+    {/* FAQ */}
+    <FaqSection />
 
     {/* CTA */}
     <section className="py-20 bg-foreground text-background">
