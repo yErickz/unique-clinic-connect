@@ -51,7 +51,7 @@ const Header = () => {
           : "bg-background border border-border"
       }`}>
         <Link to="/" className="flex items-center gap-3">
-          <img src={logoNavy} alt="Clínica Unique" className="h-10 w-auto object-contain" />
+          <img src={logoNavy} alt="Clínica Unique" className="h-10 md:h-10 w-auto object-contain min-h-[40px]" />
           <span className="text-lg font-bold text-foreground">Clínica Unique</span>
         </Link>
 

@@ -82,13 +82,13 @@ const Index = () => {
                   Saúde, bem-estar e day clinic. Atendimento humanizado, tecnologia de última geração e os melhores especialistas reunidos em um só lugar.
                 </motion.p>
                 <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 mb-10">
-                  <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta na Clínica Unique.")}>
-                    <Button size="lg" className="hero-gradient border-0 text-primary-foreground rounded-full px-8 text-base group shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-shadow">
+                  <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta na Clínica Unique.")} className="w-full sm:w-auto">
+                    <Button size="lg" className="w-full sm:w-auto hero-gradient border-0 text-primary-foreground rounded-full px-8 text-base group shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-shadow">
                       <Phone className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" /> Agendar pelo WhatsApp
                     </Button>
                   </a>
-                  <a href="#servicos">
-                    <Button size="lg" variant="outline" className="rounded-full px-8 text-base border-2 group hover:bg-accent/5 hover:border-accent hover:text-accent transition-all">
+                  <a href="#servicos" className="w-full sm:w-auto">
+                    <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full px-8 text-base border-2 group hover:bg-accent/5 hover:border-accent hover:text-accent transition-all">
                       Nossos Serviços <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </a>
@@ -288,20 +288,36 @@ const Index = () => {
             </h2>
             <p className="text-muted-foreground">Também atendemos de forma particular.</p>
           </motion.div>
-          <div className="flex flex-wrap justify-center gap-4 max-w-2xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl mx-auto">
             {convenios.map((conv, i) => (
-              <motion.span
+              <motion.div
                 key={conv}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                whileHover={{ scale: 1.05, y: -2, transition: { duration: 0.2 } }}
-                className="bg-card border border-border rounded-full px-6 py-3 text-sm font-medium text-foreground card-shadow hover:border-accent hover:text-accent hover:card-shadow-hover transition-all cursor-default"
+                whileHover={{ scale: 1.03, y: -3, transition: { duration: 0.2 } }}
+                className="bg-card border border-border rounded-2xl p-6 card-shadow hover:border-accent hover:card-shadow-hover transition-all cursor-default text-center"
               >
-                {conv}
-              </motion.span>
+                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-3">
+                  <Shield className="w-6 h-6 text-accent" />
+                </div>
+                <span className="font-semibold text-foreground">{conv}</span>
+              </motion.div>
             ))}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              whileHover={{ scale: 1.03, y: -3, transition: { duration: 0.2 } }}
+              className="bg-secondary/60 border border-border/50 rounded-2xl p-6 card-shadow hover:card-shadow-hover transition-all cursor-default text-center"
+            >
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                <Heart className="w-6 h-6 text-primary" />
+              </div>
+              <span className="font-semibold text-foreground">Particular</span>
+            </motion.div>
           </div>
         </div>
       </section>

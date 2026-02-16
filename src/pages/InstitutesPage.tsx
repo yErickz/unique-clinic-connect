@@ -38,7 +38,7 @@ const InstitutesPage = () => (
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-14"
       >
-        <span className="text-primary text-sm font-semibold uppercase tracking-wider">Especialidades</span>
+        <span className="text-accent text-sm font-semibold uppercase tracking-wider">Especialidades</span>
         <h1 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-4">
           Nossos Institutos
         </h1>
