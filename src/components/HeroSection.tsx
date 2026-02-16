@@ -19,8 +19,8 @@ const HeroSection = () => (
         alt="Clínica Unique"
         className="w-full h-full object-cover"
       />
-      {/* Dark gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[hsl(218,51%,10%)/0.92] via-[hsl(218,51%,14%)/0.80] to-[hsl(218,51%,18%)/0.50]" />
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[hsl(218,51%,96%)/0.90] via-[hsl(218,51%,96%)/0.85] to-[hsl(218,51%,96%)/0.60]" />
     </div>
 
     {/* Content */}
@@ -31,8 +31,8 @@ const HeroSection = () => (
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white/90 text-sm font-medium px-5 py-2.5 rounded-full mb-8 border border-white/10">
-            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+          <span className="inline-flex items-center gap-2 bg-primary/10 text-primary text-sm font-medium px-5 py-2.5 rounded-full mb-8 border border-primary/20">
+            <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
             Agendamento Online
           </span>
         </motion.div>
@@ -41,10 +41,10 @@ const HeroSection = () => (
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
-          className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.1] mb-6 text-balance"
+          className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-foreground leading-[1.1] mb-6 text-balance"
         >
           Sua saúde em{" "}
-          <span className="bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+          <span className="text-primary">
             boas mãos
           </span>
         </motion.h1>
@@ -53,7 +53,7 @@ const HeroSection = () => (
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-          className="text-lg md:text-xl text-white/70 mb-10 leading-relaxed max-w-lg"
+          className="text-lg md:text-xl text-muted-foreground mb-10 leading-relaxed max-w-lg"
         >
           Saúde, bem-estar e day clinic. Atendimento humanizado, tecnologia de
           última geração e os melhores especialistas.
@@ -68,7 +68,7 @@ const HeroSection = () => (
           <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta na Clínica Unique.")}>
             <Button
               size="lg"
-              className="bg-white text-foreground hover:bg-white/90 rounded-full px-8 text-base font-semibold shadow-lg shadow-black/20"
+              className="hero-gradient border-0 text-primary-foreground rounded-full px-8 text-base font-semibold shadow-lg shadow-primary/20"
             >
               <Phone className="w-5 h-5 mr-2" /> Agendar pelo WhatsApp
             </Button>
@@ -77,7 +77,7 @@ const HeroSection = () => (
             <Button
               size="lg"
               variant="outline"
-              className="rounded-full px-8 text-base border-2 border-white/30 text-white hover:bg-white/10 hover:text-white"
+              className="rounded-full px-8 text-base border-2 border-primary/30 text-foreground hover:bg-primary/5"
             >
               Ver Serviços <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
@@ -93,9 +93,9 @@ const HeroSection = () => (
           {features.map((feat) => (
             <div
               key={feat.text}
-              className="flex items-center gap-2 text-sm text-white/60"
+              className="flex items-center gap-2 text-sm text-muted-foreground"
             >
-              <feat.icon className="w-5 h-5 text-green-400" />
+              <feat.icon className="w-5 h-5 text-primary" />
               {feat.text}
             </div>
           ))}
