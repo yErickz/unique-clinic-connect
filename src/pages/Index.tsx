@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Phone, CheckCircle, ArrowRight, Heart, Target, Eye, Users, MapPin, Clock, Mail, Stethoscope, Shield, Star } from "lucide-react";
+import { Phone, CheckCircle, ArrowRight, Heart, Target, Eye, Users, MapPin, Clock, Mail, Stethoscope, Shield, Star, TestTube, Droplets, Activity, Pill, Dna } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ServiceCard from "@/components/ServiceCard";
 import { institutes, convenios, getWhatsAppLink } from "@/data/mockData";
@@ -273,6 +273,64 @@ const Index = () => {
               />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Exames Mais Escolhidos */}
+      <section className="py-24 section-divider">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="mb-14"
+          >
+            <span className="text-accent text-sm font-semibold uppercase tracking-wider">Laboratório</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-3">
+              Exames Mais Escolhidos
+            </h2>
+            <p className="text-muted-foreground max-w-xl">
+              Resultados rápidos e precisos para os exames que você mais precisa.
+            </p>
+          </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+            {[
+              { icon: Droplets, name: "Hemograma", desc: "Avaliação completa das células sanguíneas para detecção de infecções, anemias e outras condições." },
+              { icon: Activity, name: "Glicemia", desc: "Medição do nível de açúcar no sangue, essencial para diagnóstico e controle do diabetes." },
+              { icon: Heart, name: "Colesterol", desc: "Análise do perfil lipídico para avaliar riscos cardiovasculares e orientar prevenção." },
+              { icon: Dna, name: "Hormônios", desc: "Dosagem hormonal para avaliação da tireoide, fertilidade e equilíbrio metabólico." },
+              { icon: TestTube, name: "Função Renal", desc: "Análise de creatinina e ureia para avaliar o funcionamento dos rins." },
+            ].map((exam, i) => (
+              <motion.div
+                key={exam.name}
+                initial={{ opacity: 0, y: 30, filter: "blur(4px)" }}
+                whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ y: -6, transition: { duration: 0.3 } }}
+                className="bg-card border border-border/50 rounded-2xl p-6 card-shadow hover:card-shadow-hover hover:border-accent/30 transition-all duration-300 text-center"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-4">
+                  <exam.icon className="w-7 h-7 text-accent" />
+                </div>
+                <h3 className="font-semibold text-foreground text-base mb-2">{exam.name}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{exam.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mt-10"
+          >
+            <a href={getWhatsAppLink("Olá! Gostaria de agendar um exame laboratorial.")}>
+              <Button className="hero-gradient border-0 text-primary-foreground rounded-full px-8 group">
+                <Phone className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" /> Agendar Exame
+              </Button>
+            </a>
+          </motion.div>
         </div>
       </section>
 
