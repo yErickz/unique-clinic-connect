@@ -7,11 +7,11 @@ import { getWhatsAppLink } from "@/data/mockData";
 import logoNavy from "@/assets/logo-unique-navy-cropped.png";
 
 const navItems = [
-  { label: "Início", path: "/" },
-  { label: "Institutos", path: "/#institutos" },
-  { label: "Convênios", path: "/#convenios" },
-  { label: "Contato", path: "/contato" },
-];
+{ label: "Início", path: "/" },
+{ label: "Institutos", path: "/#institutos" },
+{ label: "Convênios", path: "/#convenios" },
+{ label: "Contato", path: "/contato" }];
+
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -20,46 +20,46 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
       {/* Top bar */}
       <div className="bg-primary text-primary-foreground py-2">
-        <div className="container mx-auto px-4 flex items-center justify-between text-sm">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">São Paulo, SP</span>
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Phone className="w-3.5 h-3.5" />
-              (11) 9999-9999
-            </span>
-          </div>
-          <a 
-            href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta.")}
-            className="font-medium hover:underline"
-          >
-            Agendar Consulta
-          </a>
-        </div>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       </div>
 
       {/* Main header */}
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <img 
-            src={logoNavy} 
-            alt="Clínica Unique" 
-            className="h-20 w-auto object-contain"
-          />
+          <img
+            src={logoNavy}
+            alt="Clínica Unique"
+            className="h-20 w-auto object-contain" />
+
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
+          {navItems.map((item) =>
+          <Link
+            key={item.path}
+            to={item.path}
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+
               {item.label}
             </Link>
-          ))}
+          )}
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
@@ -72,31 +72,31 @@ const Header = () => {
 
         <button
           className="md:hidden text-foreground p-2"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
+          onClick={() => setMobileOpen(!mobileOpen)}>
+
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
       <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background border-t border-border"
-          >
+        {mobileOpen &&
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          className="md:hidden bg-background border-t border-border">
+
             <nav className="container mx-auto px-4 py-4 flex flex-col gap-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setMobileOpen(false)}
-                  className="text-sm font-medium py-3 px-4 rounded-lg text-foreground hover:bg-secondary transition-colors"
-                >
+              {navItems.map((item) =>
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={() => setMobileOpen(false)}
+              className="text-sm font-medium py-3 px-4 rounded-lg text-foreground hover:bg-secondary transition-colors">
+
                   {item.label}
                 </Link>
-              ))}
+            )}
               <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta.")} className="mt-2">
                 <Button className="w-full hero-gradient border-0 text-primary-foreground rounded-full">
                   <Phone className="w-4 h-4 mr-2" /> Agendar Consulta
@@ -104,10 +104,10 @@ const Header = () => {
               </a>
             </nav>
           </motion.div>
-        )}
+        }
       </AnimatePresence>
-    </header>
-  );
+    </header>);
+
 };
 
 export default Header;
