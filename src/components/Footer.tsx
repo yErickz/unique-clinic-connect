@@ -1,17 +1,34 @@
 import { Link } from "react-router-dom";
 import { MapPin, Phone, Clock, Mail, Facebook, Instagram, Linkedin } from "lucide-react";
+import { motion } from "framer-motion";
 import logoLight from "@/assets/logo-unique-light.jpg";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+};
 
 const Footer = () => (
   <footer className="bg-foreground text-background">
     <div className="container mx-auto px-4 py-16">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+      <motion.div
+        variants={stagger}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.1 }}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10"
+      >
         {/* Brand */}
-        <div>
+        <motion.div variants={fadeUp}>
           <div className="flex items-center gap-3 mb-4">
-            <img 
-              src={logoLight} 
-              alt="Clínica Unique" 
+            <img
+              src={logoLight}
+              alt="Clínica Unique"
               className="h-12 w-auto object-contain"
             />
           </div>
@@ -19,42 +36,64 @@ const Footer = () => (
             Saúde, bem-estar e day clinic. Referência em atendimento humanizado e tecnologia de última geração.
           </p>
           <div className="flex gap-3">
-            <a href="#" className="w-9 h-9 rounded-full bg-background/10 hover:bg-primary flex items-center justify-center transition-colors">
-              <Facebook className="w-4 h-4" />
-            </a>
-            <a href="#" className="w-9 h-9 rounded-full bg-background/10 hover:bg-primary flex items-center justify-center transition-colors">
-              <Instagram className="w-4 h-4" />
-            </a>
-            <a href="#" className="w-9 h-9 rounded-full bg-background/10 hover:bg-primary flex items-center justify-center transition-colors">
-              <Linkedin className="w-4 h-4" />
-            </a>
+            {[Facebook, Instagram, Linkedin].map((Icon, i) => (
+              <motion.a
+                key={i}
+                href="#"
+                whileHover={{ scale: 1.15, rotate: 5 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-9 h-9 rounded-full bg-background/10 hover:bg-primary flex items-center justify-center transition-colors"
+              >
+                <Icon className="w-4 h-4" />
+              </motion.a>
+            ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Navigation */}
-        <div>
+        <motion.div variants={fadeUp}>
           <h4 className="font-semibold text-sm mb-5 uppercase tracking-wider">Navegação</h4>
           <div className="flex flex-col gap-3 text-sm">
-            <Link to="/" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Início</Link>
-            <Link to="/#institutos" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Nossos Institutos</Link>
-            <Link to="/#convenios" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Convênios</Link>
-            <Link to="/contato" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Contato</Link>
+            {[
+              { to: "/", label: "Início" },
+              { to: "/#institutos", label: "Nossos Institutos" },
+              { to: "/#convenios", label: "Convênios" },
+              { to: "/contato", label: "Contato" },
+            ].map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="opacity-70 hover:opacity-100 hover:text-primary hover:translate-x-1 transition-all duration-200 inline-block"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Services */}
-        <div>
+        <motion.div variants={fadeUp}>
           <h4 className="font-semibold text-sm mb-5 uppercase tracking-wider">Institutos</h4>
           <div className="flex flex-col gap-3 text-sm">
-            <Link to="/instituto/cardiologia" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Cardiologia</Link>
-            <Link to="/instituto/ortopedia" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Ortopedia</Link>
-            <Link to="/instituto/dermatologia" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Dermatologia</Link>
-            <Link to="/instituto/oftalmologia" className="opacity-70 hover:opacity-100 hover:text-primary transition-all">Oftalmologia</Link>
+            {[
+              { to: "/instituto/cardiologia", label: "Cardiologia" },
+              { to: "/instituto/ortopedia", label: "Ortopedia" },
+              { to: "/instituto/dermatologia", label: "Dermatologia" },
+              { to: "/instituto/oftalmologia", label: "Oftalmologia" },
+            ].map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="opacity-70 hover:opacity-100 hover:text-primary hover:translate-x-1 transition-all duration-200 inline-block"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Contact */}
-        <div>
+        <motion.div variants={fadeUp}>
           <h4 className="font-semibold text-sm mb-5 uppercase tracking-wider">Contato</h4>
           <div className="flex flex-col gap-4 text-sm">
             <div className="flex items-start gap-3 opacity-70">
@@ -74,18 +113,24 @@ const Footer = () => (
               <span>Seg–Sex: 7h–19h<br />Sáb: 7h–13h</span>
             </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
-    <div className="border-t border-background/10">
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay: 0.3 }}
+      className="border-t border-background/10"
+    >
       <div className="container mx-auto px-4 py-5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs opacity-50">
         <span>© {new Date().getFullYear()} Clínica Unique. Todos os direitos reservados.</span>
         <div className="flex gap-6">
-          <a href="#" className="hover:opacity-100">Política de Privacidade</a>
-          <a href="#" className="hover:opacity-100">Termos de Uso</a>
+          <a href="#" className="hover:opacity-100 transition-opacity">Política de Privacidade</a>
+          <a href="#" className="hover:opacity-100 transition-opacity">Termos de Uso</a>
         </div>
       </div>
-    </div>
+    </motion.div>
   </footer>
 );
 
