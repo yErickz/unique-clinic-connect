@@ -56,8 +56,8 @@ const Footer = () => (
           <div className="flex flex-col gap-3 text-sm">
             {[
               { to: "/", label: "Início" },
-              { to: "/#institutos", label: "Nossos Institutos" },
-              { to: "/#convenios", label: "Convênios" },
+              { to: "/institutos", label: "Institutos" },
+              { to: "/medicos", label: "Médicos" },
               { to: "/contato", label: "Contato" },
             ].map((link) => (
               <Link
