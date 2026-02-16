@@ -129,9 +129,7 @@ export const doctors: Doctor[] = [
 ];
 
 export const convenios = [
-  "Amil", "Bradesco Saúde", "SulAmérica", "Unimed", "Porto Seguro",
-  "NotreDame Intermédica", "Hapvida", "Prevent Senior", "Mediservice", "Cassi",
-  "GEAP", "Fundação Saúde Itaú",
+  "Bradesco Saúde", "Vale",
 ];
 
 export function getWhatsAppLink(message: string): string {
