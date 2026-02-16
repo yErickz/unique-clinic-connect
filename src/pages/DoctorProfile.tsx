@@ -1,8 +1,10 @@
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Phone, User, Award, Stethoscope, GraduationCap, Calendar } from "lucide-react";
+import { ArrowLeft, Phone, User, Award, Stethoscope, GraduationCap, Calendar, Building2, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { doctors, institutes, getWhatsAppLink } from "@/data/mockData";
+
+const ease = [0.22, 1, 0.36, 1] as const;
 
 const DoctorProfile = () => {
   const { id } = useParams();
@@ -20,74 +22,160 @@ const DoctorProfile = () => {
     );
   }
 
+  // Parse bio into highlights (split sentences)
+  const bioSentences = doctor.bio.split(". ").filter(Boolean).map(s => s.endsWith(".") ? s : s + ".");
+
   return (
-    <main className="pt-32 pb-20">
-      <div className="container mx-auto px-4 max-w-4xl">
+    <main className="pt-28 pb-20 min-h-screen">
+      <div className="container mx-auto px-4 max-w-3xl">
         <button
           onClick={() => window.history.back()}
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" /> Voltar
         </button>
 
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-card rounded-3xl overflow-hidden card-shadow border border-border"
+          initial={{ opacity: 0, y: 24, filter: "blur(6px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: 0.6, ease }}
+          className="relative bg-card rounded-3xl overflow-hidden card-shadow border border-border"
         >
-          {/* Header */}
-          <div className="bg-gradient-to-br from-primary/10 via-secondary to-transparent p-8 md:p-10">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-              <div className="w-32 h-32 rounded-3xl bg-secondary border-4 border-card flex items-center justify-center shrink-0 shadow-lg">
-                <User className="w-16 h-16 text-muted-foreground" />
-              </div>
-              <div className="text-center md:text-left flex-1">
-                <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+          {/* Top accent */}
+          <div className="h-1.5 bg-gradient-to-r from-primary via-primary/60 to-accent" />
+
+          {/* Header section */}
+          <div className="px-8 pt-8 pb-6 md:px-10 md:pt-10">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+              {/* Avatar */}
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.15, duration: 0.5, ease }}
+                className="relative shrink-0"
+              >
+                <div className="w-28 h-28 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/10 border-2 border-primary/20 flex items-center justify-center shadow-lg">
+                  <User className="w-14 h-14 text-primary/60" />
+                </div>
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-md">
+                  <BadgeCheck className="w-4 h-4 text-primary-foreground" />
+                </div>
+              </motion.div>
+
+              {/* Name & tags */}
+              <motion.div
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.25, duration: 0.5, ease }}
+                className="text-center sm:text-left flex-1"
+              >
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-3">
                   {doctor.name}
                 </h1>
-                <div className="flex flex-wrap justify-center md:justify-start gap-3 mb-4">
-                  <span className="inline-flex items-center gap-1.5 text-sm text-primary font-medium bg-primary/10 px-3 py-1 rounded-full">
-                    <Stethoscope className="w-4 h-4" /> {doctor.specialty}
+                <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                  <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary bg-primary/10 px-3.5 py-1.5 rounded-full">
+                    <Stethoscope className="w-3.5 h-3.5" /> {doctor.specialty}
                   </span>
-                  <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                    <Award className="w-4 h-4" /> {doctor.crm}
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
+                    <Award className="w-3.5 h-3.5" /> {doctor.crm}
                   </span>
+                  {institute && (
+                    <Link
+                      to={`/instituto/${institute.id}`}
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-muted hover:bg-primary/10 hover:text-primary px-3 py-1.5 rounded-full transition-colors"
+                    >
+                      <Building2 className="w-3.5 h-3.5" /> {institute.name}
+                    </Link>
+                  )}
                 </div>
-                {institute && (
-                  <Link 
-                    to={`/instituto/${institute.id}`} 
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {institute.name}
-                  </Link>
-                )}
-              </div>
+              </motion.div>
             </div>
           </div>
 
-          {/* Content */}
-          <div className="p-8 md:p-10">
-            <div className="flex items-center gap-2 mb-4">
-              <GraduationCap className="w-5 h-5 text-primary" />
-              <h2 className="text-lg font-semibold text-foreground">Sobre o Profissional</h2>
-            </div>
-            <p className="text-muted-foreground leading-relaxed mb-8">{doctor.bio}</p>
+          {/* Divider */}
+          <div className="mx-8 md:mx-10 h-px bg-border" />
+
+          {/* Curriculum body */}
+          <div className="px-8 py-8 md:px-10 md:py-10 space-y-8">
+            {/* About / Formação */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.5, ease }}
+            >
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <GraduationCap className="w-4 h-4 text-primary" />
+                </div>
+                <h2 className="text-base font-bold text-foreground uppercase tracking-wide">Formação & Experiência</h2>
+              </div>
+              <div className="space-y-3 pl-2">
+                {bioSentences.map((sentence, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 + i * 0.08, duration: 0.4, ease }}
+                    className="flex items-start gap-3"
+                  >
+                    <span className="mt-2 w-2 h-2 rounded-full bg-primary/40 shrink-0" />
+                    <p className="text-muted-foreground leading-relaxed text-[15px]">{sentence}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Services from institute */}
+            {institute && institute.services.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.5, ease }}
+              >
+                <div className="flex items-center gap-2.5 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                    <Stethoscope className="w-4 h-4 text-accent" />
+                  </div>
+                  <h2 className="text-base font-bold text-foreground uppercase tracking-wide">Áreas de Atuação</h2>
+                </div>
+                <div className="flex flex-wrap gap-2 pl-2">
+                  {institute.services.map((service, i) => (
+                    <motion.span
+                      key={service}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.55 + i * 0.05, duration: 0.3, ease }}
+                      className="text-sm font-medium text-foreground/80 bg-secondary border border-border/50 px-3.5 py-1.5 rounded-full"
+                    >
+                      {service}
+                    </motion.span>
+                  ))}
+                </div>
+              </motion.div>
+            )}
 
             {/* CTA */}
-            <div className="bg-secondary/50 rounded-2xl p-6">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.65, duration: 0.5, ease }}
+              className="bg-gradient-to-br from-primary/5 via-secondary/80 to-accent/5 rounded-2xl p-6 border border-primary/10"
+            >
               <div className="flex items-center gap-3 mb-3">
-                <Calendar className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold text-foreground">Agende sua Consulta</h3>
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Calendar className="w-4.5 h-4.5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-foreground">Agende sua Consulta</h3>
+                  <p className="text-xs text-muted-foreground">Atendimento rápido pelo WhatsApp</p>
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground mb-5">
-                Entre em contato pelo WhatsApp para agendar uma consulta com {doctor.name}.
-              </p>
               <a href={getWhatsAppLink(`Olá! Gostaria de agendar uma consulta com ${doctor.name} (${doctor.specialty}).`)}>
-                <Button size="lg" className="w-full md:w-auto hero-gradient border-0 text-primary-foreground rounded-full px-8">
-                  <Phone className="w-5 h-5 mr-2" /> Agendar com {doctor.name}
+                <Button size="lg" className="w-full sm:w-auto hero-gradient border-0 text-primary-foreground rounded-full px-8 mt-3 group">
+                  <Phone className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" /> Agendar com {doctor.name}
                 </Button>
               </a>
-            </div>
+            </motion.div>
           </div>
         </motion.div>
       </div>
