@@ -139,7 +139,7 @@ const Index = () => {
                   </div>
                   <div>
                     <div className="text-lg font-bold text-foreground">Tudo em um só lugar</div>
-                    <div className="text-sm text-muted-foreground">6 institutos especializados</div>
+                    <div className="text-sm text-muted-foreground">4 institutos especializados</div>
                   </div>
                 </div>
               </motion.div>
