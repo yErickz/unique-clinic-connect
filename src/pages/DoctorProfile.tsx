@@ -23,12 +23,12 @@ const DoctorProfile = () => {
   return (
     <main className="pt-32 pb-20">
       <div className="container mx-auto px-4 max-w-4xl">
-        <Link
-          to={institute ? `/instituto/${institute.id}` : "/"}
+        <button
+          onClick={() => window.history.back()}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
         >
-          <ArrowLeft className="w-4 h-4" /> {institute ? institute.name : "Voltar"}
-        </Link>
+          <ArrowLeft className="w-4 h-4" /> Voltar
+        </button>
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
