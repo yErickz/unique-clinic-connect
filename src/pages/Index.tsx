@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Phone, Shield, Clock, Users, CheckCircle, ArrowRight } from "lucide-react";
+import { Phone, Shield, Clock, Users, CheckCircle, ArrowRight, Heart, Target, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ServiceCard from "@/components/ServiceCard";
 import { institutes, convenios, getWhatsAppLink } from "@/data/mockData";
@@ -188,6 +188,85 @@ const Index = () => {
               </motion.div>
             ))}
           </motion.div>
+        </div>
+      </section>
+
+      {/* Sobre o Grupo Unique */}
+      <section id="sobre" className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <span className="text-primary text-sm font-semibold uppercase tracking-wider">Quem Somos</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-6">
+                Sobre o Grupo Unique
+              </h2>
+              <p className="text-muted-foreground leading-relaxed mb-6">
+                Fundado com a missão de oferecer saúde de excelência, o Grupo Unique nasceu da união de profissionais apaixonados por cuidar de pessoas. Ao longo dos anos, nos consolidamos como referência em atendimento humanizado, reunindo especialistas renomados e tecnologia de ponta em um único lugar.
+              </p>
+              <p className="text-muted-foreground leading-relaxed mb-8">
+                Acreditamos que cada paciente merece atenção individualizada e um ambiente acolhedor. Por isso, investimos continuamente em infraestrutura, capacitação e inovação para proporcionar a melhor experiência em saúde para você e sua família.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {[
+                  { icon: Target, title: "Missão", desc: "Promover saúde e bem-estar com excelência, humanização e responsabilidade." },
+                  { icon: Eye, title: "Visão", desc: "Ser a clínica referência em confiança e qualidade na nossa comunidade." },
+                  { icon: Heart, title: "Valores", desc: "Ética, empatia, inovação e compromisso com cada paciente." },
+                ].map((item, i) => (
+                  <motion.div
+                    key={item.title}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 + i * 0.1 }}
+                    whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                    className="bg-card border border-border rounded-2xl p-5 card-shadow"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                      <item.icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-foreground mb-1.5">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative hidden lg:block"
+            >
+              <div className="bg-secondary rounded-3xl p-8 relative">
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { value: "15+", label: "Anos de história" },
+                    { value: "50k+", label: "Pacientes atendidos" },
+                    { value: "6", label: "Institutos especializados" },
+                    { value: "30+", label: "Profissionais de saúde" },
+                  ].map((item, i) => (
+                    <motion.div
+                      key={item.label}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.3 + i * 0.1 }}
+                      whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+                      className="bg-card rounded-2xl p-6 card-shadow border border-border text-center cursor-default"
+                    >
+                      <div className="text-3xl font-bold text-primary mb-1">{item.value}</div>
+                      <div className="text-sm text-muted-foreground">{item.label}</div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
