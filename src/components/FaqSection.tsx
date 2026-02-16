@@ -28,11 +28,6 @@ const faqs = [
       "Não é necessário encaminhamento para consultas particulares. Para atendimentos por convênio, verifique as regras do seu plano — alguns exigem guia de referência do médico assistente.",
   },
   {
-    question: "Como funciona o atendimento domiciliar?",
-    answer:
-      "Nosso serviço domiciliar inclui coleta de exames, vacinas e curativos no conforto da sua casa. Basta entrar em contato pelo WhatsApp para verificar disponibilidade e agendar a visita.",
-  },
-  {
     question: "Em quanto tempo recebo os resultados dos exames?",
     answer:
       "A maioria dos exames laboratoriais tem resultado em até 24 horas úteis. Exames mais complexos podem levar de 3 a 7 dias. Você receberá os resultados por e-mail ou poderá retirá-los na clínica.",
