@@ -43,13 +43,13 @@ const Header = () => {
     <motion.header
       animate={{ y: hidden ? -100 : 0 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm"
-          : "bg-background border-b border-border"
-      }`}
+      className="fixed top-2 left-2 right-2 z-50"
     >
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <div className={`container mx-auto px-6 h-14 flex items-center justify-between rounded-2xl transition-all duration-300 ${
+        scrolled
+          ? "bg-background/80 backdrop-blur-xl border border-border/50 shadow-md"
+          : "bg-background border border-border"
+      }`}>
         <Link to="/" className="flex items-center gap-3">
           <img src={logoNavy} alt="Clínica Unique" className="h-10 w-auto object-contain" />
           <span className="text-lg font-bold text-foreground">Clínica Unique</span>
