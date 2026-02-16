@@ -20,7 +20,7 @@ const faqs = [
   {
     question: "Qual o horário de funcionamento da clínica?",
     answer:
-      "Funcionamos de segunda a sexta-feira das 7h às 19h e aos sábados das 7h às 13h. O laboratório abre a partir das 6h30 para coleta de exames em jejum.",
+      "Funcionamos de segunda a sexta-feira das 8h às 18h. O laboratório abre a partir das 7h para coleta de exames em jejum.",
   },
   {
     question: "Preciso de encaminhamento para consultar um especialista?",
