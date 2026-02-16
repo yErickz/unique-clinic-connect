@@ -66,6 +66,15 @@ export const institutes: Institute[] = [
     services: ["Hemograma", "Glicemia", "Colesterol", "Função Renal", "Hormônios"],
     doctors: [],
   },
+  {
+    id: "ginecologia",
+    name: "Ginecologia",
+    category: "Saúde da Mulher",
+    description: "Cuidado integral à saúde feminina. Exames preventivos, acompanhamento e orientação especializada.",
+    icon: "Heart",
+    services: ["Preventivo", "Ultrassonografia", "Pré-natal", "Colposcopia", "Planejamento Familiar"],
+    doctors: [],
+  },
 ];
 
 export const doctors: Doctor[] = [
