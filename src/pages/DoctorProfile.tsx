@@ -80,11 +80,11 @@ const DoctorProfile = () => {
                 <h3 className="font-semibold text-foreground">Agende sua Consulta</h3>
               </div>
               <p className="text-sm text-muted-foreground mb-5">
-                Entre em contato pelo WhatsApp para agendar uma consulta com {doctor.name.split(" ")[0]}. {doctor.name.split(" ").slice(-1)}.
+                Entre em contato pelo WhatsApp para agendar uma consulta com {doctor.name}.
               </p>
               <a href={getWhatsAppLink(`Olá! Gostaria de agendar uma consulta com ${doctor.name} (${doctor.specialty}).`)}>
                 <Button size="lg" className="w-full md:w-auto hero-gradient border-0 text-primary-foreground rounded-full px-8">
-                  <Phone className="w-5 h-5 mr-2" /> Agendar com {doctor.name.split(" ")[0]}. {doctor.name.split(" ").slice(-1)}
+                  <Phone className="w-5 h-5 mr-2" /> Agendar com {doctor.name}
                 </Button>
               </a>
             </div>
