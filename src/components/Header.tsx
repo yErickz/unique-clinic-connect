@@ -8,8 +8,8 @@ import logoNavy from "@/assets/logo-unique-navy-cropped.png";
 
 const navItems = [
   { label: "Início", path: "/" },
-  { label: "Institutos", path: "/#institutos" },
-  { label: "Convênios", path: "/#convenios" },
+  { label: "Sobre", path: "/#sobre" },
+  { label: "Serviços", path: "/#servicos" },
   { label: "Contato", path: "/contato" },
 ];
 

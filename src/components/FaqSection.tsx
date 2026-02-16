@@ -15,7 +15,7 @@ const faqs = [
   {
     question: "Quais convênios são aceitos?",
     answer:
-      "Aceitamos os principais planos de saúde do Brasil, incluindo Amil, Bradesco Saúde, SulAmérica, Unimed, Porto Seguro, NotreDame Intermédica, Hapvida, Prevent Senior, entre outros. Consulte a lista completa na seção de convênios.",
+      "Atualmente aceitamos Bradesco Saúde e Vale. Também oferecemos atendimento particular com condições especiais. Entre em contato pelo WhatsApp para mais informações.",
   },
   {
     question: "Qual o horário de funcionamento da clínica?",

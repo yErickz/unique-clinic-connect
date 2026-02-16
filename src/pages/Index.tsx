@@ -1,8 +1,8 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Phone, Shield, Clock, Users, CheckCircle, ArrowRight, Heart, Target, Eye } from "lucide-react";
+import { Phone, CheckCircle, ArrowRight, Heart, Target, Eye, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ServiceCard from "@/components/ServiceCard";
-import { institutes, convenios, getWhatsAppLink } from "@/data/mockData";
+import { institutes, getWhatsAppLink } from "@/data/mockData";
 import heroImage from "@/assets/hero-sabin-style.jpg";
 import FaqSection from "@/components/FaqSection";
 import { useRef } from "react";
@@ -30,12 +30,6 @@ const features = [
   { icon: CheckCircle, text: "Tecnologia de ponta" },
 ];
 
-const stats = [
-  { icon: Users, label: "Pacientes atendidos", value: "50.000+" },
-  { icon: Shield, label: "Anos de experiência", value: "15+" },
-  { icon: Clock, label: "Tempo médio de espera", value: "< 15min" },
-];
-
 const stagger = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.12 } },
@@ -46,16 +40,6 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
 };
 
-const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.5 } },
-};
-
-const scaleUp = {
-  hidden: { opacity: 0, scale: 0.9 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut" as const } },
-};
-
 const Index = () => {
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
@@ -64,19 +48,13 @@ const Index = () => {
 
   return (
     <main className="overflow-x-hidden">
-      {/* Hero with parallax */}
+      {/* Hero */}
       <section ref={heroRef} className="relative min-h-[90vh] flex items-center pt-28 pb-16 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-secondary via-background to-background" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              style={{ y: heroY, opacity: heroOpacity }}
-            >
-              <motion.div
-                variants={stagger}
-                initial="hidden"
-                animate="visible"
-              >
+            <motion.div style={{ y: heroY, opacity: heroOpacity }}>
+              <motion.div variants={stagger} initial="hidden" animate="visible">
                 <motion.span
                   variants={fadeUp}
                   className="inline-flex items-center gap-2 bg-primary/10 text-primary text-sm font-medium px-4 py-2 rounded-full mb-6"
@@ -94,17 +72,17 @@ const Index = () => {
                   variants={fadeUp}
                   className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-lg"
                 >
-                  Saúde, bem-estar e day clinic. Atendimento humanizado, tecnologia de última geração e os melhores especialistas.
+                  Saúde, bem-estar e day clinic. Atendimento humanizado, tecnologia de última geração e os melhores especialistas reunidos em um só lugar.
                 </motion.p>
                 <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 mb-10">
-                  <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta na Clínica Unique.")}>
+                  <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta no Grupo Unique.")}>
                     <Button size="lg" className="hero-gradient border-0 text-primary-foreground rounded-full px-8 text-base group">
                       <Phone className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" /> Agendar pelo WhatsApp
                     </Button>
                   </a>
                   <a href="#servicos">
                     <Button size="lg" variant="outline" className="rounded-full px-8 text-base border-2 group">
-                      Ver Serviços <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      Nossos Serviços <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </a>
                 </motion.div>
@@ -133,7 +111,7 @@ const Index = () => {
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent rounded-3xl" />
               <motion.img
                 src={heroImage}
-                alt="Clínica Unique"
+                alt="Grupo Unique — Ambiente moderno e acolhedor"
                 className="w-full h-[500px] object-cover rounded-3xl shadow-2xl"
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.4 }}
@@ -149,45 +127,13 @@ const Index = () => {
                     <Users className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-foreground">50k+</div>
-                    <div className="text-sm text-muted-foreground">Pacientes satisfeitos</div>
+                    <div className="text-lg font-bold text-foreground">Tudo em um só lugar</div>
+                    <div className="text-sm text-muted-foreground">6 institutos especializados</div>
                   </div>
                 </div>
               </motion.div>
             </motion.div>
           </div>
-        </div>
-      </section>
-
-      {/* Stats - animated counters feel */}
-      <section className="py-16 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4">
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
-          >
-            {stats.map((stat) => (
-              <motion.div
-                key={stat.label}
-                variants={scaleUp}
-                whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
-                className="text-center cursor-default"
-              >
-                <motion.div
-                  initial={{ rotate: 0 }}
-                  whileHover={{ rotate: [0, -10, 10, 0] }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <stat.icon className="w-10 h-10 mx-auto mb-4 opacity-80" />
-                </motion.div>
-                <div className="text-4xl font-bold mb-2">{stat.value}</div>
-                <div className="text-sm opacity-80">{stat.label}</div>
-              </motion.div>
-            ))}
-          </motion.div>
         </div>
       </section>
 
@@ -206,15 +152,15 @@ const Index = () => {
                 Sobre o Grupo Unique
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                Fundado com a missão de oferecer saúde de excelência, o Grupo Unique nasceu da união de profissionais apaixonados por cuidar de pessoas. Ao longo dos anos, nos consolidamos como referência em atendimento humanizado, reunindo especialistas renomados e tecnologia de ponta em um único lugar.
+                O Grupo Unique nasceu da união de profissionais comprometidos com a saúde e o bem-estar da nossa comunidade. Reunimos especialistas renomados e tecnologia de ponta em um único lugar, para que você tenha acesso ao melhor da medicina com praticidade e confiança.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-8">
-                Acreditamos que cada paciente merece atenção individualizada e um ambiente acolhedor. Por isso, investimos continuamente em infraestrutura, capacitação e inovação para proporcionar a melhor experiência em saúde para você e sua família.
+                Cada paciente é único — e é assim que tratamos você. Com atendimento individualizado e um ambiente acolhedor, cuidamos da sua saúde com a seriedade e o carinho que você merece.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 {[
-                  { icon: Target, title: "Missão", desc: "Promover saúde e bem-estar com excelência, humanização e responsabilidade." },
-                  { icon: Eye, title: "Visão", desc: "Ser a clínica referência em confiança e qualidade na nossa comunidade." },
+                  { icon: Target, title: "Missão", desc: "Promover saúde com excelência, humanização e responsabilidade." },
+                  { icon: Eye, title: "Visão", desc: "Ser referência em confiança e qualidade para a nossa comunidade." },
                   { icon: Heart, title: "Valores", desc: "Ética, empatia, inovação e compromisso com cada paciente." },
                 ].map((item, i) => (
                   <motion.div
@@ -242,13 +188,13 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="relative hidden lg:block"
             >
-              <div className="bg-secondary rounded-3xl p-8 relative">
+              <div className="bg-secondary rounded-3xl p-8">
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { value: "15+", label: "Anos de história" },
-                    { value: "50k+", label: "Pacientes atendidos" },
                     { value: "6", label: "Institutos especializados" },
-                    { value: "30+", label: "Profissionais de saúde" },
+                    { value: "24h", label: "Resultados de exames" },
+                    { value: "2", label: "Convênios aceitos" },
+                    { value: "< 15min", label: "Tempo médio de espera" },
                   ].map((item, i) => (
                     <motion.div
                       key={item.label}
@@ -271,7 +217,7 @@ const Index = () => {
       </section>
 
       {/* Serviços */}
-      <section id="servicos" className="py-20">
+      <section id="servicos" className="py-20 bg-secondary/30">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -280,8 +226,9 @@ const Index = () => {
             transition={{ duration: 0.5 }}
             className="mb-14"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-              Serviços para você
+            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Especialidades</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
+              Todos os cuidados que você precisa
             </h2>
           </motion.div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -300,47 +247,10 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Convênios */}
-      <section id="convenios" className="py-20 bg-secondary/30">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-12"
-          >
-            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Planos de Saúde</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-4">
-              Convênios Aceitos
-            </h2>
-            <p className="text-muted-foreground">Trabalhamos com os principais planos de saúde do Brasil.</p>
-          </motion.div>
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto"
-          >
-            {convenios.map((conv) => (
-              <motion.span
-                key={conv}
-                variants={scaleUp}
-                whileHover={{ scale: 1.08, y: -2, transition: { duration: 0.2 } }}
-                className="bg-card border border-border rounded-full px-5 py-2.5 text-sm font-medium text-foreground card-shadow hover:border-primary hover:text-primary transition-colors cursor-default"
-              >
-                {conv}
-              </motion.span>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
       {/* FAQ */}
       <FaqSection />
 
-      {/* CTA */}
+      {/* CTA Final */}
       <section className="py-20 bg-foreground text-background">
         <div className="container mx-auto px-4 text-center">
           <motion.div
@@ -374,7 +284,7 @@ const Index = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
             >
-              <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta na Clínica Unique.")}>
+              <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta no Grupo Unique.")}>
                 <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-10 text-base group">
                   <Phone className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" /> Agendar Consulta
                 </Button>
