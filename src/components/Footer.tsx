@@ -4,13 +4,13 @@ import { motion } from "framer-motion";
 import logoLight from "@/assets/logo-unique-light.jpg";
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  hidden: { opacity: 0, y: 24, filter: "blur(3px)" },
+  visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
 const stagger = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
 };
 
 const Footer = () => (
@@ -80,6 +80,7 @@ const Footer = () => (
               { to: "/instituto/ortopedia", label: "Ortopedia" },
               { to: "/instituto/dermatologia", label: "Dermatologia" },
               { to: "/instituto/oftalmologia", label: "Oftalmologia" },
+              { to: "/instituto/ginecologia", label: "Ginecologia" },
             ].map((link) => (
               <Link
                 key={link.to}

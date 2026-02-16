@@ -13,11 +13,11 @@ interface Props {
 
 const ServiceCard = ({ id, category, title, description, image, index }: Props) => (
   <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, amount: 0.2 }}
-    transition={{ delay: index * 0.1, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-    whileHover={{ y: -4, transition: { duration: 0.25 } }}
+    initial={{ opacity: 0, y: 40, filter: "blur(4px)" }}
+    whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+    viewport={{ once: true, amount: 0.15 }}
+    transition={{ delay: index * 0.12, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    whileHover={{ y: -6, transition: { duration: 0.3, ease: "easeOut" } }}
   >
     <Link
       to={`/instituto/${id}`}
@@ -27,23 +27,21 @@ const ServiceCard = ({ id, category, title, description, image, index }: Props) 
         <motion.img
           src={image}
           alt={title}
-          className="w-full h-full object-cover"
-          whileHover={{ scale: 1.1 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
         />
       </div>
       <div className="flex flex-col justify-center py-1 min-w-0">
         <span className="text-xs font-bold uppercase tracking-wider text-primary mb-1.5">
           {category}
         </span>
-        <h3 className="font-semibold text-lg text-foreground mb-2 group-hover:text-primary transition-colors">
+        <h3 className="font-semibold text-lg text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
           {title}
         </h3>
         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 mb-3">
           {description}
         </p>
-        <span className="inline-flex items-center text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">
-          Saiba mais <ChevronRight className="w-4 h-4 ml-0.5 group-hover:translate-x-1.5 transition-transform duration-300" />
+        <span className="inline-flex items-center text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300">
+          Saiba mais <ChevronRight className="w-4 h-4 ml-0.5 group-hover:translate-x-2 transition-transform duration-300" />
         </span>
       </div>
     </Link>
