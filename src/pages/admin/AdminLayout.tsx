@@ -11,8 +11,7 @@ import {
   FileText,
   Image,
   LogOut,
-  PanelLeftClose,
-  PanelLeft,
+  ChevronLeft,
   ExternalLink,
 } from "lucide-react";
 import logoImg from "@/assets/logo-unique-navy-cropped.png";
@@ -76,25 +75,35 @@ const AdminLayout = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:relative z-40 h-full bg-card border-r border-border transition-all duration-300 flex flex-col ${
-          isCollapsed ? "w-16" : "w-56"
+        className={`fixed md:relative z-40 h-full bg-primary text-primary-foreground transition-all duration-300 flex flex-col ${
+          isCollapsed ? "w-[72px]" : "w-60"
         } ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
-        {/* Header */}
-        <div className={`flex items-center border-b border-border ${isCollapsed ? "px-2 py-3 justify-center" : "px-4 py-3"}`}>
+        {/* Logo */}
+        <div className={`flex items-center gap-3 border-b border-primary-foreground/10 ${isCollapsed ? "px-3 py-4 justify-center" : "px-5 py-4"}`}>
+          <img
+            src={logoImg}
+            alt="Grupo Unique"
+            className={`shrink-0 brightness-0 invert ${isCollapsed ? "h-7 w-7 object-contain" : "h-7"}`}
+          />
           {!isCollapsed && (
-            <img src={logoImg} alt="Grupo Unique" className="h-6 shrink-0" />
+            <span className="text-[11px] font-medium uppercase tracking-widest text-primary-foreground/50">Admin</span>
           )}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className={`hidden md:flex p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors shrink-0 ${!isCollapsed ? "ml-auto" : ""}`}
+            className="hidden md:flex ml-auto p-1 rounded-md hover:bg-primary-foreground/10 transition-colors shrink-0"
           >
-            {isCollapsed ? <PanelLeft size={16} /> : <PanelLeftClose size={16} />}
+            <ChevronLeft
+              size={16}
+              className={`transition-transform duration-300 text-primary-foreground/50 ${
+                isCollapsed ? "rotate-180" : ""
+              }`}
+            />
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className={`flex-1 overflow-y-auto py-2 ${isCollapsed ? "px-1.5" : "px-2"} space-y-0.5`}>
+        <nav className={`flex-1 overflow-y-auto py-3 ${isCollapsed ? "px-2" : "px-3"} space-y-0.5`}>
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -103,46 +112,57 @@ const AdminLayout = () => {
                 to={item.to}
                 end={item.end}
                 className={({ isActive }) =>
-                  `w-full flex items-center gap-2.5 rounded-lg transition-colors duration-150 text-[13px] ${
-                    isCollapsed ? "px-0 py-2 justify-center" : "px-3 py-2"
+                  `w-full flex items-center gap-3 rounded-lg transition-all duration-150 ${
+                    isCollapsed ? "px-3 py-2.5 justify-center" : "px-3 py-2.5"
                   } ${
                     isActive
-                      ? "bg-primary text-primary-foreground font-medium"
-                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                      ? "bg-primary-foreground/15 text-primary-foreground font-medium"
+                      : "text-primary-foreground/60 hover:bg-primary-foreground/8 hover:text-primary-foreground/90"
                   }`
                 }
               >
-                <Icon size={17} className="shrink-0" />
-                {!isCollapsed && <span>{item.label}</span>}
+                {({ isActive }) => (
+                  <>
+                    <Icon size={18} className="shrink-0" />
+                    {!isCollapsed && (
+                      <span className="text-[13px]">{item.label}</span>
+                    )}
+                    {isActive && !isCollapsed && (
+                      <div className="ml-auto w-1.5 h-1.5 rounded-full bg-accent" />
+                    )}
+                  </>
+                )}
               </RouterNavLink>
             );
           })}
         </nav>
 
-        {/* Bottom */}
-        <div className={`border-t border-border ${isCollapsed ? "p-1.5" : "p-2"} space-y-0.5`}>
+        {/* View Site Link */}
+        <div className={`${isCollapsed ? "px-2" : "px-3"} pb-2`}>
           <a
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className={`w-full flex items-center gap-2 rounded-lg px-3 py-2 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors text-[12px] ${isCollapsed ? "px-0 justify-center" : ""}`}
+            className={`w-full flex items-center gap-2 rounded-lg px-3 py-2 text-primary-foreground/50 hover:text-primary-foreground/80 hover:bg-primary-foreground/5 transition-all text-[12px] ${isCollapsed ? "justify-center" : ""}`}
           >
             <ExternalLink size={14} className="shrink-0" />
             {!isCollapsed && <span>Ver site</span>}
           </a>
+        </div>
 
+        {/* Footer */}
+        <div className={`border-t border-primary-foreground/10 ${isCollapsed ? "p-2" : "px-3 py-3"}`}>
           {!isCollapsed && (
-            <p className="text-[11px] text-muted-foreground truncate px-3 py-1">{user.email}</p>
+            <p className="text-[11px] text-primary-foreground/35 truncate mb-1.5 px-3">{user.email}</p>
           )}
-
           <button
             onClick={() => signOut().then(() => navigate("/admin/login"))}
-            className={`w-full flex items-center gap-2 rounded-lg px-3 py-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors text-[13px] ${
-              isCollapsed ? "px-0 justify-center" : ""
+            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-primary-foreground/50 hover:bg-destructive/20 hover:text-destructive transition-all duration-150 ${
+              isCollapsed ? "justify-center" : ""
             }`}
           >
-            <LogOut size={15} className="shrink-0" />
-            {!isCollapsed && <span>Sair</span>}
+            <LogOut size={16} className="shrink-0" />
+            {!isCollapsed && <span className="text-[13px]">Sair</span>}
           </button>
         </div>
       </aside>
