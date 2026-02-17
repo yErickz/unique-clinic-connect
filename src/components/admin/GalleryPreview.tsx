@@ -29,13 +29,13 @@ const GalleryPreview = ({ spaces }: { spaces: GallerySpace[] }) => {
       <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 block">
         Preview
       </span>
-      <div className="grid grid-cols-3 auto-rows-[180px] gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 auto-rows-[180px] gap-3">
         {spaces.map((space, i) => {
           const spanClass =
             space.span === "wide"
-              ? "col-span-2 row-span-1"
+              ? "col-span-1 md:col-span-2 row-span-1"
               : space.span === "vertical"
-              ? "col-span-1 row-span-2"
+              ? "col-span-1 row-span-1 md:row-span-2"
               : "col-span-1 row-span-1";
           const gradient = gradients[i % gradients.length];
           const hasImage = !!space.image_url;
