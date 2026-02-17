@@ -1,24 +1,22 @@
 
-## Categoria como Select/Dropdown
+# Preview da Galeria no Admin
 
-Substituir o campo de texto livre da categoria por um componente Select (dropdown) que lista as categorias ja existentes, com opcao de criar uma nova categoria.
+## Objetivo
+Adicionar uma preview visual no editor da galeria que mostra exatamente como os cards vao ficar no site publico, usando o mesmo grid de 3 colunas com os spans corretos (normal, wide, vertical).
 
-### O que muda
+## O que muda
 
-**Arquivo:** `src/components/admin/ExamsEditor.tsx`
-
-1. Importar os componentes `Select`, `SelectTrigger`, `SelectValue`, `SelectContent`, `SelectItem` de `@/components/ui/select`
-2. Adicionar estado local `newCategory` para controlar a criacao de nova categoria via Input inline
-3. Substituir o `Input` + `datalist` da categoria por um `Select` dropdown com:
-   - Um item para cada categoria existente (derivada dos exames atuais)
-   - Um item especial "Nova categoria..." que ao ser selecionado exibe um Input para digitar o nome da nova categoria
-   - Um item "Sem categoria" para limpar a selecao
-4. Quando o usuario seleciona "Nova categoria...", aparece um Input inline para digitar e confirmar a nova categoria
-5. Manter os chips de categorias no topo do editor (ja existentes)
+### GalleryEditor.tsx
+- Adicionar um botao toggle "Visualizar" (icone Eye/EyeOff) no topo do editor
+- Quando ativado, renderizar abaixo da lista de itens um mini-grid que replica o layout do `ClinicGallerySection`:
+  - Grid de 3 colunas com `auto-rows-[180px]` (um pouco menor que o publico)
+  - Cada card mostra a foto com overlay + label/descricao, ou o fallback com icone caso nao tenha foto
+  - Classes de span identicas: `col-span-2` para wide, `row-span-2` para vertical
+  - Borda tracejada ao redor para indicar que e uma preview
+- O preview atualiza em tempo real conforme o usuario edita nome, descricao, foto ou span
 
 ### Detalhes tecnicos
-
-- O dropdown usa os componentes shadcn/ui Select ja disponiveis no projeto
-- As categorias sao derivadas dinamicamente dos exames (`[...new Set(exams.map(e => e.category).filter(Boolean))]`), sem necessidade de tabela separada
-- Ao selecionar "nova_categoria" como valor especial, o estado `newCategory` e ativado mostrando um Input + botao confirmar
-- O Select tera `z-50` e background solido via classes ja definidas no componente Select do projeto
+- Reutilizar os mesmos gradientes e estilos do `ClinicGallerySection` para fidelidade visual
+- Nenhuma mudanca no backend ou banco de dados
+- Componente de preview sera inline dentro do `GalleryEditor`, sem modais
+- Estado controlado por um `useState<boolean>` simples (`showPreview`)
