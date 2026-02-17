@@ -28,11 +28,12 @@ interface AdminUser {
 }
 
 const fetchAdminUsers = async (): Promise<AdminUser[]> => {
-  const { data, error } = await supabase.functions.invoke("manage-admin-users", {
-    body: { action: "list" },
-  });
+  const { data, error } = await supabase.rpc("list_admin_users");
   if (error) throw new Error(error.message || "Erro ao buscar usuários");
-  return data.users;
+  return (data || []).map((u: any) => ({
+    ...u,
+    is_caller: false, // will be set in component
+  }));
 };
 
 const AdminUsers = () => {
@@ -42,10 +43,15 @@ const AdminUsers = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { data: users = [], isLoading } = useQuery({
+  const { data: rawUsers = [], isLoading } = useQuery({
     queryKey: ["admin-users"],
     queryFn: fetchAdminUsers,
   });
+
+  const users = rawUsers.map((u) => ({
+    ...u,
+    is_caller: u.id === user?.id,
+  }));
 
   const createMutation = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
