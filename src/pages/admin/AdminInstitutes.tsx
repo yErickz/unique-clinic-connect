@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Save, ExternalLink, Upload, X, ImageIcon, Building2, LayoutList, Type, LayoutGrid } from "lucide-react";
+import { Plus, Pencil, Trash2, Save, ExternalLink, Upload, X, ImageIcon, Building2, LayoutList, Type, LayoutGrid, Tag } from "lucide-react";
 import { toast } from "sonner";
 import ImageCropDialog from "@/components/admin/ImageCropDialog";
+import { ExpandableAdminCard } from "@/components/admin/ExpandableAdminCard";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
 type Institute = Tables<"institutes">;
@@ -360,7 +361,32 @@ const AdminInstitutes = () => {
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {institutes.map((inst) => (
-                  <div key={inst.id} className="bg-card rounded-xl border border-border group hover:border-accent/30 hover:shadow-md transition-all relative overflow-hidden">
+                  <ExpandableAdminCard
+                    key={inst.id}
+                    actions={
+                      <>
+                        <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm" onClick={() => openEdit(inst)}><Pencil className="w-3 h-3" /></Button>
+                        <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(inst.id); }}><Trash2 className="w-3 h-3" /></Button>
+                      </>
+                    }
+                    expandedContent={
+                      <div className="p-3 space-y-2">
+                        {inst.description && <p className="text-xs text-muted-foreground leading-relaxed line-clamp-4">{inst.description}</p>}
+                        {inst.services.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {inst.services.slice(0, 5).map((s, i) => (
+                              <span key={i} className="inline-flex items-center gap-1 text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-full">
+                                <Tag size={8} /> {s}
+                              </span>
+                            ))}
+                            {inst.services.length > 5 && (
+                              <span className="text-[10px] text-muted-foreground/60">+{inst.services.length - 5}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    }
+                  >
                     {inst.image_url ? (
                       <img src={inst.image_url} alt={inst.name} className="w-full h-24 object-cover" />
                     ) : (
@@ -368,16 +394,12 @@ const AdminInstitutes = () => {
                         <ImageIcon size={24} className="text-muted-foreground" />
                       </div>
                     )}
-                    <div className="p-3">
+                    <div className="p-3 pb-6">
                       <p className="font-semibold text-sm text-foreground truncate">{inst.name}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">{inst.category}</p>
                       <p className="text-[10px] text-muted-foreground/70 mt-0.5">{inst.services.length} serviços</p>
                     </div>
-                    <div className="absolute top-1.5 right-1.5 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm" onClick={() => openEdit(inst)}><Pencil className="w-3 h-3" /></Button>
-                      <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(inst.id); }}><Trash2 className="w-3 h-3" /></Button>
-                    </div>
-                  </div>
+                  </ExpandableAdminCard>
                 ))}
               </div>
             )}
