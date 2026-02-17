@@ -56,7 +56,7 @@ const AdminLayout = () => {
   if (!user || !isAdmin) return null;
 
   return (
-    <div className="flex h-screen bg-muted/30">
+    <div className="flex h-screen dark bg-background text-foreground">
       {/* Mobile Hamburger */}
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -75,12 +75,12 @@ const AdminLayout = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:relative z-40 h-full bg-primary text-primary-foreground transition-all duration-300 flex flex-col ${
+        className={`fixed md:relative z-40 h-full bg-[hsl(218_45%_11%)] text-white transition-all duration-300 flex flex-col ${
           isCollapsed ? "w-[72px]" : "w-60"
         } ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
         {/* Logo */}
-        <div className={`flex items-center gap-3 border-b border-primary-foreground/10 ${isCollapsed ? "px-3 py-4 justify-center" : "px-5 py-4"}`}>
+        <div className={`flex items-center gap-3 border-b border-white/8 ${isCollapsed ? "px-3 py-4 justify-center" : "px-5 py-4"}`}>
           <img
             src={logoImg}
             alt="Grupo Unique"

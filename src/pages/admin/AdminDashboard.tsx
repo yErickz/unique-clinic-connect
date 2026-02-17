@@ -6,9 +6,10 @@ import {
   Users,
   Building2,
   MessageSquareQuote,
-  ArrowRight,
+  ArrowUpRight,
   Image,
   FileText,
+  TrendingUp,
 } from "lucide-react";
 
 const AdminDashboard = () => {
@@ -40,9 +41,9 @@ const AdminDashboard = () => {
   });
 
   const stats = [
-    { label: "Médicos", value: doctorCount ?? 0, icon: Users, route: "/admin/medicos" },
-    { label: "Institutos", value: instituteCount ?? 0, icon: Building2, route: "/admin/institutos" },
-    { label: "Depoimentos", value: testimonialCount ?? 0, icon: MessageSquareQuote, route: "/admin/depoimentos" },
+    { label: "Médicos", value: doctorCount ?? 0, icon: Users, route: "/admin/medicos", accent: "hsl(174 55% 42%)" },
+    { label: "Institutos", value: instituteCount ?? 0, icon: Building2, route: "/admin/institutos", accent: "hsl(218 58% 55%)" },
+    { label: "Depoimentos", value: testimonialCount ?? 0, icon: MessageSquareQuote, route: "/admin/depoimentos", accent: "hsl(37 90% 55%)" },
   ];
 
   const quickActions = [
@@ -57,8 +58,8 @@ const AdminDashboard = () => {
     <div className="space-y-8">
       {/* Greeting */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">
-          Olá, {firstName}
+        <h1 className="text-2xl font-bold tracking-tight">
+          Olá, {firstName} 👋
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Gerencie o conteúdo do site da Clínica Unique.
@@ -73,16 +74,26 @@ const AdminDashboard = () => {
             <button
               key={s.label}
               onClick={() => navigate(s.route)}
-              className="group bg-card rounded-xl p-5 border border-border hover:border-accent/30 transition-all duration-200 text-left hover:shadow-md"
+              className="group relative bg-card rounded-xl p-5 border border-border/60 hover:border-border transition-all duration-200 text-left overflow-hidden"
             >
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center">
-                  <Icon className="w-[18px] h-[18px] text-accent" />
+              {/* Subtle glow */}
+              <div
+                className="absolute top-0 right-0 w-24 h-24 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity"
+                style={{ background: s.accent }}
+              />
+
+              <div className="flex items-center justify-between mb-4 relative">
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{ background: `${s.accent}20` }}
+                >
+                  <Icon className="w-5 h-5" style={{ color: s.accent }} />
                 </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground/0 group-hover:text-muted-foreground/60 transition-all duration-200 -translate-x-1 group-hover:translate-x-0" />
+                <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity -translate-x-1 group-hover:translate-x-0" />
               </div>
-              <p className="text-3xl font-bold text-foreground tabular-nums">{s.value}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{s.label} cadastrados</p>
+
+              <p className="text-3xl font-bold tabular-nums relative">{s.value}</p>
+              <p className="text-xs text-muted-foreground mt-1 relative">{s.label} cadastrados</p>
             </button>
           );
         })}
@@ -90,7 +101,7 @@ const AdminDashboard = () => {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-sm font-semibold text-foreground mb-3">Atalhos rápidos</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Atalhos rápidos</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {quickActions.map((action) => {
             const Icon = action.icon;
@@ -98,13 +109,13 @@ const AdminDashboard = () => {
               <button
                 key={action.label}
                 onClick={() => navigate(action.route)}
-                className="group flex items-center gap-3 bg-card rounded-xl px-4 py-3.5 border border-border hover:border-primary/20 transition-all duration-200 text-left hover:shadow-sm"
+                className="group flex items-center gap-3 bg-card/50 rounded-xl px-4 py-3.5 border border-border/40 hover:border-border/80 hover:bg-card transition-all duration-200 text-left"
               >
-                <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
-                  <Icon className="w-4 h-4 text-primary" />
+                <div className="w-9 h-9 rounded-lg bg-muted/50 flex items-center justify-center shrink-0 group-hover:bg-muted transition-colors">
+                  <Icon className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-foreground">{action.label}</p>
+                  <p className="text-sm font-medium">{action.label}</p>
                   <p className="text-[11px] text-muted-foreground truncate">{action.description}</p>
                 </div>
               </button>
