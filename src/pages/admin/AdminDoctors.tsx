@@ -14,7 +14,7 @@ import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 type Doctor = Tables<"doctors">;
 
 const emptyDoctor: Partial<TablesInsert<"doctors">> = {
-  name: "", slug: "", specialty: "", crm: "", bio: "", institute_id: null,
+  name: "", specialty: "", crm: "", bio: "", institute_id: null,
 };
 
 const AdminDoctors = () => {
@@ -41,13 +41,17 @@ const AdminDoctors = () => {
     },
   });
 
+  const generateSlug = (name: string) =>
+    name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
   const saveMutation = useMutation({
     mutationFn: async (d: Partial<TablesInsert<"doctors">>) => {
+      const payload = { ...d, slug: generateSlug(d.name || "") };
       if (editing) {
-        const { error } = await supabase.from("doctors").update(d).eq("id", editing.id);
+        const { error } = await supabase.from("doctors").update(payload).eq("id", editing.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("doctors").insert(d as TablesInsert<"doctors">);
+        const { error } = await supabase.from("doctors").insert(payload as TablesInsert<"doctors">);
         if (error) throw error;
       }
     },
@@ -76,7 +80,7 @@ const AdminDoctors = () => {
 
   const openEdit = (doc: Doctor) => {
     setEditing(doc);
-    setForm({ name: doc.name, slug: doc.slug, specialty: doc.specialty, crm: doc.crm, bio: doc.bio, institute_id: doc.institute_id });
+    setForm({ name: doc.name, specialty: doc.specialty, crm: doc.crm, bio: doc.bio, institute_id: doc.institute_id });
     setShowForm(true);
   };
 
@@ -136,10 +140,10 @@ const AdminDoctors = () => {
           <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><Label>Nome</Label><Input value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} required /></div>
-              <div><Label>Slug</Label><Input value={form.slug ?? ""} onChange={(e) => set("slug", e.target.value)} required placeholder="dr-nome" /></div>
+              <div><Label>Especialidade</Label><Input value={form.specialty ?? ""} onChange={(e) => set("specialty", e.target.value)} required /></div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div><Label>Especialidade</Label><Input value={form.specialty ?? ""} onChange={(e) => set("specialty", e.target.value)} required /></div>
+              <div><Label>CRM</Label><Input value={form.crm ?? ""} onChange={(e) => set("crm", e.target.value)} required /></div>
               <div><Label>CRM</Label><Input value={form.crm ?? ""} onChange={(e) => set("crm", e.target.value)} required /></div>
             </div>
             <div>
