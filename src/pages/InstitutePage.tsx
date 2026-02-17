@@ -32,7 +32,15 @@ const InstitutePage = () => {
   const { data: instituteDoctors = [] } = useQuery({
     queryKey: ["public-institute-doctors", institute?.id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("doctors").select("*").eq("institute_id", institute!.id).order("display_order");
+      // Get doctor IDs from junction table, then fetch doctors
+      const { data: links, error: linkError } = await supabase
+        .from("doctor_institutes")
+        .select("doctor_id")
+        .eq("institute_id", institute!.id);
+      if (linkError) throw linkError;
+      if (!links || links.length === 0) return [];
+      const doctorIds = links.map((l) => (l as any).doctor_id);
+      const { data, error } = await supabase.from("doctors").select("*").in("id", doctorIds).order("display_order");
       if (error) throw error;
       return data;
     },
