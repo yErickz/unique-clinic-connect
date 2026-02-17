@@ -72,6 +72,7 @@ export type Database = {
           display_order: number
           icon: string
           id: string
+          image_url: string | null
           name: string
           services: string[]
           slug: string
@@ -84,6 +85,7 @@ export type Database = {
           display_order?: number
           icon?: string
           id?: string
+          image_url?: string | null
           name: string
           services?: string[]
           slug: string
@@ -96,6 +98,7 @@ export type Database = {
           display_order?: number
           icon?: string
           id?: string
+          image_url?: string | null
           name?: string
           services?: string[]
           slug?: string

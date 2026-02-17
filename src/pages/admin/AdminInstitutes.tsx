@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Save, ExternalLink } from "lucide-react";
+import { Plus, Pencil, Trash2, Save, ExternalLink, Upload, X, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+import ImageCropDialog from "@/components/admin/ImageCropDialog";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
 type Institute = Tables<"institutes">;
@@ -33,6 +34,10 @@ const AdminInstitutes = () => {
   const [editing, setEditing] = useState<Institute | null>(null);
   const [form, setForm] = useState(empty);
   const [servicesText, setServicesText] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [cropState, setCropState] = useState<{ imageSrc: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [pageDrafts, setPageDrafts] = useState<Record<string, string>>({});
   const [pageEditing, setPageEditing] = useState(false);
 
@@ -59,7 +64,11 @@ const AdminInstitutes = () => {
 
   const saveMutation = useMutation({
     mutationFn: async (d: Partial<TablesInsert<"institutes">>) => {
-      const payload = { ...d, services: servicesText.split(",").map((s) => s.trim()).filter(Boolean) };
+      const payload = {
+        ...d,
+        services: servicesText.split(",").map((s) => s.trim()).filter(Boolean),
+        image_url: imageUrl || null,
+      };
       if (editing) {
         const { error } = await supabase.from("institutes").update(payload).eq("id", editing.id);
         if (error) throw error;
@@ -71,6 +80,7 @@ const AdminInstitutes = () => {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-institutes"] });
       qc.invalidateQueries({ queryKey: ["admin-institute-count"] });
+      qc.invalidateQueries({ queryKey: ["public-institutes"] });
       toast.success(editing ? "Instituto atualizado!" : "Instituto adicionado!");
       closeDialog();
     },
@@ -79,6 +89,12 @@ const AdminInstitutes = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      // Clean up image
+      const inst = institutes.find((i) => i.id === id);
+      if (inst?.image_url) {
+        const path = inst.image_url.split("/gallery/")[1];
+        if (path) await supabase.storage.from("gallery").remove([path]);
+      }
       const { error } = await supabase.from("institutes").delete().eq("id", id);
       if (error) throw error;
     },
@@ -111,16 +127,61 @@ const AdminInstitutes = () => {
     setEditing(null);
     setForm(empty);
     setServicesText("");
+    setImageUrl("");
   };
 
   const openEdit = (inst: Institute) => {
     setEditing(inst);
     setForm({ name: inst.name, slug: inst.slug, category: inst.category, description: inst.description, icon: inst.icon });
     setServicesText(inst.services.join(", "));
+    setImageUrl(inst.image_url || "");
     setOpen(true);
   };
 
   const set = (key: string, val: string) => setForm((f) => ({ ...f, [key]: val }));
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setCropState({ imageSrc: reader.result as string });
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleCropConfirm = useCallback(async (croppedBlob: Blob) => {
+    setCropState(null);
+    setIsUploading(true);
+    try {
+      // Remove old image if replacing
+      if (imageUrl) {
+        const oldPath = imageUrl.split("/gallery/")[1];
+        if (oldPath) await supabase.storage.from("gallery").remove([oldPath]);
+      }
+
+      const fileName = `institutes/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from("gallery")
+        .upload(fileName, croppedBlob, { cacheControl: "3600", upsert: false, contentType: "image/jpeg" });
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage.from("gallery").getPublicUrl(fileName);
+      setImageUrl(publicUrl);
+      toast.success("Foto enviada!");
+    } catch (err: any) {
+      toast.error("Erro ao enviar foto: " + (err.message || "Tente novamente"));
+    } finally {
+      setIsUploading(false);
+    }
+  }, [imageUrl]);
+
+  const removeImage = async () => {
+    if (imageUrl) {
+      const path = imageUrl.split("/gallery/")[1];
+      if (path) await supabase.storage.from("gallery").remove([path]);
+    }
+    setImageUrl("");
+  };
 
   const startPageEditing = () => {
     const initial: Record<string, string> = {};
@@ -183,11 +244,58 @@ const AdminInstitutes = () => {
                   <Plus className="w-4 h-4 mr-2" /> Adicionar
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-lg">
+              <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>{editing ? "Editar Instituto" : "Novo Instituto"}</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-4">
+                  {/* Image upload */}
+                  <div>
+                    <Label className="mb-2 block">Foto de Capa</Label>
+                    {imageUrl ? (
+                      <div className="relative inline-block">
+                        <img src={imageUrl} alt="Capa" className="w-full h-40 rounded-lg object-cover border border-border" />
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="absolute top-1.5 right-1.5 p-1 rounded-full bg-destructive text-destructive-foreground shadow-md hover:bg-destructive/90"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploading}
+                        className="w-full h-32 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {isUploading ? (
+                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+                        ) : (
+                          <>
+                            <Upload size={20} />
+                            <span className="text-xs">Clique para enviar uma foto</span>
+                          </>
+                        )}
+                      </button>
+                    )}
+                    <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
+                    {imageUrl && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="mt-2 gap-1.5"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploading}
+                      >
+                        <Upload size={14} />
+                        {isUploading ? "Enviando..." : "Trocar foto"}
+                      </Button>
+                    )}
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     <div><Label>Nome</Label><Input value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} required /></div>
                     <div><Label>Slug</Label><Input value={form.slug ?? ""} onChange={(e) => set("slug", e.target.value)} required placeholder="cardiologia" /></div>
@@ -200,7 +308,7 @@ const AdminInstitutes = () => {
                   <div><Label>Serviços (separados por vírgula)</Label><Input value={servicesText} onChange={(e) => setServicesText(e.target.value)} placeholder="Exame 1, Exame 2" /></div>
                   <div className="flex justify-end gap-2">
                     <Button type="button" variant="outline" onClick={closeDialog}>Cancelar</Button>
-                    <Button type="submit" disabled={saveMutation.isPending}>{saveMutation.isPending ? "Salvando..." : "Salvar"}</Button>
+                    <Button type="submit" disabled={saveMutation.isPending || isUploading}>{saveMutation.isPending ? "Salvando..." : "Salvar"}</Button>
                   </div>
                 </form>
               </DialogContent>
@@ -214,6 +322,7 @@ const AdminInstitutes = () => {
               <table className="w-full text-sm">
                 <thead className="bg-secondary/50">
                   <tr>
+                    <th className="text-left p-3 font-medium text-muted-foreground">Foto</th>
                     <th className="text-left p-3 font-medium text-muted-foreground">Nome</th>
                     <th className="text-left p-3 font-medium text-muted-foreground">Categoria</th>
                     <th className="text-left p-3 font-medium text-muted-foreground">Serviços</th>
@@ -223,6 +332,15 @@ const AdminInstitutes = () => {
                 <tbody>
                   {institutes.map((inst) => (
                     <tr key={inst.id} className="border-t border-border hover:bg-secondary/20 transition-colors">
+                      <td className="p-3">
+                        {inst.image_url ? (
+                          <img src={inst.image_url} alt={inst.name} className="w-12 h-8 rounded object-cover" />
+                        ) : (
+                          <div className="w-12 h-8 rounded bg-muted flex items-center justify-center">
+                            <ImageIcon size={14} className="text-muted-foreground" />
+                          </div>
+                        )}
+                      </td>
                       <td className="p-3 font-medium text-foreground">{inst.name}</td>
                       <td className="p-3 text-muted-foreground">{inst.category}</td>
                       <td className="p-3 text-muted-foreground">{inst.services.length}</td>
@@ -302,6 +420,15 @@ const AdminInstitutes = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Crop Dialog */}
+      <ImageCropDialog
+        open={!!cropState}
+        imageSrc={cropState?.imageSrc ?? ""}
+        aspect={16 / 9}
+        onClose={() => setCropState(null)}
+        onConfirm={handleCropConfirm}
+      />
     </div>
   );
 };
