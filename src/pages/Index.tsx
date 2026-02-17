@@ -102,10 +102,7 @@ const Index = () => {
                   variants={fadeUp}
                   className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-foreground leading-[1.1] mb-6 text-balance"
                 >
-                  {c("hero_title", "Sua saúde em boas mãos").split("boas mãos")[0]}
-                  <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                    boas mãos
-                  </span>
+                  {c("hero_title", "Sua saúde em boas mãos")}
                 </motion.h1>
                 <motion.p
                   variants={fadeUp}
