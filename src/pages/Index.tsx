@@ -299,6 +299,9 @@ const Index = () => {
                   { name: "Colesterol Total", price: "R$ 35,00" },
                   { name: "Hormônios (TSH)", price: "R$ 55,00" },
                   { name: "Função Renal", price: "R$ 40,00" },
+                  { name: "Urina Tipo 1", price: "R$ 25,00" },
+                  { name: "Vitamina D", price: "R$ 65,00" },
+                  { name: "Ferro Sérico", price: "R$ 38,00" },
                 ].map((exam, i) => (
                   <motion.div
                     key={exam.name}
@@ -337,7 +340,7 @@ const Index = () => {
                 const el = document.getElementById("exames-carousel");
                 if (el) el.scrollBy({ left: -240, behavior: "smooth" });
               }}
-              className="absolute -left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card border border-border shadow-md flex items-center justify-center hover:bg-muted transition-colors hidden md:flex z-10"
+              className="absolute -left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card border border-border shadow-md items-center justify-center hover:bg-muted transition-colors z-10 hidden md:!flex"
               aria-label="Anterior"
             >
               <ChevronLeft className="w-5 h-5 text-foreground" />
@@ -347,7 +350,7 @@ const Index = () => {
                 const el = document.getElementById("exames-carousel");
                 if (el) el.scrollBy({ left: 240, behavior: "smooth" });
               }}
-              className="absolute -right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card border border-border shadow-md flex items-center justify-center hover:bg-muted transition-colors hidden md:flex z-10"
+              className="absolute -right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card border border-border shadow-md items-center justify-center hover:bg-muted transition-colors z-10 hidden md:!flex"
               aria-label="Próximo"
             >
               <ChevronRight className="w-5 h-5 text-foreground" />
