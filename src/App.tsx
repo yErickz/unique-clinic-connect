@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -15,8 +16,25 @@ import DoctorsPage from "./pages/DoctorsPage";
 import DoctorProfile from "./pages/DoctorProfile";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminDoctors from "./pages/admin/AdminDoctors";
+import AdminInstitutes from "./pages/admin/AdminInstitutes";
+import AdminTestimonials from "./pages/admin/AdminTestimonials";
+import AdminContent from "./pages/admin/AdminContent";
 
 const queryClient = new QueryClient();
+
+const PublicLayout = ({ children }: { children: React.ReactNode }) => (
+  <>
+    <Header />
+    {children}
+    <Footer />
+    <WhatsAppButton />
+    <CookieBanner />
+  </>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -24,20 +42,30 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <ScrollToTop />
-        <Header />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/institutos" element={<InstitutesPage />} />
-          <Route path="/instituto/:id" element={<InstitutePage />} />
-          <Route path="/medicos" element={<DoctorsPage />} />
-          <Route path="/medico/:id" element={<DoctorProfile />} />
-          <Route path="/contato" element={<Contact />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Footer />
-        <WhatsAppButton />
-        <CookieBanner />
+        <AuthProvider>
+          <ScrollToTop />
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<PublicLayout><Index /></PublicLayout>} />
+            <Route path="/institutos" element={<PublicLayout><InstitutesPage /></PublicLayout>} />
+            <Route path="/instituto/:id" element={<PublicLayout><InstitutePage /></PublicLayout>} />
+            <Route path="/medicos" element={<PublicLayout><DoctorsPage /></PublicLayout>} />
+            <Route path="/medico/:id" element={<PublicLayout><DoctorProfile /></PublicLayout>} />
+            <Route path="/contato" element={<PublicLayout><Contact /></PublicLayout>} />
+
+            {/* Admin routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="medicos" element={<AdminDoctors />} />
+              <Route path="institutos" element={<AdminInstitutes />} />
+              <Route path="depoimentos" element={<AdminTestimonials />} />
+              <Route path="conteudo" element={<AdminContent />} />
+            </Route>
+
+            <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
