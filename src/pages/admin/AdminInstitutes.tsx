@@ -32,7 +32,8 @@ const AdminInstitutes = () => {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Institute | null>(null);
   const [form, setForm] = useState(empty);
-  const [servicesText, setServicesText] = useState("");
+  const [servicesList, setServicesList] = useState<string[]>([]);
+  const [newService, setNewService] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [cropState, setCropState] = useState<{ imageSrc: string } | null>(null);
@@ -62,11 +63,15 @@ const AdminInstitutes = () => {
 
   const contentByKey = new Map(pageContent.map((c) => [c.key, c]));
 
+  const generateSlug = (name: string) =>
+    name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
   const saveMutation = useMutation({
     mutationFn: async (d: Partial<TablesInsert<"institutes">>) => {
       const payload = {
         ...d,
-        services: servicesText.split(",").map((s) => s.trim()).filter(Boolean),
+        slug: generateSlug(d.name || ""),
+        services: servicesList,
         image_url: imageUrl || null,
       };
       if (editing) {
@@ -125,14 +130,16 @@ const AdminInstitutes = () => {
     setShowForm(false);
     setEditing(null);
     setForm(empty);
-    setServicesText("");
+    setServicesList([]);
+    setNewService("");
     setImageUrl("");
   };
 
   const openEdit = (inst: Institute) => {
     setEditing(inst);
     setForm({ name: inst.name, slug: inst.slug, category: inst.category, description: inst.description, icon: inst.icon });
-    setServicesText(inst.services.join(", "));
+    setServicesList([...inst.services]);
+    setNewService("");
     setImageUrl(inst.image_url || "");
     setShowForm(true);
   };
@@ -140,7 +147,8 @@ const AdminInstitutes = () => {
   const openNew = () => {
     setEditing(null);
     setForm(empty);
-    setServicesText("");
+    setServicesList([]);
+    setNewService("");
     setImageUrl("");
     setShowForm(true);
   };
@@ -311,16 +319,68 @@ const AdminInstitutes = () => {
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div><Label>Nome</Label><Input value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} required /></div>
-                  <div><Label>Slug</Label><Input value={form.slug ?? ""} onChange={(e) => set("slug", e.target.value)} required placeholder="cardiologia" /></div>
+                <div>
+                  <Label>Nome</Label>
+                  <Input value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} required />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div><Label>Categoria</Label><Input value={form.category ?? ""} onChange={(e) => set("category", e.target.value)} /></div>
+                  <div><Label>Categoria</Label><Input value={form.category ?? ""} onChange={(e) => set("category", e.target.value)} placeholder="Ex: Clínica, Cirúrgica" /></div>
                   <div><Label>Ícone</Label><Input value={form.icon ?? "Heart"} onChange={(e) => set("icon", e.target.value)} placeholder="Heart" /></div>
                 </div>
                 <div><Label>Descrição</Label><Textarea value={form.description ?? ""} onChange={(e) => set("description", e.target.value)} rows={3} /></div>
-                <div><Label>Serviços (separados por vírgula)</Label><Input value={servicesText} onChange={(e) => setServicesText(e.target.value)} placeholder="Exame 1, Exame 2" /></div>
+
+                {/* Services as tags */}
+                <div>
+                  <Label className="mb-2 block">Serviços</Label>
+                  {servicesList.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {servicesList.map((s, i) => (
+                        <span key={i} className="inline-flex items-center gap-1 bg-secondary text-foreground text-xs px-2.5 py-1 rounded-full">
+                          {s}
+                          <button
+                            type="button"
+                            onClick={() => setServicesList((prev) => prev.filter((_, idx) => idx !== i))}
+                            className="hover:text-destructive transition-colors"
+                          >
+                            <X size={12} />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <Input
+                      value={newService}
+                      onChange={(e) => setNewService(e.target.value)}
+                      placeholder="Digite um serviço e clique em Adicionar"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          const val = newService.trim();
+                          if (val && !servicesList.includes(val)) {
+                            setServicesList((prev) => [...prev, val]);
+                            setNewService("");
+                          }
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0 gap-1"
+                      onClick={() => {
+                        const val = newService.trim();
+                        if (val && !servicesList.includes(val)) {
+                          setServicesList((prev) => [...prev, val]);
+                          setNewService("");
+                        }
+                      }}
+                    >
+                      <Plus size={14} /> Adicionar
+                    </Button>
+                  </div>
+                </div>
                 <div className="flex justify-end gap-2 pt-2 border-t border-border">
                   <Button type="button" variant="outline" size="sm" onClick={closeForm}>Cancelar</Button>
                   <Button type="submit" size="sm" disabled={saveMutation.isPending || isUploading} className="gap-1.5">
