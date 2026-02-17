@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, Trash2, Star, MessageSquareQuote, Eye, EyeOff, X, Save, LayoutGrid, LayoutList } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, MessageSquareQuote, Eye, EyeOff, X, Save, LayoutGrid, LayoutList, Calendar } from "lucide-react";
 import { toast } from "sonner";
+import { ExpandableAdminCard } from "@/components/admin/ExpandableAdminCard";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
 type Testimonial = Tables<"testimonials">;
@@ -200,32 +201,47 @@ const AdminTestimonials = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {testimonials.map((t) => (
-            <div key={t.id} className="bg-card rounded-xl border border-border p-4 group hover:border-accent/30 hover:shadow-md transition-all relative">
-              <div className="absolute top-2 right-2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => togglePublish.mutate({ id: t.id, published: !t.is_published })}>
-                  {t.is_published ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                </Button>
-                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEdit(t)}><Pencil className="w-3 h-3" /></Button>
-                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(t.id); }}><Trash2 className="w-3 h-3" /></Button>
-              </div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="font-semibold text-sm text-foreground">{t.patient_initials}</span>
-                {t.is_published ? (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-medium text-accent bg-accent/10 px-1.5 py-0.5 rounded-full"><Eye size={9} /></span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-full"><EyeOff size={9} /></span>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed mb-2">"{t.quote}"</p>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-0.5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className={`w-3 h-3 ${i < t.rating ? "fill-accent text-accent" : "text-border"}`} />
-                  ))}
+            <ExpandableAdminCard
+              key={t.id}
+              actions={
+                <>
+                  <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm" onClick={() => togglePublish.mutate({ id: t.id, published: !t.is_published })}>
+                    {t.is_published ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm" onClick={() => openEdit(t)}><Pencil className="w-3 h-3" /></Button>
+                  <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(t.id); }}><Trash2 className="w-3 h-3" /></Button>
+                </>
+              }
+              expandedContent={
+                <div className="p-3 space-y-2">
+                  <p className="text-xs text-muted-foreground leading-relaxed">"{t.quote}"</p>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Calendar size={12} className="text-accent" />
+                    <span>{new Date(t.created_at).toLocaleDateString("pt-BR")}</span>
+                  </div>
                 </div>
-                <span className="text-[10px] text-muted-foreground">{t.specialty}</span>
+              }
+            >
+              <div className="p-4 pb-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-semibold text-sm text-foreground">{t.patient_initials}</span>
+                  {t.is_published ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-accent bg-accent/10 px-1.5 py-0.5 rounded-full"><Eye size={9} /></span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-full"><EyeOff size={9} /></span>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed mb-2">"{t.quote}"</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className={`w-3 h-3 ${i < t.rating ? "fill-accent text-accent" : "text-border"}`} />
+                    ))}
+                  </div>
+                  <span className="text-[10px] text-muted-foreground">{t.specialty}</span>
+                </div>
               </div>
-            </div>
+            </ExpandableAdminCard>
           ))}
         </div>
       )}

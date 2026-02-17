@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, Users, X, Save, LayoutGrid, LayoutList } from "lucide-react";
+import { Plus, Pencil, Trash2, Users, X, Save, LayoutGrid, LayoutList, Stethoscope, BadgeCheck } from "lucide-react";
 import { toast } from "sonner";
+import { ExpandableAdminCard } from "@/components/admin/ExpandableAdminCard";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
 type Doctor = Tables<"doctors">;
@@ -190,24 +191,47 @@ const AdminDoctors = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {doctors.map((doc) => (
-              <div key={doc.id} className="bg-card rounded-xl border border-border p-4 group hover:border-accent/30 hover:shadow-md transition-all text-center relative">
-                <div className="absolute top-2 right-2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEdit(doc)}><Pencil className="w-3 h-3" /></Button>
-                  <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover este médico?")) deleteMutation.mutate(doc.id); }}><Trash2 className="w-3 h-3" /></Button>
-                </div>
-                {doc.photo_url ? (
-                  <img src={doc.photo_url} alt={doc.name} className="w-16 h-16 rounded-full object-cover mx-auto mb-3 border-2 border-border" />
-                ) : (
-                  <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center text-lg font-bold text-muted-foreground mx-auto mb-3">
-                    {doc.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+            {doctors.map((doc) => {
+              const institute = institutes.find((i) => i.id === doc.institute_id);
+              return (
+                <ExpandableAdminCard
+                  key={doc.id}
+                  actions={
+                    <>
+                      <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm" onClick={() => openEdit(doc)}><Pencil className="w-3 h-3" /></Button>
+                      <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover este médico?")) deleteMutation.mutate(doc.id); }}><Trash2 className="w-3 h-3" /></Button>
+                    </>
+                  }
+                  expandedContent={
+                    <div className="p-3 space-y-2">
+                      {doc.bio && <p className="text-xs text-muted-foreground leading-relaxed line-clamp-4">{doc.bio}</p>}
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <BadgeCheck size={12} className="text-accent" />
+                        <span>CRM {doc.crm}</span>
+                      </div>
+                      {institute && (
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Stethoscope size={12} className="text-accent" />
+                          <span>{institute.name}</span>
+                        </div>
+                      )}
+                    </div>
+                  }
+                >
+                  <div className="p-4 pb-6 text-center">
+                    {doc.photo_url ? (
+                      <img src={doc.photo_url} alt={doc.name} className="w-16 h-16 rounded-full object-cover mx-auto mb-3 border-2 border-border" />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center text-lg font-bold text-muted-foreground mx-auto mb-3">
+                        {doc.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+                      </div>
+                    )}
+                    <p className="font-semibold text-sm text-foreground truncate">{doc.name}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 truncate">{doc.specialty}</p>
                   </div>
-                )}
-                <p className="font-semibold text-sm text-foreground truncate">{doc.name}</p>
-                <p className="text-xs text-muted-foreground mt-0.5 truncate">{doc.specialty}</p>
-                <p className="text-[10px] text-muted-foreground/70 mt-0.5">CRM {doc.crm}</p>
-              </div>
-            ))}
+                </ExpandableAdminCard>
+              );
+            })}
           </div>
         )}
     </div>
