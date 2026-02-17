@@ -4,15 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { Pencil, ExternalLink, Save, X, Info, Search } from "lucide-react";
+import { Pencil, ExternalLink, Save, X, Info, Search, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import ExamsEditor from "@/components/admin/ExamsEditor";
@@ -133,7 +125,12 @@ const AdminContent = () => {
 
   const contentByKey = new Map(contents.map((c) => [c.key, c]));
 
-  const openEditModal = (sectionKey: string) => {
+  const openEditor = (sectionKey: string) => {
+    if (editingSection === sectionKey) {
+      setEditingSection(null);
+      setDrafts({});
+      return;
+    }
     const sec = sections[sectionKey];
     const initial: Record<string, string> = {};
     sec.keys.forEach((k) => {
@@ -165,7 +162,6 @@ const AdminContent = () => {
     saveMutation.mutate(updates);
   };
 
-  /* Summary: show first 2 non-empty values of a section */
   const getSummary = (keys: string[]) => {
     const previews: string[] = [];
     for (const k of keys) {
@@ -191,8 +187,6 @@ const AdminContent = () => {
       })
     );
   });
-
-  const editingSec = editingSection ? sections[editingSection] : null;
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -233,134 +227,135 @@ const AdminContent = () => {
           <span className="ml-3 text-muted-foreground">Carregando...</span>
         </div>
       ) : (
-        /* Section Cards Grid */
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        /* Section Cards */
+        <div className="space-y-4">
           {filteredSections.map(([sectionKey, sec]) => {
             const sectionItems = sec.keys.map((k) => contentByKey.get(k)).filter(Boolean) as Content[];
             if (sectionItems.length === 0) return null;
             const summary = getSummary(sec.keys);
+            const isEditing = editingSection === sectionKey;
 
             return (
               <div
                 key={sectionKey}
-                className="group bg-card rounded-xl border border-border p-5 hover:shadow-md transition-shadow flex flex-col justify-between"
+                className="bg-card rounded-xl border border-border overflow-hidden transition-shadow hover:shadow-md"
               >
-                <div>
-                  <div className="flex items-start gap-3 mb-3">
-                    <span className="text-2xl">{sec.icon}</span>
-                    <div className="flex-1 min-w-0">
+                {/* Card Header */}
+                <div className="p-5 flex items-start gap-3">
+                  <span className="text-2xl">{sec.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
                       <h3 className="font-semibold text-foreground text-sm">{sec.label}</h3>
-                      <p className="text-xs text-muted-foreground">{sec.description}</p>
+                      <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full shrink-0">
+                        {sectionItems.length} {sectionItems.length === 1 ? "campo" : "campos"}
+                      </span>
                     </div>
-                    <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full shrink-0">
-                      {sectionItems.length} {sectionItems.length === 1 ? "campo" : "campos"}
-                    </span>
+                    <p className="text-xs text-muted-foreground mt-0.5">{sec.description}</p>
+
+                    {!isEditing && summary.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {summary.map((text, i) => (
+                          <span key={i} className="text-xs text-muted-foreground bg-muted/50 rounded px-2 py-0.5 truncate max-w-xs">
+                            {text}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
-                  {summary.length > 0 && (
-                    <div className="space-y-1 mb-4">
-                      {summary.map((text, i) => (
-                        <p key={i} className="text-xs text-muted-foreground truncate bg-muted/50 rounded px-2 py-1">
-                          {text}
-                        </p>
-                      ))}
-                    </div>
-                  )}
+                  <Button
+                    size="sm"
+                    variant={isEditing ? "secondary" : "outline"}
+                    onClick={() => openEditor(sectionKey)}
+                    className="gap-1.5 shrink-0"
+                  >
+                    {isEditing ? (
+                      <>
+                        <ChevronUp size={14} />
+                        Fechar
+                      </>
+                    ) : (
+                      <>
+                        <Pencil size={14} />
+                        Editar
+                      </>
+                    )}
+                  </Button>
                 </div>
 
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => openEditModal(sectionKey)}
-                  className="w-full gap-2 mt-auto"
-                >
-                  <Pencil size={14} />
-                  Editar Seção
-                </Button>
+                {/* Inline Editor */}
+                {isEditing && (
+                  <div className="border-t border-border bg-muted/20 px-5 pb-5 pt-4">
+                    <div className="space-y-4">
+                      {sec.keys.map((k) => {
+                        const item = contentByKey.get(k);
+                        if (!item) return null;
+                        const kl = keyLabels[k];
+                        const isLong = item.value.length > 80 || k.includes("data") || k.includes("text_");
+
+                        return (
+                          <div key={k}>
+                            <div className="flex items-center gap-2 mb-1.5">
+                              <label className="text-sm font-medium text-foreground">
+                                {kl?.label ?? k}
+                              </label>
+                              {kl?.hint && k !== "exams_data" && (
+                                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                                  <Info size={12} />
+                                  {kl.hint}
+                                </span>
+                              )}
+                            </div>
+                            {k === "exams_data" ? (
+                              <ExamsEditor
+                                value={drafts[k] ?? item.value}
+                                onChange={(val) => setDrafts((prev) => ({ ...prev, [k]: val }))}
+                              />
+                            ) : isLong ? (
+                              <Textarea
+                                value={drafts[k] ?? item.value}
+                                onChange={(e) => setDrafts((prev) => ({ ...prev, [k]: e.target.value }))}
+                                rows={k.includes("data") ? 6 : 3}
+                                className="font-mono text-xs"
+                              />
+                            ) : (
+                              <Input
+                                value={drafts[k] ?? item.value}
+                                onChange={(e) => setDrafts((prev) => ({ ...prev, [k]: e.target.value }))}
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="flex justify-end gap-2 mt-5 pt-4 border-t border-border">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => { setEditingSection(null); setDrafts({}); }}
+                        className="gap-1.5"
+                      >
+                        <X size={14} />
+                        Cancelar
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={handleSave}
+                        disabled={saveMutation.isPending}
+                        className="gap-1.5"
+                      >
+                        <Save size={14} />
+                        {saveMutation.isPending ? "Salvando..." : "Salvar Alterações"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
       )}
-
-      {/* Edit Modal */}
-      <Dialog open={!!editingSection} onOpenChange={(open) => { if (!open) { setEditingSection(null); setDrafts({}); } }}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-          {editingSec && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-lg">
-                  <span className="text-xl">{editingSec.icon}</span>
-                  {editingSec.label}
-                </DialogTitle>
-                <DialogDescription>{editingSec.description}</DialogDescription>
-              </DialogHeader>
-
-              <div className="space-y-4 py-4">
-                {editingSec.keys.map((k) => {
-                  const item = contentByKey.get(k);
-                  if (!item) return null;
-                  const kl = keyLabels[k];
-                  const isLong = item.value.length > 80 || k.includes("data") || k.includes("text_");
-
-                    return (
-                    <div key={k}>
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <label className="text-sm font-medium text-foreground">
-                          {kl?.label ?? k}
-                        </label>
-                        {kl?.hint && k !== "exams_data" && (
-                          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                            <Info size={12} />
-                            {kl.hint}
-                          </span>
-                        )}
-                      </div>
-                      {k === "exams_data" ? (
-                        <ExamsEditor
-                          value={drafts[k] ?? item.value}
-                          onChange={(val) => setDrafts((prev) => ({ ...prev, [k]: val }))}
-                        />
-                      ) : isLong ? (
-                        <Textarea
-                          value={drafts[k] ?? item.value}
-                          onChange={(e) => setDrafts((prev) => ({ ...prev, [k]: e.target.value }))}
-                          rows={k.includes("data") ? 6 : 3}
-                          className="font-mono text-xs"
-                        />
-                      ) : (
-                        <Input
-                          value={drafts[k] ?? item.value}
-                          onChange={(e) => setDrafts((prev) => ({ ...prev, [k]: e.target.value }))}
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              <DialogFooter className="gap-2 sm:gap-0">
-                <Button
-                  variant="outline"
-                  onClick={() => { setEditingSection(null); setDrafts({}); }}
-                  className="gap-1.5"
-                >
-                  <X size={14} />
-                  Cancelar
-                </Button>
-                <Button
-                  onClick={handleSave}
-                  disabled={saveMutation.isPending}
-                  className="gap-1.5"
-                >
-                  <Save size={14} />
-                  {saveMutation.isPending ? "Salvando..." : "Salvar Alterações"}
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
