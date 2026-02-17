@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Save, ExternalLink, Upload, X, ImageIcon, Building2, LayoutList, Type } from "lucide-react";
+import { Plus, Pencil, Trash2, Save, ExternalLink, Upload, X, ImageIcon, Building2, LayoutList, Type, LayoutGrid } from "lucide-react";
 import { toast } from "sonner";
 import ImageCropDialog from "@/components/admin/ImageCropDialog";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
@@ -38,6 +38,7 @@ const AdminInstitutes = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pageDrafts, setPageDrafts] = useState<Record<string, string>>({});
   const [pageEditing, setPageEditing] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
 
   const { data: institutes = [], isLoading } = useQuery({
     queryKey: ["admin-institutes"],
@@ -242,9 +243,17 @@ const AdminInstitutes = () => {
         </TabsList>
 
         <TabsContent value="list">
-          {/* Add button */}
+          {/* Add button + view toggle */}
           {!showForm && (
-            <div className="flex justify-end mb-4">
+            <div className="flex justify-end items-center gap-2 mb-4">
+              <div className="flex items-center bg-secondary rounded-lg p-0.5">
+                <button onClick={() => setViewMode("list")} className={`p-1.5 rounded-md transition-colors ${viewMode === "list" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                  <LayoutList size={16} />
+                </button>
+                <button onClick={() => setViewMode("grid")} className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                  <LayoutGrid size={16} />
+                </button>
+              </div>
               <Button className="hero-gradient border-0 text-primary-foreground" onClick={openNew}>
                 <Plus className="w-4 h-4 mr-2" /> Adicionar
               </Button>
@@ -324,31 +333,54 @@ const AdminInstitutes = () => {
 
           {isLoading ? (
             <p className="text-muted-foreground">Carregando...</p>
-          ) : (
-            <div className="space-y-2">
-              {institutes.map((inst) => (
-                <div key={inst.id} className="bg-card rounded-xl border border-border p-4 flex items-center justify-between group hover:border-accent/30 transition-colors">
-                  <div className="flex items-center gap-3 min-w-0">
-                    {inst.image_url ? (
-                      <img src={inst.image_url} alt={inst.name} className="w-12 h-9 rounded-lg object-cover shrink-0" />
-                    ) : (
-                      <div className="w-12 h-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                        <ImageIcon size={14} className="text-muted-foreground" />
+          ) : viewMode === "list" ? (
+              <div className="space-y-2">
+                {institutes.map((inst) => (
+                  <div key={inst.id} className="bg-card rounded-xl border border-border p-4 flex items-center justify-between group hover:border-accent/30 transition-colors">
+                    <div className="flex items-center gap-3 min-w-0">
+                      {inst.image_url ? (
+                        <img src={inst.image_url} alt={inst.name} className="w-12 h-9 rounded-lg object-cover shrink-0" />
+                      ) : (
+                        <div className="w-12 h-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                          <ImageIcon size={14} className="text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm text-foreground">{inst.name}</p>
+                        <p className="text-xs text-muted-foreground">{inst.category} · {inst.services.length} serviços</p>
                       </div>
-                    )}
-                    <div className="min-w-0">
-                      <p className="font-medium text-sm text-foreground">{inst.name}</p>
-                      <p className="text-xs text-muted-foreground">{inst.category} · {inst.services.length} serviços</p>
+                    </div>
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openEdit(inst)}><Pencil className="w-3.5 h-3.5" /></Button>
+                      <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(inst.id); }}><Trash2 className="w-3.5 h-3.5" /></Button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openEdit(inst)}><Pencil className="w-3.5 h-3.5" /></Button>
-                    <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(inst.id); }}><Trash2 className="w-3.5 h-3.5" /></Button>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {institutes.map((inst) => (
+                  <div key={inst.id} className="bg-card rounded-xl border border-border group hover:border-accent/30 hover:shadow-md transition-all relative overflow-hidden">
+                    {inst.image_url ? (
+                      <img src={inst.image_url} alt={inst.name} className="w-full h-24 object-cover" />
+                    ) : (
+                      <div className="w-full h-24 bg-muted flex items-center justify-center">
+                        <ImageIcon size={24} className="text-muted-foreground" />
+                      </div>
+                    )}
+                    <div className="p-3">
+                      <p className="font-semibold text-sm text-foreground truncate">{inst.name}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{inst.category}</p>
+                      <p className="text-[10px] text-muted-foreground/70 mt-0.5">{inst.services.length} serviços</p>
+                    </div>
+                    <div className="absolute top-1.5 right-1.5 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm" onClick={() => openEdit(inst)}><Pencil className="w-3 h-3" /></Button>
+                      <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(inst.id); }}><Trash2 className="w-3 h-3" /></Button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
         </TabsContent>
 
         {/* Tab: Textos da Página */}

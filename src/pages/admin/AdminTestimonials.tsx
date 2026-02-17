@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, Trash2, Star, MessageSquareQuote, Eye, EyeOff, X, Save } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, MessageSquareQuote, Eye, EyeOff, X, Save, LayoutGrid, LayoutList } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
@@ -21,6 +21,7 @@ const AdminTestimonials = () => {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Testimonial | null>(null);
   const [form, setForm] = useState(empty);
+  const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
 
   const { data: testimonials = [], isLoading } = useQuery({
     queryKey: ["admin-testimonials"],
@@ -105,11 +106,21 @@ const AdminTestimonials = () => {
             <p className="text-xs text-muted-foreground">{published} publicados · {draft} rascunhos</p>
           </div>
         </div>
-        {!showForm && (
-          <Button size="sm" className="hero-gradient border-0 text-primary-foreground gap-1.5" onClick={openNew}>
-            <Plus className="w-4 h-4" /> Adicionar
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center bg-secondary rounded-lg p-0.5">
+            <button onClick={() => setViewMode("list")} className={`p-1.5 rounded-md transition-colors ${viewMode === "list" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+              <LayoutList size={16} />
+            </button>
+            <button onClick={() => setViewMode("grid")} className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+              <LayoutGrid size={16} />
+            </button>
+          </div>
+          {!showForm && (
+            <Button size="sm" className="hero-gradient border-0 text-primary-foreground gap-1.5" onClick={openNew}>
+              <Plus className="w-4 h-4" /> Adicionar
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Inline Form */}
@@ -153,7 +164,7 @@ const AdminTestimonials = () => {
         <div className="flex items-center gap-2 py-12 justify-center text-sm text-muted-foreground">
           <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" /> Carregando...
         </div>
-      ) : (
+      ) : viewMode === "list" ? (
         <div className="space-y-2">
           {testimonials.map((t) => (
             <div key={t.id} className="bg-card rounded-xl border border-border p-4 group hover:border-accent/30 transition-colors">
@@ -163,13 +174,9 @@ const AdminTestimonials = () => {
                     <span className="font-semibold text-sm text-foreground">{t.patient_initials}</span>
                     <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">{t.specialty}</span>
                     {t.is_published ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full">
-                        <Eye size={10} /> Publicado
-                      </span>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full"><Eye size={10} /> Publicado</span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
-                        <EyeOff size={10} /> Rascunho
-                      </span>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-secondary px-2 py-0.5 rounded-full"><EyeOff size={10} /> Rascunho</span>
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">"{t.quote}"</p>
@@ -183,13 +190,40 @@ const AdminTestimonials = () => {
                   <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => togglePublish.mutate({ id: t.id, published: !t.is_published })}>
                     {t.is_published ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openEdit(t)}>
-                    <Pencil className="w-3.5 h-3.5" />
-                  </Button>
-                  <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(t.id); }}>
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </Button>
+                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openEdit(t)}><Pencil className="w-3.5 h-3.5" /></Button>
+                  <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(t.id); }}><Trash2 className="w-3.5 h-3.5" /></Button>
                 </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {testimonials.map((t) => (
+            <div key={t.id} className="bg-card rounded-xl border border-border p-4 group hover:border-accent/30 hover:shadow-md transition-all relative">
+              <div className="absolute top-2 right-2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => togglePublish.mutate({ id: t.id, published: !t.is_published })}>
+                  {t.is_published ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                </Button>
+                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEdit(t)}><Pencil className="w-3 h-3" /></Button>
+                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(t.id); }}><Trash2 className="w-3 h-3" /></Button>
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="font-semibold text-sm text-foreground">{t.patient_initials}</span>
+                {t.is_published ? (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-medium text-accent bg-accent/10 px-1.5 py-0.5 rounded-full"><Eye size={9} /></span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-full"><EyeOff size={9} /></span>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed mb-2">"{t.quote}"</p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className={`w-3 h-3 ${i < t.rating ? "fill-accent text-accent" : "text-border"}`} />
+                  ))}
+                </div>
+                <span className="text-[10px] text-muted-foreground">{t.specialty}</span>
               </div>
             </div>
           ))}
