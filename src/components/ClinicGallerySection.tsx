@@ -1,17 +1,20 @@
 import { motion } from "framer-motion";
-import { Building2, Stethoscope, TestTube, Armchair, Monitor, Heart, Activity, Baby, Bed, Pill, type LucideIcon } from "lucide-react";
+import { Building2 } from "lucide-react";
 import { useSiteContent } from "@/hooks/useSiteContent";
 
-const iconMap: Record<string, LucideIcon> = {
-  Building2, Stethoscope, TestTube, Armchair, Monitor, Heart, Activity, Baby, Bed, Pill,
-};
+interface GallerySpace {
+  label: string;
+  description: string;
+  image_url?: string;
+  span: string;
+}
 
-const defaultSpaces = [
-  { icon: "Building2", label: "Recepção", description: "Ambiente amplo e acolhedor", span: "wide" },
-  { icon: "Stethoscope", label: "Consultório", description: "Equipamentos modernos", span: "normal" },
-  { icon: "TestTube", label: "Laboratório", description: "Resultados em até 24h", span: "normal" },
-  { icon: "Armchair", label: "Sala de Espera", description: "Conforto e tranquilidade", span: "normal" },
-  { icon: "Monitor", label: "Centro de Diagnóstico", description: "Tecnologia de ponta", span: "wide" },
+const defaultSpaces: GallerySpace[] = [
+  { label: "Recepção", description: "Ambiente amplo e acolhedor", span: "wide" },
+  { label: "Consultório", description: "Equipamentos modernos", span: "normal" },
+  { label: "Laboratório", description: "Resultados em até 24h", span: "normal" },
+  { label: "Sala de Espera", description: "Conforto e tranquilidade", span: "normal" },
+  { label: "Centro de Diagnóstico", description: "Tecnologia de ponta", span: "wide" },
 ];
 
 const gradients = [
@@ -24,7 +27,7 @@ const gradients = [
 
 const ClinicGallerySection = () => {
   const { c, cJson } = useSiteContent();
-  const spaces = cJson<{ icon: string; label: string; description: string; span: string }[]>("gallery_data", defaultSpaces);
+  const spaces = cJson<GallerySpace[]>("gallery_data", defaultSpaces);
 
   return (
     <section className="py-20">
@@ -48,9 +51,9 @@ const ClinicGallerySection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
           {spaces.map((space, i) => {
-            const Icon = iconMap[space.icon] || Building2;
             const spanClass = space.span === "wide" ? "col-span-1 md:col-span-2 row-span-1" : "col-span-1 row-span-1";
             const gradient = gradients[i % gradients.length];
+            const hasImage = !!space.image_url;
 
             return (
               <motion.div
@@ -59,29 +62,37 @@ const ClinicGallerySection = () => {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className={`${spanClass} group relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br ${gradient} cursor-default`}
+                className={`${spanClass} group relative overflow-hidden rounded-2xl border border-border cursor-default ${
+                  hasImage ? "" : `bg-gradient-to-br ${gradient}`
+                }`}
               >
-                <div className="flex flex-col items-center justify-center text-center p-10 min-h-[180px] transition-transform duration-300 group-hover:scale-[1.03]">
-                  <div className="w-14 h-14 rounded-2xl bg-card/80 border border-border flex items-center justify-center mb-4 shadow-sm">
-                    <Icon className="w-7 h-7 text-primary" />
+                {hasImage ? (
+                  <div className="relative min-h-[220px]">
+                    <img
+                      src={space.image_url}
+                      alt={space.label}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="relative flex flex-col justify-end h-full min-h-[220px] p-6">
+                      <h3 className="font-bold text-white text-lg mb-1">{space.label}</h3>
+                      <p className="text-sm text-white/80">{space.description}</p>
+                    </div>
                   </div>
-                  <h3 className="font-bold text-foreground text-lg mb-1">{space.label}</h3>
-                  <p className="text-sm text-muted-foreground">{space.description}</p>
-                </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-center p-10 min-h-[180px] transition-transform duration-300 group-hover:scale-[1.03]">
+                    <div className="w-14 h-14 rounded-2xl bg-card/80 border border-border flex items-center justify-center mb-4 shadow-sm">
+                      <Building2 className="w-7 h-7 text-primary" />
+                    </div>
+                    <h3 className="font-bold text-foreground text-lg mb-1">{space.label}</h3>
+                    <p className="text-sm text-muted-foreground">{space.description}</p>
+                  </div>
+                )}
               </motion.div>
             );
           })}
         </div>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-          className="text-center text-xs text-muted-foreground mt-6"
-        >
-          * Fotos reais do espaço em breve
-        </motion.p>
       </div>
     </section>
   );
