@@ -162,7 +162,7 @@ const Index = () => {
       </section>
 
       {/* Sobre o Grupo Unique */}
-      <section id="sobre" className="py-24 section-divider">
+      <section id="sobre" className="py-24 section-divider bg-primary/[0.03]">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -171,7 +171,7 @@ const Index = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <span className="text-accent text-sm font-semibold uppercase tracking-wider">Quem Somos</span>
+              <span className="text-primary text-sm font-semibold uppercase tracking-wider">Quem Somos</span>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-6">
                 Sobre o Grupo Unique
               </h2>
@@ -252,7 +252,7 @@ const Index = () => {
             transition={{ duration: 0.5 }}
             className="mb-14"
           >
-            <span className="text-accent text-sm font-semibold uppercase tracking-wider">Especialidades</span>
+            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Especialidades</span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-3">
               Todos os cuidados que você precisa
             </h2>
@@ -277,7 +277,7 @@ const Index = () => {
       </section>
 
       {/* Exames Mais Escolhidos */}
-      <section className="py-24 section-divider">
+      <section className="py-24 section-divider bg-primary/[0.02]">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -314,8 +314,8 @@ const Index = () => {
                   >
                     <div>
                       <h3 className="font-bold text-foreground text-base uppercase mb-3">{exam.name}</h3>
-                      <span className="inline-block bg-accent text-accent-foreground text-xs font-semibold px-3 py-1 rounded-full mb-4">
-                        Coberto por convênios
+                      <span className="inline-block bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full mb-4">
+                         Coberto por convênios
                       </span>
                     </div>
                     <div>
@@ -396,7 +396,7 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <span className="text-accent text-sm font-semibold uppercase tracking-wider">Planos de Saúde</span>
+            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Planos de Saúde</span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-3">
               Convênios Aceitos
             </h2>
@@ -413,9 +413,9 @@ const Index = () => {
                 whileHover={{ scale: 1.03, y: -3, transition: { duration: 0.2 } }}
                 className="bg-card border border-border rounded-2xl p-6 card-shadow hover:border-accent hover:card-shadow-hover transition-all cursor-default text-center"
               >
-                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-3">
-                  <Shield className="w-6 h-6 text-accent" />
-                </div>
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                   <Shield className="w-6 h-6 text-primary" />
+                 </div>
                 <span className="font-semibold text-foreground">{conv}</span>
               </motion.div>
             ))}
@@ -445,7 +445,7 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <span className="text-accent text-sm font-semibold uppercase tracking-wider">Fale Conosco</span>
+            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Fale Conosco</span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
               Onde nos encontrar
             </h2>
@@ -465,9 +465,9 @@ const Index = () => {
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
                 className="bg-card border border-border rounded-2xl p-6 card-shadow text-center hover:card-shadow-hover transition-shadow"
               >
-                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="w-6 h-6 text-accent" />
-                </div>
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                   <item.icon className="w-6 h-6 text-primary" />
+                 </div>
                 <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">{item.text}</p>
               </motion.div>
