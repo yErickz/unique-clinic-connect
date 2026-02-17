@@ -1,46 +1,36 @@
 
+# Substituir editor JSON de Exames por interface visual
 
-## Plano: Enriquecer o Site com Depoimentos e Galeria
+## O que muda
 
-### 1. Secao de Depoimentos de Pacientes
+Atualmente, a seção "Exames" abre um campo de texto com JSON puro para editar a lista. Isso e confuso e propenso a erros. A ideia e substituir esse campo por uma interface amigavel onde voce pode:
 
-Adicionar uma nova secao na pagina inicial (entre Convenios e FAQ) com depoimentos de pacientes. O design tera:
+- Ver cada exame como um item individual (nome + preco)
+- Remover qualquer exame com um botao de lixeira
+- Adicionar novos exames preenchendo nome e preco em campos separados
+- Tudo dentro do mesmo modal de edicao, sem precisar mexer em JSON
 
-- Cards com citacao, nome do paciente (iniciais para privacidade), especialidade consultada e avaliacao em estrelas
-- Layout em grid responsivo (3 colunas desktop, 1 mobile)
-- Animacoes de entrada consistentes com o resto do site
-- Icone de aspas estilizado em cada card
-- Dados ficticios iniciais que o proprietario podera substituir por depoimentos reais
+## Como vai funcionar
 
-Exemplo de depoimentos:
-- "Atendimento excelente e muito humanizado. Me senti acolhida desde a recepcao." -- M.S., Cardiologia
-- "Resultados dos exames rapidos e equipe muito atenciosa." -- J.P., Laboratorio
-- "Medicos competentes e ambiente muito confortavel." -- A.L., Ortopedia
+Quando o modal da secao "Exames" abrir, ao inves do campo de texto com JSON, voce vera:
 
-### 2. Secao Galeria de Fotos da Clinica
+1. **Titulo** -- campo de texto normal (ja existe)
+2. **Lista de exames** -- cada exame aparece como uma linha com:
+   - Campo "Nome" (ex: Hemograma)
+   - Campo "Preco" (ex: R$ 45,00)
+   - Botao vermelho de lixeira para remover
+3. **Botao "+ Adicionar Exame"** na parte de baixo para inserir um novo item
+4. Ao salvar, a lista e convertida de volta para JSON automaticamente
 
-Adicionar uma secao visual na pagina inicial (antes do CTA final) mostrando o ambiente da clinica:
+## Detalhes tecnicos
 
-- Grid de fotos com efeito hover (zoom suave)
-- Layout masonry-style ou grid uniforme com cantos arredondados
-- Como nao temos fotos reais da clinica ainda, usaremos placeholders descritivos com icones indicando o tipo de ambiente (Recepcao, Consultorio, Laboratorio, Sala de Espera)
-- O proprietario podera enviar fotos reais para substituir depois
+**Arquivo modificado:** `src/pages/admin/AdminContent.tsx`
 
-### 3. Arquivos Modificados
-
-- **src/pages/Index.tsx** -- Importar e posicionar os dois novos componentes
-- **src/components/TestimonialsSection.tsx** -- Novo componente de depoimentos
-- **src/components/ClinicGallerySection.tsx** -- Novo componente de galeria
-
-### Ordem na pagina inicial (atualizada)
-
-1. Hero
-2. Sobre o Grupo Unique
-3. Especialidades
-4. Exames mais pesquisados
-5. Convenios
-6. **Depoimentos** (novo)
-7. FAQ
-8. **Galeria da Clinica** (novo)
-9. CTA Final
-
+- Detectar quando a key sendo renderizada e `exams_data`
+- Em vez de renderizar um `Textarea`, renderizar um componente customizado inline que:
+  - Faz `JSON.parse` do valor atual do draft para obter o array `{name, price}[]`
+  - Renderiza cada item como uma linha com dois `Input` e um botao `Trash2`
+  - Botao "Adicionar Exame" faz push de `{name: "", price: ""}` no array
+  - Cada mudanca faz `JSON.stringify` do array atualizado e grava de volta no `drafts["exams_data"]`
+- O fluxo de salvamento continua o mesmo (o valor final e uma string JSON valida)
+- Nenhuma mudanca no banco de dados e necessaria
