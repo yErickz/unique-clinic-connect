@@ -2,12 +2,13 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Phone, CheckCircle, ArrowRight, Heart, Target, Eye, Users, MapPin, Clock, Mail, Stethoscope, Shield, Star, TestTube, Droplets, Activity, Pill, Dna, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ServiceCard from "@/components/ServiceCard";
-import { institutes, convenios, getWhatsAppLink } from "@/data/mockData";
+import { institutes } from "@/data/mockData";
 import heroImage from "@/assets/hero-sabin-style.jpg";
 import FaqSection from "@/components/FaqSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ClinicGallerySection from "@/components/ClinicGallerySection";
-import { useRef, useState, useCallback } from "react";
+import { useRef } from "react";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 // Import service images
 import cardiologiaImg from "@/assets/services/cardiologia.jpg";
@@ -26,12 +27,6 @@ const serviceImages: Record<string, string> = {
   ginecologia: ginecologiaImg,
 };
 
-const features = [
-  { icon: Shield, text: "Resultado em até 24h" },
-  { icon: Stethoscope, text: "Atendimento humanizado" },
-  { icon: Star, text: "Tecnologia de ponta" },
-];
-
 const stagger = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
@@ -42,6 +37,12 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
+const featureIcons = [Shield, Stethoscope, Star];
+
+function getWhatsAppLink(number: string, message: string) {
+  return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+}
+
 const Index = () => {
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
@@ -49,12 +50,40 @@ const Index = () => {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
 
+  const { c, cJson } = useSiteContent();
+  const wa = c("whatsapp_number", "5594992775857");
+
+  const features = [
+    { icon: featureIcons[0], text: c("hero_stat_1", "Resultado em até 24h") },
+    { icon: featureIcons[1], text: c("hero_stat_2", "Atendimento humanizado") },
+    { icon: featureIcons[2], text: c("hero_stat_3", "Tecnologia de ponta") },
+  ];
+
+  const exams = cJson<{ name: string; price: string }[]>("exams_data", [
+    { name: "Hemograma", price: "R$ 45,00" },
+    { name: "Glicemia", price: "R$ 30,00" },
+    { name: "Colesterol Total", price: "R$ 35,00" },
+    { name: "Hormônios (TSH)", price: "R$ 55,00" },
+    { name: "Função Renal", price: "R$ 40,00" },
+    { name: "Urina Tipo 1", price: "R$ 25,00" },
+    { name: "Vitamina D", price: "R$ 65,00" },
+    { name: "Ferro Sérico", price: "R$ 38,00" },
+  ]);
+
+  const conveniosList = c("convenios_list", "Bradesco Saúde,Vale").split(",").map(s => s.trim()).filter(Boolean);
+
+  const aboutStats = [
+    { value: c("about_stat_1_value", "4"), label: c("about_stat_1_label", "Institutos especializados"), accent: false },
+    { value: c("about_stat_2_value", "24h"), label: c("about_stat_2_label", "Resultados de exames"), accent: true },
+    { value: c("about_stat_3_value", "2"), label: c("about_stat_3_label", "Convênios aceitos"), accent: true },
+    { value: c("about_stat_4_value", "< 15min"), label: c("about_stat_4_label", "Tempo médio de espera"), accent: false },
+  ];
+
   return (
     <main className="overflow-x-hidden">
       {/* Hero */}
       <section ref={heroRef} className="relative min-h-[92vh] flex items-center pt-28 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--teal-light))] via-background to-secondary" />
-        {/* Decorative blobs */}
         <div className="absolute top-20 right-0 w-96 h-96 bg-[hsl(var(--teal)/0.06)] rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
         
@@ -67,13 +96,13 @@ const Index = () => {
                   className="inline-flex items-center gap-2 bg-accent/10 text-accent text-sm font-semibold px-4 py-2 rounded-full mb-6 border border-accent/20"
                 >
                   <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-                  Agendamento Online
+                  {c("hero_badge", "Agendamento Online")}
                 </motion.span>
                 <motion.h1
                   variants={fadeUp}
                   className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-foreground leading-[1.1] mb-6 text-balance"
                 >
-                  Sua saúde em{" "}
+                  {c("hero_title", "Sua saúde em boas mãos").split("boas mãos")[0]}
                   <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                     boas mãos
                   </span>
@@ -82,17 +111,17 @@ const Index = () => {
                   variants={fadeUp}
                   className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-lg"
                 >
-                  Saúde, bem-estar e day clinic. Atendimento humanizado, tecnologia de última geração e os melhores especialistas reunidos em um só lugar.
+                  {c("hero_subtitle", "Saúde, bem-estar e day clinic. Atendimento humanizado, tecnologia de última geração e os melhores especialistas reunidos em um só lugar.")}
                 </motion.p>
                 <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 mb-10">
-                  <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta na Clínica Unique.")} className="w-full sm:w-auto">
+                  <a href={getWhatsAppLink(wa, "Olá! Gostaria de agendar uma consulta na Clínica Unique.")} className="w-full sm:w-auto">
                     <Button size="lg" className="w-full sm:w-auto hero-gradient border-0 text-primary-foreground rounded-full px-8 text-base group shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-shadow">
-                      <Phone className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" /> Agendar pelo WhatsApp
+                      <Phone className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" /> {c("hero_cta_primary", "Agendar pelo WhatsApp")}
                     </Button>
                   </a>
                   <a href="#servicos" className="w-full sm:w-auto">
                     <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full px-8 text-base border-2 group hover:bg-accent/5 hover:border-accent hover:text-accent transition-all">
-                      Nossos Serviços <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      {c("hero_cta_secondary", "Nossos Serviços")} <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </a>
                 </motion.div>
@@ -141,12 +170,11 @@ const Index = () => {
                     <Users className="w-6 h-6 text-accent" />
                   </div>
                   <div>
-                    <div className="text-lg font-bold text-foreground">Tudo em um só lugar</div>
-                    <div className="text-sm text-muted-foreground">4 institutos especializados</div>
+                    <div className="text-lg font-bold text-foreground">{c("hero_float_title", "Tudo em um só lugar")}</div>
+                    <div className="text-sm text-muted-foreground">{c("hero_float_subtitle", "4 institutos especializados")}</div>
                   </div>
                 </div>
               </motion.div>
-              {/* Floating badge top-right */}
               <motion.div
                 initial={{ opacity: 0, y: -20, x: 20 }}
                 animate={{ opacity: 1, y: 0, x: 0 }}
@@ -155,7 +183,7 @@ const Index = () => {
               >
                 <div className="flex items-center gap-2">
                   <Star className="w-4 h-4" />
-                  <span className="text-sm font-bold">Referência em Tucumã</span>
+                  <span className="text-sm font-bold">{c("hero_float_badge", "Referência em Tucumã")}</span>
                 </div>
               </motion.div>
             </motion.div>
@@ -173,21 +201,21 @@ const Index = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <span className="text-primary text-sm font-semibold uppercase tracking-wider">Quem Somos</span>
+              <span className="text-primary text-sm font-semibold uppercase tracking-wider">{c("about_label", "Quem Somos")}</span>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-6">
-                Sobre o Grupo Unique
+                {c("about_title", "Sobre o Grupo Unique")}
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                O Grupo Unique nasceu da união de profissionais comprometidos com a saúde e o bem-estar da nossa comunidade. Reunimos especialistas renomados e tecnologia de ponta em um único lugar, para que você tenha acesso ao melhor da medicina com praticidade e confiança.
+                {c("about_text_1", "O Grupo Unique nasceu da união de profissionais comprometidos com a saúde e o bem-estar da nossa comunidade.")}
               </p>
               <p className="text-muted-foreground leading-relaxed mb-8">
-                Cada paciente é único — e é assim que tratamos você. Com atendimento individualizado e um ambiente acolhedor, cuidamos da sua saúde com a seriedade e o carinho que você merece.
+                {c("about_text_2", "Cada paciente é único — e é assim que tratamos você.")}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 {[
-                  { icon: Target, title: "Missão", desc: "Promover saúde com excelência, humanização e responsabilidade.", gradient: "from-primary/15 to-primary/5", iconBg: "bg-primary/15", iconColor: "text-primary", borderColor: "hover:border-primary/30" },
-                  { icon: Eye, title: "Visão", desc: "Ser referência em confiança e qualidade para a nossa comunidade.", gradient: "from-accent/15 to-accent/5", iconBg: "bg-accent/15", iconColor: "text-accent", borderColor: "hover:border-accent/30" },
-                  { icon: Heart, title: "Valores", desc: "Ética, empatia, inovação e compromisso com cada paciente.", gradient: "from-primary/15 to-accent/5", iconBg: "bg-primary/15", iconColor: "text-primary", borderColor: "hover:border-primary/30" },
+                  { icon: Target, title: "Missão", desc: c("about_mission", "Promover saúde com excelência, humanização e responsabilidade."), gradient: "from-primary/15 to-primary/5", iconBg: "bg-primary/15", iconColor: "text-primary", borderColor: "hover:border-primary/30" },
+                  { icon: Eye, title: "Visão", desc: c("about_vision", "Ser referência em confiança e qualidade para a nossa comunidade."), gradient: "from-accent/15 to-accent/5", iconBg: "bg-accent/15", iconColor: "text-accent", borderColor: "hover:border-accent/30" },
+                  { icon: Heart, title: "Valores", desc: c("about_values", "Ética, empatia, inovação e compromisso com cada paciente."), gradient: "from-primary/15 to-accent/5", iconBg: "bg-primary/15", iconColor: "text-primary", borderColor: "hover:border-primary/30" },
                 ].map((item, i) => (
                   <motion.div
                     key={item.title}
@@ -198,7 +226,6 @@ const Index = () => {
                     whileHover={{ y: -6, transition: { duration: 0.3 } }}
                     className={`relative overflow-hidden bg-card border border-border rounded-2xl p-6 card-shadow hover:card-shadow-hover transition-all duration-300 ${item.borderColor}`}
                   >
-                    {/* Gradient accent bar */}
                     <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${item.gradient}`} />
                     <div className={`w-12 h-12 rounded-2xl ${item.iconBg} flex items-center justify-center mb-4`}>
                       <item.icon className={`w-6 h-6 ${item.iconColor}`} />
@@ -218,12 +245,7 @@ const Index = () => {
             >
               <div className="bg-gradient-to-br from-secondary to-[hsl(var(--teal-light))] rounded-3xl p-8">
                 <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { value: "4", label: "Institutos especializados", accent: false },
-                    { value: "24h", label: "Resultados de exames", accent: true },
-                    { value: "2", label: "Convênios aceitos", accent: true },
-                    { value: "< 15min", label: "Tempo médio de espera", accent: false },
-                  ].map((item, i) => (
+                  {aboutStats.map((item, i) => (
                     <motion.div
                       key={item.label}
                       initial={{ opacity: 0, scale: 0.9 }}
@@ -254,12 +276,12 @@ const Index = () => {
             transition={{ duration: 0.5 }}
             className="mb-14"
           >
-            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Especialidades</span>
+            <span className="text-primary text-sm font-semibold uppercase tracking-wider">{c("services_label", "Especialidades")}</span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-3">
-              Todos os cuidados que você precisa
+              {c("services_title", "Todos os cuidados que você precisa")}
             </h2>
             <p className="text-muted-foreground max-w-xl">
-              Especialistas dedicados em cada área para oferecer o melhor diagnóstico e tratamento.
+              {c("services_subtitle", "Especialistas dedicados em cada área para oferecer o melhor diagnóstico e tratamento.")}
             </p>
           </motion.div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -289,22 +311,13 @@ const Index = () => {
             className="mb-10"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-              Exames mais pesquisados
+              {c("exams_title", "Exames mais pesquisados")}
             </h2>
           </motion.div>
           <div className="relative">
             <div className="overflow-x-auto scrollbar-hide scroll-smooth" id="exames-carousel">
               <div className="flex gap-5" style={{ minWidth: "max-content" }}>
-                {[
-                  { name: "Hemograma", price: "R$ 45,00" },
-                  { name: "Glicemia", price: "R$ 30,00" },
-                  { name: "Colesterol Total", price: "R$ 35,00" },
-                  { name: "Hormônios (TSH)", price: "R$ 55,00" },
-                  { name: "Função Renal", price: "R$ 40,00" },
-                  { name: "Urina Tipo 1", price: "R$ 25,00" },
-                  { name: "Vitamina D", price: "R$ 65,00" },
-                  { name: "Ferro Sérico", price: "R$ 38,00" },
-                ].map((exam, i) => (
+                {exams.map((exam, i) => (
                   <motion.div
                     key={exam.name}
                     initial={{ opacity: 0, y: 30, filter: "blur(4px)" }}
@@ -324,7 +337,7 @@ const Index = () => {
                       <p className="text-xs text-muted-foreground mb-1">Particular a partir de</p>
                       <p className="text-2xl font-bold text-foreground mb-4">{exam.price}</p>
                       <a
-                        href={getWhatsAppLink(`Olá! Gostaria de saber mais sobre o exame de ${exam.name}.`)}
+                        href={getWhatsAppLink(wa, `Olá! Gostaria de saber mais sobre o exame de ${exam.name}.`)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm font-semibold text-accent hover:text-accent/80 inline-flex items-center gap-1 transition-colors"
@@ -378,7 +391,7 @@ const Index = () => {
             className="mt-8"
           >
             <a
-              href={getWhatsAppLink("Olá! Gostaria de ver mais exames disponíveis.")}
+              href={getWhatsAppLink(wa, "Olá! Gostaria de ver mais exames disponíveis.")}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-semibold text-accent hover:text-accent/80 inline-flex items-center gap-1 transition-colors"
@@ -398,14 +411,14 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Planos de Saúde</span>
+            <span className="text-primary text-sm font-semibold uppercase tracking-wider">{c("convenios_label", "Planos de Saúde")}</span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-3">
-              Convênios Aceitos
+              {c("convenios_title", "Convênios Aceitos")}
             </h2>
-            <p className="text-muted-foreground">Também atendemos de forma particular.</p>
+            <p className="text-muted-foreground">{c("convenios_subtitle", "Também atendemos de forma particular.")}</p>
           </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl mx-auto">
-            {convenios.map((conv, i) => (
+            {conveniosList.map((conv, i) => (
               <motion.div
                 key={conv}
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -447,16 +460,16 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <span className="text-primary text-sm font-semibold uppercase tracking-wider">Fale Conosco</span>
+            <span className="text-primary text-sm font-semibold uppercase tracking-wider">{c("contact_label", "Fale Conosco")}</span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
-              Onde nos encontrar
+              {c("contact_title", "Onde nos encontrar")}
             </h2>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
-              { icon: MapPin, title: "Endereço", text: "Av. Pará, 1136, Térreo\nCentro, Tucumã - PA" },
-              { icon: Phone, title: "Telefone", text: "(94) 99277-5857" },
-              { icon: Clock, title: "Horários", text: "Seg–Sex: 8h às 18h" },
+              { icon: MapPin, title: "Endereço", text: c("contact_address", "Av. Pará, 1136, Térreo\nCentro, Tucumã - PA") },
+              { icon: Phone, title: "Telefone", text: c("contact_phone", "(94) 99277-5857") },
+              { icon: Clock, title: "Horários", text: c("contact_hours", "Seg–Sex: 8h às 18h") },
             ].map((item, i) => (
               <motion.div
                 key={item.title}
@@ -507,7 +520,7 @@ const Index = () => {
                 transition={{ delay: 0.1 }}
                 className="text-3xl md:text-4xl font-bold mb-4 text-primary-foreground"
               >
-                Pronto para cuidar da sua saúde?
+                {c("cta_title", "Pronto para cuidar da sua saúde?")}
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -516,7 +529,7 @@ const Index = () => {
                 transition={{ delay: 0.2 }}
                 className="text-primary-foreground/70 mb-8 text-lg"
               >
-                Agende sua consulta agora mesmo pelo WhatsApp. Nossa equipe está pronta para atendê-lo com todo o cuidado que você merece.
+                {c("cta_subtitle", "Agende sua consulta agora mesmo pelo WhatsApp.")}
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -524,16 +537,15 @@ const Index = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.3 }}
               >
-                <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta na Clínica Unique.")}>
+                <a href={getWhatsAppLink(wa, "Olá! Gostaria de agendar uma consulta na Clínica Unique.")}>
                   <Button size="lg" variant="secondary" className="rounded-full px-10 text-base font-semibold text-primary group shadow-lg hover:shadow-xl transition-shadow">
-                    <Phone className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" /> Agendar Consulta
+                    <Phone className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" /> {c("cta_button", "Agendar Consulta")}
                   </Button>
                 </a>
               </motion.div>
             </motion.div>
           </div>
         </div>
-        {/* Transição suave para o footer */}
         <div className="h-24 bg-gradient-to-b from-primary to-foreground" />
       </section>
     </main>
