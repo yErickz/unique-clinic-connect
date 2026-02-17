@@ -11,7 +11,9 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  DragOverlay,
   type DragEndEvent,
+  type DragStartEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -78,12 +80,17 @@ const SortableExamItem = ({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 10 : undefined,
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="border border-border rounded-lg bg-muted/30 overflow-hidden">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`border rounded-lg overflow-hidden transition-all ${
+        isDragging ? "border-primary/50 bg-primary/5 opacity-30 shadow-none" : "border-border bg-muted/30"
+      }`}
+    >
       <div className="flex items-center gap-1 px-1 py-2.5 hover:bg-muted/50 transition-colors">
         <button
           type="button"
@@ -197,6 +204,7 @@ const SortableExamItem = ({
 /* ── Main Editor ── */
 const ExamsEditor = ({ value, onChange }: ExamsEditorProps) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [newCategoryFor, setNewCategoryFor] = useState<number | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
 
@@ -235,7 +243,12 @@ const ExamsEditor = ({ value, onChange }: ExamsEditorProps) => {
 
   const toggle = (index: number) => setExpandedIndex(expandedIndex === index ? null : index);
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveId(null);
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
@@ -244,7 +257,6 @@ const ExamsEditor = ({ value, onChange }: ExamsEditorProps) => {
     const reordered = arrayMove(exams, oldIndex, newIndex);
     update(reordered);
 
-    // Update expanded index to follow the moved item
     if (expandedIndex === oldIndex) {
       setExpandedIndex(newIndex);
     } else if (expandedIndex !== null) {
@@ -270,7 +282,7 @@ const ExamsEditor = ({ value, onChange }: ExamsEditorProps) => {
         </div>
       )}
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <SortableContext items={examIds} strategy={verticalListSortingStrategy}>
           {exams.map((exam, i) => (
             <SortableExamItem
@@ -291,6 +303,25 @@ const ExamsEditor = ({ value, onChange }: ExamsEditorProps) => {
             />
           ))}
         </SortableContext>
+        <DragOverlay dropAnimation={null}>
+          {activeId ? (() => {
+            const idx = examIds.indexOf(activeId);
+            const exam = exams[idx];
+            if (!exam) return null;
+            return (
+              <div className="border-2 border-primary rounded-lg bg-card shadow-xl px-3 py-2.5 flex items-center gap-2 opacity-95">
+                <GripVertical size={16} className="text-primary" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-foreground truncate">{exam.name || "Novo exame"}</span>
+                    {exam.category && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded shrink-0">{exam.category}</span>}
+                  </div>
+                  {exam.price && <span className="text-xs text-muted-foreground">{exam.price}</span>}
+                </div>
+              </div>
+            );
+          })() : null}
+        </DragOverlay>
       </DndContext>
 
       <Button type="button" variant="outline" size="sm" className="w-full gap-2" onClick={add}>
