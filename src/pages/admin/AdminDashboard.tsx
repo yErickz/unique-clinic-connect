@@ -1,8 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, Building2, MessageSquareQuote, FileText } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import {
+  Users,
+  Building2,
+  MessageSquareQuote,
+  ArrowRight,
+  Image,
+  FileText,
+} from "lucide-react";
 
 const AdminDashboard = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const { data: doctorCount } = useQuery({
     queryKey: ["admin-doctor-count"],
     queryFn: async () => {
@@ -28,26 +40,77 @@ const AdminDashboard = () => {
   });
 
   const stats = [
-    { label: "Médicos", value: doctorCount ?? 0, icon: Users, color: "text-primary" },
-    { label: "Institutos", value: instituteCount ?? 0, icon: Building2, color: "text-accent" },
-    { label: "Depoimentos", value: testimonialCount ?? 0, icon: MessageSquareQuote, color: "text-primary" },
+    { label: "Médicos", value: doctorCount ?? 0, icon: Users, route: "/admin/medicos" },
+    { label: "Institutos", value: instituteCount ?? 0, icon: Building2, route: "/admin/institutos" },
+    { label: "Depoimentos", value: testimonialCount ?? 0, icon: MessageSquareQuote, route: "/admin/depoimentos" },
   ];
 
+  const quickActions = [
+    { label: "Gerenciar Médicos", icon: Users, route: "/admin/medicos", description: "Adicionar ou editar médicos" },
+    { label: "Galeria de Fotos", icon: Image, route: "/admin/galeria", description: "Atualizar fotos da clínica" },
+    { label: "Editar Conteúdo", icon: FileText, route: "/admin/conteudo", description: "Textos, FAQ e exames" },
+  ];
+
+  const firstName = user?.email?.split("@")[0] ?? "Admin";
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-foreground mb-6">Dashboard</h1>
+    <div className="space-y-8">
+      {/* Greeting */}
+      <div>
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">
+          Olá, {firstName}
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Gerencie o conteúdo do site da Clínica Unique.
+        </p>
+      </div>
+
+      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {stats.map((s) => (
-          <div key={s.label} className="bg-card rounded-2xl p-6 border border-border card-shadow">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
-                <s.icon className={`w-5 h-5 ${s.color}`} />
+        {stats.map((s) => {
+          const Icon = s.icon;
+          return (
+            <button
+              key={s.label}
+              onClick={() => navigate(s.route)}
+              className="group bg-card rounded-xl p-5 border border-border hover:border-accent/30 transition-all duration-200 text-left hover:shadow-md"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center">
+                  <Icon className="w-[18px] h-[18px] text-accent" />
+                </div>
+                <ArrowRight className="w-4 h-4 text-muted-foreground/0 group-hover:text-muted-foreground/60 transition-all duration-200 -translate-x-1 group-hover:translate-x-0" />
               </div>
-              <span className="text-sm text-muted-foreground">{s.label}</span>
-            </div>
-            <p className="text-3xl font-bold text-foreground">{s.value}</p>
-          </div>
-        ))}
+              <p className="text-3xl font-bold text-foreground tabular-nums">{s.value}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{s.label} cadastrados</p>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Quick Actions */}
+      <div>
+        <h2 className="text-sm font-semibold text-foreground mb-3">Atalhos rápidos</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {quickActions.map((action) => {
+            const Icon = action.icon;
+            return (
+              <button
+                key={action.label}
+                onClick={() => navigate(action.route)}
+                className="group flex items-center gap-3 bg-card rounded-xl px-4 py-3.5 border border-border hover:border-primary/20 transition-all duration-200 text-left hover:shadow-sm"
+              >
+                <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
+                  <Icon className="w-4 h-4 text-primary" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-foreground">{action.label}</p>
+                  <p className="text-[11px] text-muted-foreground truncate">{action.description}</p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
