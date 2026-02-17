@@ -10,6 +10,7 @@ import {
   MessageSquareQuote,
   FileText,
   Image,
+  Shield,
   LogOut,
   ChevronLeft,
   ExternalLink,
@@ -22,6 +23,7 @@ const navItems = [
   { to: "/admin/institutos", icon: Building2, label: "Institutos", end: false },
   { to: "/admin/depoimentos", icon: MessageSquareQuote, label: "Depoimentos", end: false },
   { to: "/admin/galeria", icon: Image, label: "Galeria", end: false },
+  { to: "/admin/convenios", icon: Shield, label: "Convênios", end: false },
   { to: "/admin/conteudo", icon: FileText, label: "Conteúdo", end: false },
 ];
 
