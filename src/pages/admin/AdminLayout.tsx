@@ -15,7 +15,7 @@ import {
   ChevronLeft,
   ExternalLink,
 } from "lucide-react";
-import logoImg from "@/assets/logo-unique-navy-cropped.png";
+import logoImg from "@/assets/logo-unique-light.jpg";
 
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true },
@@ -86,7 +86,7 @@ const AdminLayout = () => {
           <img
             src={logoImg}
             alt="Grupo Unique"
-            className={`shrink-0 brightness-0 invert ${isCollapsed ? "h-7 w-7 object-contain" : "h-7"}`}
+            className={`shrink-0 rounded ${isCollapsed ? "h-7 w-7 object-cover" : "h-8 object-contain"}`}
           />
           {!isCollapsed && (
             <span className="text-[11px] font-medium uppercase tracking-widest text-primary-foreground/50">Admin</span>
