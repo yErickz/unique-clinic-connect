@@ -25,6 +25,7 @@ import AdminTestimonials from "./pages/admin/AdminTestimonials";
 import AdminContent from "./pages/admin/AdminContent";
 import AdminGallery from "./pages/admin/AdminGallery";
 import AdminConvenios from "./pages/admin/AdminConvenios";
+import AdminUsers from "./pages/admin/AdminUsers";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +66,7 @@ const App = () => (
               <Route path="galeria" element={<AdminGallery />} />
               <Route path="convenios" element={<AdminConvenios />} />
               <Route path="conteudo" element={<AdminContent />} />
+              <Route path="usuarios" element={<AdminUsers />} />
             </Route>
 
             <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
