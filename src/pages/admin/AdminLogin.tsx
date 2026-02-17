@@ -29,20 +29,20 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-primary px-4">
+    <div className="min-h-screen flex items-center justify-center dark bg-background px-4">
       <div className="w-full max-w-sm">
-        {/* Logo & Branding */}
+        {/* Logo */}
         <div className="text-center mb-8">
           <img src={logoImg} alt="Grupo Unique" className="h-10 mx-auto brightness-0 invert mb-6" />
-          <div className="inline-flex items-center gap-2 text-primary-foreground/40 text-xs font-medium uppercase tracking-widest">
+          <div className="inline-flex items-center gap-2 text-muted-foreground text-xs font-medium uppercase tracking-widest">
             <Lock size={12} />
             <span>Área restrita</span>
           </div>
         </div>
 
         {/* Card */}
-        <div className="bg-card rounded-2xl p-7 shadow-2xl border border-border/50">
-          <h1 className="text-lg font-bold text-foreground mb-1">Entrar</h1>
+        <div className="bg-card rounded-2xl p-7 border border-border/60">
+          <h1 className="text-lg font-bold mb-1">Entrar</h1>
           <p className="text-xs text-muted-foreground mb-6">Acesse o painel administrativo</p>
 
           {error && (
@@ -55,36 +55,20 @@ const AdminLogin = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="email" className="text-xs">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="admin@grupounique.com"
-                className="mt-1.5 h-10 text-sm"
-              />
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="admin@grupounique.com" className="mt-1.5 h-10 text-sm" />
             </div>
             <div>
               <Label htmlFor="password" className="text-xs">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="••••••••"
-                className="mt-1.5 h-10 text-sm"
-              />
+              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" className="mt-1.5 h-10 text-sm" />
             </div>
-            <Button type="submit" className="w-full h-10 hero-gradient border-0 text-primary-foreground text-sm font-medium" disabled={loading}>
+            <Button type="submit" className="w-full h-10 bg-accent hover:bg-accent/90 text-accent-foreground border-0 text-sm font-medium" disabled={loading}>
               <LogIn className="w-4 h-4 mr-2" />
               {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
         </div>
 
-        <p className="text-center text-[11px] text-primary-foreground/25 mt-6">
+        <p className="text-center text-[11px] text-muted-foreground/40 mt-6">
           Clínica Unique · Painel Administrativo
         </p>
       </div>

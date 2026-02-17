@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, Trash2, Star } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, MessageSquareQuote, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
@@ -84,13 +84,30 @@ const AdminTestimonials = () => {
 
   const set = (key: string, val: any) => setForm((f) => ({ ...f, [key]: val }));
 
+  const published = testimonials.filter((t) => t.is_published).length;
+  const draft = testimonials.length - published;
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Depoimentos</h1>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+            <MessageSquareQuote className="w-5 h-5 text-amber-500" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold">Depoimentos</h1>
+            <div className="flex items-center gap-3 mt-0.5">
+              <span className="text-xs text-muted-foreground">{published} publicados</span>
+              <span className="text-xs text-muted-foreground/40">•</span>
+              <span className="text-xs text-muted-foreground">{draft} rascunhos</span>
+            </div>
+          </div>
+        </div>
         <Dialog open={open} onOpenChange={(v) => { if (!v) closeDialog(); else setOpen(true); }}>
           <DialogTrigger asChild>
-            <Button className="hero-gradient border-0 text-primary-foreground"><Plus className="w-4 h-4 mr-2" /> Adicionar</Button>
+            <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground border-0 gap-1.5">
+              <Plus className="w-4 h-4" /> Adicionar
+            </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg">
             <DialogHeader><DialogTitle>{editing ? "Editar Depoimento" : "Novo Depoimento"}</DialogTitle></DialogHeader>
@@ -120,38 +137,53 @@ const AdminTestimonials = () => {
       </div>
 
       {isLoading ? (
-        <p className="text-muted-foreground">Carregando...</p>
+        <div className="flex items-center gap-3 py-12 justify-center text-muted-foreground">
+          <div className="w-5 h-5 border-2 border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
+          Carregando...
+        </div>
       ) : (
-        <div className="bg-card rounded-2xl border border-border overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-secondary/50">
-              <tr>
-                <th className="text-left p-3 font-medium text-muted-foreground">Paciente</th>
-                <th className="text-left p-3 font-medium text-muted-foreground">Depoimento</th>
-                <th className="text-left p-3 font-medium text-muted-foreground">Nota</th>
-                <th className="text-center p-3 font-medium text-muted-foreground">Publicado</th>
-                <th className="text-right p-3 font-medium text-muted-foreground">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {testimonials.map((t) => (
-                <tr key={t.id} className="border-t border-border hover:bg-secondary/20 transition-colors">
-                  <td className="p-3 font-medium text-foreground">{t.patient_initials}</td>
-                  <td className="p-3 text-muted-foreground max-w-xs truncate">{t.quote}</td>
-                  <td className="p-3">
-                    <div className="flex">{Array.from({ length: t.rating }).map((_, i) => <Star key={i} className="w-3.5 h-3.5 fill-accent text-accent" />)}</div>
-                  </td>
-                  <td className="p-3 text-center">
-                    <Switch checked={t.is_published} onCheckedChange={(v) => togglePublish.mutate({ id: t.id, published: v })} />
-                  </td>
-                  <td className="p-3 text-right">
-                    <Button size="sm" variant="ghost" onClick={() => openEdit(t)}><Pencil className="w-4 h-4" /></Button>
-                    <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(t.id); }}><Trash2 className="w-4 h-4" /></Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-2">
+          {testimonials.map((t) => (
+            <div
+              key={t.id}
+              className="bg-card rounded-xl border border-border/60 p-4 hover:border-border transition-colors group"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-semibold text-sm">{t.patient_initials}</span>
+                    <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">{t.specialty}</span>
+                    {t.is_published ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">
+                        <Eye size={10} /> Publicado
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted/30 px-2 py-0.5 rounded-full">
+                        <EyeOff size={10} /> Rascunho
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">"{t.quote}"</p>
+                  <div className="flex items-center gap-0.5 mt-2">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className={`w-3 h-3 ${i < t.rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"}`} />
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => togglePublish.mutate({ id: t.id, published: !t.is_published })}>
+                    {t.is_published ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => openEdit(t)}>
+                    <Pencil className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(t.id); }}>
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
