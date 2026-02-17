@@ -8,6 +8,7 @@ import { Pencil, ExternalLink, Save, X, Info, Search, ChevronUp } from "lucide-r
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import ExamsEditor from "@/components/admin/ExamsEditor";
+import FaqEditor from "@/components/admin/FaqEditor";
 
 type Content = Tables<"site_content">;
 
@@ -308,6 +309,11 @@ const AdminContent = () => {
                             </div>
                             {k === "exams_data" ? (
                               <ExamsEditor
+                                value={drafts[k] ?? item.value}
+                                onChange={(val) => setDrafts((prev) => ({ ...prev, [k]: val }))}
+                              />
+                            ) : k === "faq_data" ? (
+                              <FaqEditor
                                 value={drafts[k] ?? item.value}
                                 onChange={(val) => setDrafts((prev) => ({ ...prev, [k]: val }))}
                               />
