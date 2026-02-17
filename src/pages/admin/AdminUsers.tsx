@@ -28,12 +28,6 @@ interface AdminUser {
 
 const fetchAdminUsers = async (): Promise<AdminUser[]> => {
   const { data: { session } } = await supabase.auth.getSession();
-  const res = await supabase.functions.invoke("manage-admin-users", {
-    method: "GET",
-    headers: { Authorization: `Bearer ${session?.access_token}` },
-    body: undefined,
-  });
-  // supabase functions.invoke uses POST by default, let's use fetch directly
   const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-admin-users?action=list`;
   const response = await fetch(url, {
     headers: {
