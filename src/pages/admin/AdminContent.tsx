@@ -15,7 +15,7 @@ import {
 import { Pencil, ExternalLink, Save, X, Info, Search } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
-import ExamsEditor from "@/components/admin/ExamsEditor";
+import ExamsCard from "@/components/admin/ExamsCard";
 
 type Content = Tables<"site_content">;
 
@@ -235,7 +235,24 @@ const AdminContent = () => {
       ) : (
         /* Section Cards Grid */
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredSections.map(([sectionKey, sec]) => {
+          {/* Exams standalone card */}
+          {(!search || "exames".includes(search.toLowerCase())) && (() => {
+            const examsDataItem = contentByKey.get("exams_data");
+            const examsTitleItem = contentByKey.get("exams_title");
+            if (!examsDataItem || !examsTitleItem) return null;
+            return (
+              <ExamsCard
+                contentId={examsDataItem.id}
+                title={examsTitleItem.value}
+                titleContentId={examsTitleItem.id}
+                value={examsDataItem.value}
+              />
+            );
+          })()}
+
+          {filteredSections
+            .filter(([sectionKey]) => sectionKey !== "exams")
+            .map(([sectionKey, sec]) => {
             const sectionItems = sec.keys.map((k) => contentByKey.get(k)).filter(Boolean) as Content[];
             if (sectionItems.length === 0) return null;
             const summary = getSummary(sec.keys);
@@ -317,12 +334,7 @@ const AdminContent = () => {
                           </span>
                         )}
                       </div>
-                      {k === "exams_data" ? (
-                        <ExamsEditor
-                          value={drafts[k] ?? item.value}
-                          onChange={(val) => setDrafts((prev) => ({ ...prev, [k]: val }))}
-                        />
-                      ) : isLong ? (
+                      {isLong ? (
                         <Textarea
                           value={drafts[k] ?? item.value}
                           onChange={(e) => setDrafts((prev) => ({ ...prev, [k]: e.target.value }))}
