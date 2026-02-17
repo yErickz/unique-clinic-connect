@@ -28,17 +28,11 @@ interface AdminUser {
 }
 
 const fetchAdminUsers = async (): Promise<AdminUser[]> => {
-  const { data: { session } } = await supabase.auth.getSession();
-  const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-admin-users?action=list`;
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${session?.access_token}`,
-      apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-    },
+  const { data, error } = await supabase.functions.invoke("manage-admin-users", {
+    body: { action: "list" },
   });
-  const json = await response.json();
-  if (!response.ok) throw new Error(json.error || "Erro ao buscar usuários");
-  return json.users;
+  if (error) throw new Error(error.message || "Erro ao buscar usuários");
+  return data.users;
 };
 
 const AdminUsers = () => {
@@ -55,20 +49,11 @@ const AdminUsers = () => {
 
   const createMutation = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-admin-users?action=create`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${session?.access_token}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+      const { data, error } = await supabase.functions.invoke("manage-admin-users", {
+        body: { action: "create", email, password },
       });
-      const json = await response.json();
-      if (!response.ok) throw new Error(json.error || "Erro ao criar usuário");
-      return json;
+      if (error) throw new Error(error.message || "Erro ao criar usuário");
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
@@ -84,20 +69,11 @@ const AdminUsers = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (userId: string) => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-admin-users?action=delete`;
-      const response = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${session?.access_token}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ user_id: userId }),
+      const { data, error } = await supabase.functions.invoke("manage-admin-users", {
+        body: { action: "delete", user_id: userId },
       });
-      const json = await response.json();
-      if (!response.ok) throw new Error(json.error || "Erro ao remover usuário");
-      return json;
+      if (error) throw new Error(error.message || "Erro ao remover usuário");
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
