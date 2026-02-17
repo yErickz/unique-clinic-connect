@@ -1,36 +1,24 @@
 
-# Substituir editor JSON de Exames por interface visual
+## Categoria como Select/Dropdown
 
-## O que muda
+Substituir o campo de texto livre da categoria por um componente Select (dropdown) que lista as categorias ja existentes, com opcao de criar uma nova categoria.
 
-Atualmente, a seção "Exames" abre um campo de texto com JSON puro para editar a lista. Isso e confuso e propenso a erros. A ideia e substituir esse campo por uma interface amigavel onde voce pode:
+### O que muda
 
-- Ver cada exame como um item individual (nome + preco)
-- Remover qualquer exame com um botao de lixeira
-- Adicionar novos exames preenchendo nome e preco em campos separados
-- Tudo dentro do mesmo modal de edicao, sem precisar mexer em JSON
+**Arquivo:** `src/components/admin/ExamsEditor.tsx`
 
-## Como vai funcionar
+1. Importar os componentes `Select`, `SelectTrigger`, `SelectValue`, `SelectContent`, `SelectItem` de `@/components/ui/select`
+2. Adicionar estado local `newCategory` para controlar a criacao de nova categoria via Input inline
+3. Substituir o `Input` + `datalist` da categoria por um `Select` dropdown com:
+   - Um item para cada categoria existente (derivada dos exames atuais)
+   - Um item especial "Nova categoria..." que ao ser selecionado exibe um Input para digitar o nome da nova categoria
+   - Um item "Sem categoria" para limpar a selecao
+4. Quando o usuario seleciona "Nova categoria...", aparece um Input inline para digitar e confirmar a nova categoria
+5. Manter os chips de categorias no topo do editor (ja existentes)
 
-Quando o modal da secao "Exames" abrir, ao inves do campo de texto com JSON, voce vera:
+### Detalhes tecnicos
 
-1. **Titulo** -- campo de texto normal (ja existe)
-2. **Lista de exames** -- cada exame aparece como uma linha com:
-   - Campo "Nome" (ex: Hemograma)
-   - Campo "Preco" (ex: R$ 45,00)
-   - Botao vermelho de lixeira para remover
-3. **Botao "+ Adicionar Exame"** na parte de baixo para inserir um novo item
-4. Ao salvar, a lista e convertida de volta para JSON automaticamente
-
-## Detalhes tecnicos
-
-**Arquivo modificado:** `src/pages/admin/AdminContent.tsx`
-
-- Detectar quando a key sendo renderizada e `exams_data`
-- Em vez de renderizar um `Textarea`, renderizar um componente customizado inline que:
-  - Faz `JSON.parse` do valor atual do draft para obter o array `{name, price}[]`
-  - Renderiza cada item como uma linha com dois `Input` e um botao `Trash2`
-  - Botao "Adicionar Exame" faz push de `{name: "", price: ""}` no array
-  - Cada mudanca faz `JSON.stringify` do array atualizado e grava de volta no `drafts["exams_data"]`
-- O fluxo de salvamento continua o mesmo (o valor final e uma string JSON valida)
-- Nenhuma mudanca no banco de dados e necessaria
+- O dropdown usa os componentes shadcn/ui Select ja disponiveis no projeto
+- As categorias sao derivadas dinamicamente dos exames (`[...new Set(exams.map(e => e.category).filter(Boolean))]`), sem necessidade de tabela separada
+- Ao selecionar "nova_categoria" como valor especial, o estado `newCategory` e ativado mostrando um Input + botao confirmar
+- O Select tera `z-50` e background solido via classes ja definidas no componente Select do projeto
