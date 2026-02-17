@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence, useMotionValueEvent, useScroll } from "framer-motion";
-import { getWhatsAppLink } from "@/data/mockData";
 import logoNavy from "@/assets/logo-unique-navy-cropped.png";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const navItems = [
   { label: "Início", path: "/" },
@@ -20,6 +20,10 @@ const Header = () => {
   const { scrollY } = useScroll();
   const lastScrollY = useRef(0);
   const location = useLocation();
+  const { c } = useSiteContent();
+
+  const wa = c("whatsapp_number", "5594992775857");
+  const waLink = `https://wa.me/${wa}?text=${encodeURIComponent("Olá! Gostaria de agendar uma consulta.")}`;
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const diff = latest - lastScrollY.current;
@@ -52,7 +56,7 @@ const Header = () => {
       }`}>
         <Link to="/" className="flex items-center gap-3">
           <img src={logoNavy} alt="Clínica Unique" className="h-10 md:h-10 w-auto object-contain min-h-[40px]" />
-          <span className="text-lg font-bold text-foreground">Clínica Unique</span>
+          <span className="text-lg font-bold text-foreground">{c("header_brand_name", "Clínica Unique")}</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
@@ -61,9 +65,7 @@ const Header = () => {
               key={item.path}
               to={item.path}
               className={`relative text-sm font-medium transition-colors py-1 ${
-                isActive(item.path)
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-primary"
+                isActive(item.path) ? "text-primary" : "text-muted-foreground hover:text-primary"
               }`}
             >
               {item.label}
@@ -79,17 +81,14 @@ const Header = () => {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta.")}>
+          <a href={waLink}>
             <Button className="hero-gradient border-0 text-primary-foreground rounded-full px-6">
               <Phone className="w-4 h-4 mr-2" /> Agendar
             </Button>
           </a>
         </div>
 
-        <button
-          className="md:hidden text-foreground p-2"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
+        <button className="md:hidden text-foreground p-2" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
@@ -109,15 +108,13 @@ const Header = () => {
                   to={item.path}
                   onClick={() => setMobileOpen(false)}
                   className={`text-sm font-medium py-3 px-4 rounded-lg transition-colors ${
-                    isActive(item.path)
-                      ? "bg-primary/10 text-primary"
-                      : "text-foreground hover:bg-secondary"
+                    isActive(item.path) ? "bg-primary/10 text-primary" : "text-foreground hover:bg-secondary"
                   }`}
                 >
                   {item.label}
                 </Link>
               ))}
-              <a href={getWhatsAppLink("Olá! Gostaria de agendar uma consulta.")} className="mt-2">
+              <a href={waLink} className="mt-2">
                 <Button className="w-full hero-gradient border-0 text-primary-foreground rounded-full">
                   <Phone className="w-4 h-4 mr-2" /> Agendar Consulta
                 </Button>
