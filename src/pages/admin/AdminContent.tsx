@@ -15,6 +15,7 @@ import {
 import { Pencil, ExternalLink, Save, X, Info, Search } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
+import ExamsEditor from "@/components/admin/ExamsEditor";
 
 type Content = Tables<"site_content">;
 
@@ -303,20 +304,25 @@ const AdminContent = () => {
                   const kl = keyLabels[k];
                   const isLong = item.value.length > 80 || k.includes("data") || k.includes("text_");
 
-                  return (
+                    return (
                     <div key={k}>
                       <div className="flex items-center gap-2 mb-1.5">
                         <label className="text-sm font-medium text-foreground">
                           {kl?.label ?? k}
                         </label>
-                        {kl?.hint && (
+                        {kl?.hint && k !== "exams_data" && (
                           <span className="inline-flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
                             <Info size={12} />
                             {kl.hint}
                           </span>
                         )}
                       </div>
-                      {isLong ? (
+                      {k === "exams_data" ? (
+                        <ExamsEditor
+                          value={drafts[k] ?? item.value}
+                          onChange={(val) => setDrafts((prev) => ({ ...prev, [k]: val }))}
+                        />
+                      ) : isLong ? (
                         <Textarea
                           value={drafts[k] ?? item.value}
                           onChange={(e) => setDrafts((prev) => ({ ...prev, [k]: e.target.value }))}
