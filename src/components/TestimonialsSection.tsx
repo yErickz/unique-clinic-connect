@@ -17,7 +17,7 @@ const TestimonialsSection = () => {
         .from("testimonials")
         .select("quote, patient_initials, specialty, rating")
         .eq("is_published", true)
-        .order("created_at", { ascending: false });
+        .order("display_order");
       if (error) throw error;
       return data;
     },
