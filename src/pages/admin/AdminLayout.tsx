@@ -39,6 +39,7 @@ const navItems = [
   { to: "/admin/galeria", icon: Image, label: "Galeria", end: false },
   { to: "/admin/convenios", icon: Shield, label: "Convênios", end: false },
   { to: "/admin/conteudo", icon: FileText, label: "Conteúdo", end: false },
+  { to: "/admin/usuarios", icon: User, label: "Usuários", end: false },
 ];
 
 const AdminLayout = () => {
