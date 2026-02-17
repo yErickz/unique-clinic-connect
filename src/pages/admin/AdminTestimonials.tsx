@@ -205,11 +205,11 @@ const AdminTestimonials = () => {
               key={t.id}
               actions={
                 <>
-                  <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm" onClick={() => togglePublish.mutate({ id: t.id, published: !t.is_published })}>
-                    {t.is_published ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                  <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs" onClick={() => togglePublish.mutate({ id: t.id, published: !t.is_published })}>
+                    {t.is_published ? <><EyeOff className="w-3 h-3" /> Ocultar</> : <><Eye className="w-3 h-3" /> Publicar</>}
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm" onClick={() => openEdit(t)}><Pencil className="w-3 h-3" /></Button>
-                  <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(t.id); }}><Trash2 className="w-3 h-3" /></Button>
+                  <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs" onClick={() => openEdit(t)}><Pencil className="w-3 h-3" /> Editar</Button>
+                  <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(t.id); }}><Trash2 className="w-3 h-3" /> Excluir</Button>
                 </>
               }
               expandedContent={

@@ -365,8 +365,8 @@ const AdminInstitutes = () => {
                     key={inst.id}
                     actions={
                       <>
-                        <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm" onClick={() => openEdit(inst)}><Pencil className="w-3 h-3" /></Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7 bg-card/80 backdrop-blur-sm text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(inst.id); }}><Trash2 className="w-3 h-3" /></Button>
+                        <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs" onClick={() => openEdit(inst)}><Pencil className="w-3 h-3" /> Editar</Button>
+                        <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(inst.id); }}><Trash2 className="w-3 h-3" /> Excluir</Button>
                       </>
                     }
                     expandedContent={
