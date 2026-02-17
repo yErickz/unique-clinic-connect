@@ -86,10 +86,10 @@ const AdminInstitutes = () => {
       qc.invalidateQueries({ queryKey: ["admin-institutes"] });
       qc.invalidateQueries({ queryKey: ["admin-institute-count"] });
       qc.invalidateQueries({ queryKey: ["public-institutes"] });
-      toast.success(editing ? "Instituto atualizado!" : "Instituto adicionado!");
+      toast.success(editing ? "Unidade atualizada!" : "Unidade adicionada!");
       closeForm();
     },
-    onError: () => toast.error("Erro ao salvar instituto."),
+    onError: () => toast.error("Erro ao salvar unidade."),
   });
 
   const deleteMutation = useMutation({
@@ -105,7 +105,7 @@ const AdminInstitutes = () => {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-institutes"] });
       qc.invalidateQueries({ queryKey: ["admin-institute-count"] });
-      toast.success("Instituto removido!");
+      toast.success("Unidade removida!");
     },
   });
 
@@ -230,8 +230,8 @@ const AdminInstitutes = () => {
             <Building2 className="w-[18px] h-[18px] text-accent" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-foreground">Institutos</h1>
-            <p className="text-xs text-muted-foreground">{institutes.length} cadastrados</p>
+            <h1 className="text-xl font-bold text-foreground">Unidades do Grupo</h1>
+            <p className="text-xs text-muted-foreground">{institutes.length} unidades cadastradas</p>
           </div>
         </div>
         <a
@@ -247,7 +247,7 @@ const AdminInstitutes = () => {
 
       <Tabs defaultValue="list" className="w-full">
         <TabsList className="mb-6">
-          <TabsTrigger value="list" className="gap-1.5"><LayoutList size={14} /> Lista de Institutos</TabsTrigger>
+          <TabsTrigger value="list" className="gap-1.5"><LayoutList size={14} /> Unidades</TabsTrigger>
           <TabsTrigger value="page" className="gap-1.5"><Type size={14} /> Textos da Página</TabsTrigger>
         </TabsList>
 
@@ -273,7 +273,7 @@ const AdminInstitutes = () => {
           {showForm && (
             <div className="bg-card rounded-xl border border-accent/30 p-5 mb-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-semibold text-foreground">{editing ? "Editar Instituto" : "Novo Instituto"}</h2>
+                <h2 className="text-sm font-semibold text-foreground">{editing ? "Editar Unidade" : "Nova Unidade"}</h2>
                 <Button size="icon" variant="ghost" className="h-7 w-7" onClick={closeForm}>
                   <X className="w-4 h-4" />
                 </Button>
@@ -320,14 +320,14 @@ const AdminInstitutes = () => {
                 </div>
 
                 <div>
-                  <Label>Nome</Label>
-                  <Input value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} required />
+                  <Label>Nome da Unidade</Label>
+                  <Input value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} required placeholder="Ex: Unique Kids, Unique Lab" />
                 </div>
                 <div>
-                  <Label>Categoria</Label>
-                  <Input value={form.category ?? ""} onChange={(e) => set("category", e.target.value)} placeholder="Ex: Clínica, Cirúrgica" />
+                  <Label>Localização</Label>
+                  <Input value={form.category ?? ""} onChange={(e) => set("category", e.target.value)} placeholder="Ex: 2º Andar, Anexo B" />
                 </div>
-                <div><Label>Descrição</Label><Textarea value={form.description ?? ""} onChange={(e) => set("description", e.target.value)} rows={3} /></div>
+                <div><Label>Sobre esta unidade</Label><Textarea value={form.description ?? ""} onChange={(e) => set("description", e.target.value)} rows={3} placeholder="Descreva o que essa unidade do grupo oferece" /></div>
 
                 {/* Services as tags */}
                 <div>
