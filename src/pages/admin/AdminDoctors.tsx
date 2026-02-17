@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, Users, X, Save } from "lucide-react";
+import { Plus, Pencil, Trash2, Users, X, Save, LayoutGrid, LayoutList } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
@@ -21,6 +21,7 @@ const AdminDoctors = () => {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Doctor | null>(null);
   const [form, setForm] = useState(emptyDoctor);
+  const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
 
   const { data: doctors = [], isLoading } = useQuery({
     queryKey: ["admin-doctors"],
@@ -99,11 +100,27 @@ const AdminDoctors = () => {
             <p className="text-xs text-muted-foreground">{doctors.length} cadastrados</p>
           </div>
         </div>
-        {!showForm && (
-          <Button size="sm" className="hero-gradient border-0 text-primary-foreground gap-1.5" onClick={openNew}>
-            <Plus className="w-4 h-4" /> Adicionar
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center bg-secondary rounded-lg p-0.5">
+            <button
+              onClick={() => setViewMode("list")}
+              className={`p-1.5 rounded-md transition-colors ${viewMode === "list" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              <LayoutList size={16} />
+            </button>
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              <LayoutGrid size={16} />
+            </button>
+          </div>
+          {!showForm && (
+            <Button size="sm" className="hero-gradient border-0 text-primary-foreground gap-1.5" onClick={openNew}>
+              <Plus className="w-4 h-4" /> Adicionar
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Inline Form */}
@@ -151,27 +168,48 @@ const AdminDoctors = () => {
         <div className="flex items-center gap-2 py-12 justify-center text-sm text-muted-foreground">
           <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" /> Carregando...
         </div>
-      ) : (
-        <div className="space-y-2">
-          {doctors.map((doc) => (
-            <div key={doc.id} className="bg-card rounded-xl border border-border p-4 flex items-center justify-between group hover:border-accent/30 transition-colors">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-muted-foreground shrink-0">
-                  {doc.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+      ) : viewMode === "list" ? (
+          <div className="space-y-2">
+            {doctors.map((doc) => (
+              <div key={doc.id} className="bg-card rounded-xl border border-border p-4 flex items-center justify-between group hover:border-accent/30 transition-colors">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-muted-foreground shrink-0">
+                    {doc.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm text-foreground">{doc.name}</p>
+                    <p className="text-xs text-muted-foreground">{doc.specialty} · CRM {doc.crm}</p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="font-medium text-sm text-foreground">{doc.name}</p>
-                  <p className="text-xs text-muted-foreground">{doc.specialty} · CRM {doc.crm}</p>
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openEdit(doc)}><Pencil className="w-3.5 h-3.5" /></Button>
+                  <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover este médico?")) deleteMutation.mutate(doc.id); }}><Trash2 className="w-3.5 h-3.5" /></Button>
                 </div>
               </div>
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openEdit(doc)}><Pencil className="w-3.5 h-3.5" /></Button>
-                <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover este médico?")) deleteMutation.mutate(doc.id); }}><Trash2 className="w-3.5 h-3.5" /></Button>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {doctors.map((doc) => (
+              <div key={doc.id} className="bg-card rounded-xl border border-border p-4 group hover:border-accent/30 hover:shadow-md transition-all text-center relative">
+                <div className="absolute top-2 right-2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEdit(doc)}><Pencil className="w-3 h-3" /></Button>
+                  <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover este médico?")) deleteMutation.mutate(doc.id); }}><Trash2 className="w-3 h-3" /></Button>
+                </div>
+                {doc.photo_url ? (
+                  <img src={doc.photo_url} alt={doc.name} className="w-16 h-16 rounded-full object-cover mx-auto mb-3 border-2 border-border" />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center text-lg font-bold text-muted-foreground mx-auto mb-3">
+                    {doc.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+                  </div>
+                )}
+                <p className="font-semibold text-sm text-foreground truncate">{doc.name}</p>
+                <p className="text-xs text-muted-foreground mt-0.5 truncate">{doc.specialty}</p>
+                <p className="text-[10px] text-muted-foreground/70 mt-0.5">CRM {doc.crm}</p>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
     </div>
   );
 };
