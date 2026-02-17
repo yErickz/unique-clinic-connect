@@ -2,7 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 Deno.serve(async (req) => {
@@ -36,7 +36,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Check if caller is admin
     const { data: isAdmin } = await supabase.rpc("has_role", {
       _user_id: caller.id,
       _role: "admin",
@@ -48,12 +47,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    const method = req.method;
-    const url = new URL(req.url);
-    const action = url.searchParams.get("action");
+    // Parse body - all actions come via POST from supabase.functions.invoke
+    const body = await req.json().catch(() => ({}));
+    const action = body.action;
 
     // LIST admin users
-    if (method === "GET" && action === "list") {
+    if (action === "list") {
       const { data: roles, error: rolesErr } = await supabase
         .from("user_roles")
         .select("user_id, role, created_at")
@@ -61,7 +60,6 @@ Deno.serve(async (req) => {
 
       if (rolesErr) throw rolesErr;
 
-      // Get user details from auth
       const users = [];
       for (const role of roles || []) {
         const { data: { user } } = await supabase.auth.admin.getUserById(role.user_id);
@@ -82,8 +80,8 @@ Deno.serve(async (req) => {
     }
 
     // CREATE admin user
-    if (method === "POST" && action === "create") {
-      const { email, password } = await req.json();
+    if (action === "create") {
+      const { email, password } = body;
 
       if (!email || !password) {
         return new Response(
@@ -92,7 +90,6 @@ Deno.serve(async (req) => {
         );
       }
 
-      // Create the user
       const { data: newUser, error: createErr } = await supabase.auth.admin.createUser({
         email,
         password,
@@ -106,14 +103,12 @@ Deno.serve(async (req) => {
         );
       }
 
-      // Assign admin role
       const { error: roleErr } = await supabase.from("user_roles").insert({
         user_id: newUser.user.id,
         role: "admin",
       });
 
       if (roleErr) {
-        // Rollback: delete user if role assignment fails
         await supabase.auth.admin.deleteUser(newUser.user.id);
         throw roleErr;
       }
@@ -131,8 +126,8 @@ Deno.serve(async (req) => {
     }
 
     // DELETE admin user
-    if (method === "DELETE" && action === "delete") {
-      const { user_id } = await req.json();
+    if (action === "delete") {
+      const { user_id } = body;
 
       if (!user_id) {
         return new Response(
@@ -148,14 +143,12 @@ Deno.serve(async (req) => {
         );
       }
 
-      // Remove role
       await supabase
         .from("user_roles")
         .delete()
         .eq("user_id", user_id)
         .eq("role", "admin");
 
-      // Delete user from auth
       await supabase.auth.admin.deleteUser(user_id);
 
       return new Response(
