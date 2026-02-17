@@ -41,11 +41,21 @@ const AdminInstitutes = () => {
   const [pageDrafts, setPageDrafts] = useState<Record<string, string>>({});
   const [pageEditing, setPageEditing] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
+  const [selectedDoctorIds, setSelectedDoctorIds] = useState<string[]>([]);
 
   const { data: institutes = [], isLoading } = useQuery({
     queryKey: ["admin-institutes"],
     queryFn: async () => {
       const { data, error } = await supabase.from("institutes").select("*").order("display_order");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: allDoctors = [] } = useQuery({
+    queryKey: ["admin-all-doctors"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("doctors").select("id, name, specialty, institute_id").order("name");
       if (error) throw error;
       return data;
     },
@@ -74,18 +84,34 @@ const AdminInstitutes = () => {
         services: servicesList,
         image_url: imageUrl || null,
       };
+      let instituteId: string;
       if (editing) {
         const { error } = await supabase.from("institutes").update(payload).eq("id", editing.id);
         if (error) throw error;
+        instituteId = editing.id;
       } else {
-        const { error } = await supabase.from("institutes").insert(payload as TablesInsert<"institutes">);
+        const { data: inserted, error } = await supabase.from("institutes").insert(payload as TablesInsert<"institutes">).select("id").single();
         if (error) throw error;
+        instituteId = inserted.id;
+      }
+      // Update doctor associations
+      // Remove this institute from doctors no longer selected
+      const previousDoctors = allDoctors.filter((doc) => doc.institute_id === instituteId);
+      const removedIds = previousDoctors.filter((doc) => !selectedDoctorIds.includes(doc.id)).map((doc) => doc.id);
+      if (removedIds.length > 0) {
+        await supabase.from("doctors").update({ institute_id: null }).in("id", removedIds);
+      }
+      // Assign this institute to newly selected doctors
+      if (selectedDoctorIds.length > 0) {
+        await supabase.from("doctors").update({ institute_id: instituteId }).in("id", selectedDoctorIds);
       }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-institutes"] });
       qc.invalidateQueries({ queryKey: ["admin-institute-count"] });
       qc.invalidateQueries({ queryKey: ["public-institutes"] });
+      qc.invalidateQueries({ queryKey: ["admin-all-doctors"] });
+      qc.invalidateQueries({ queryKey: ["admin-doctors"] });
       toast.success(editing ? "Unidade atualizada!" : "Unidade adicionada!");
       closeForm();
     },
@@ -133,6 +159,7 @@ const AdminInstitutes = () => {
     setServicesList([]);
     setNewService("");
     setImageUrl("");
+    setSelectedDoctorIds([]);
   };
 
   const openEdit = (inst: Institute) => {
@@ -141,6 +168,7 @@ const AdminInstitutes = () => {
     setServicesList([...inst.services]);
     setNewService("");
     setImageUrl(inst.image_url || "");
+    setSelectedDoctorIds(allDoctors.filter((d) => d.institute_id === inst.id).map((d) => d.id));
     setShowForm(true);
   };
 
@@ -150,6 +178,7 @@ const AdminInstitutes = () => {
     setServicesList([]);
     setNewService("");
     setImageUrl("");
+    setSelectedDoctorIds([]);
     setShowForm(true);
   };
 
@@ -381,6 +410,52 @@ const AdminInstitutes = () => {
                     </Button>
                   </div>
                 </div>
+
+                {/* Doctor selector */}
+                <div>
+                  <Label className="mb-2 block">Médicos que atendem nesta unidade</Label>
+                  <div className="space-y-1.5 max-h-48 overflow-y-auto rounded-lg border border-border p-2">
+                    {allDoctors.length === 0 ? (
+                      <p className="text-xs text-muted-foreground p-2">Nenhum médico cadastrado.</p>
+                    ) : (
+                      allDoctors.map((doc) => {
+                        const isSelected = selectedDoctorIds.includes(doc.id);
+                        const assignedElsewhere = doc.institute_id && doc.institute_id !== editing?.id;
+                        const assignedInstitute = assignedElsewhere ? institutes.find((i) => i.id === doc.institute_id) : null;
+                        return (
+                          <label
+                            key={doc.id}
+                            className={`flex items-center gap-3 rounded-lg px-3 py-2 cursor-pointer transition-colors ${isSelected ? "bg-accent/10 border border-accent/30" : "hover:bg-secondary border border-transparent"}`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => {
+                                setSelectedDoctorIds((prev) =>
+                                  prev.includes(doc.id) ? prev.filter((id) => id !== doc.id) : [...prev, doc.id]
+                                );
+                              }}
+                              className="rounded border-border text-primary focus:ring-primary"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{doc.name}</p>
+                              <p className="text-xs text-muted-foreground">{doc.specialty}</p>
+                            </div>
+                            {assignedInstitute && !isSelected && (
+                              <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-full shrink-0">
+                                {assignedInstitute.name}
+                              </span>
+                            )}
+                          </label>
+                        );
+                      })
+                    )}
+                  </div>
+                  {selectedDoctorIds.length > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1.5">{selectedDoctorIds.length} médico(s) selecionado(s)</p>
+                  )}
+                </div>
+
                 <div className="flex justify-end gap-2 pt-2 border-t border-border">
                   <Button type="button" variant="outline" size="sm" onClick={closeForm}>Cancelar</Button>
                   <Button type="submit" size="sm" disabled={saveMutation.isPending || isUploading} className="gap-1.5">
