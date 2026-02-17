@@ -56,9 +56,18 @@ const AdminInstitutes = () => {
   const { data: allDoctors = [] } = useQuery({
     queryKey: ["admin-all-doctors"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("doctors").select("id, name, specialty, institute_id").order("name");
+      const { data, error } = await supabase.from("doctors").select("id, name, specialty").order("name");
       if (error) throw error;
       return data;
+    },
+  });
+
+  const { data: doctorInstituteLinks = [] } = useQuery({
+    queryKey: ["admin-doctor-institutes"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("doctor_institutes").select("doctor_id, institute_id");
+      if (error) throw error;
+      return data as { doctor_id: string; institute_id: string }[];
     },
   });
 
@@ -95,16 +104,14 @@ const AdminInstitutes = () => {
         if (error) throw error;
         instituteId = inserted.id;
       }
-      // Update doctor associations
-      // Remove this institute from doctors no longer selected
-      const previousDoctors = allDoctors.filter((doc) => doc.institute_id === instituteId);
-      const removedIds = previousDoctors.filter((doc) => !selectedDoctorIds.includes(doc.id)).map((doc) => doc.id);
-      if (removedIds.length > 0) {
-        await supabase.from("doctors").update({ institute_id: null }).in("id", removedIds);
-      }
-      // Assign this institute to newly selected doctors
+      // Update doctor associations via junction table
+      // Remove old links for this institute
+      await supabase.from("doctor_institutes").delete().eq("institute_id", instituteId);
+      // Insert new links
       if (selectedDoctorIds.length > 0) {
-        await supabase.from("doctors").update({ institute_id: instituteId }).in("id", selectedDoctorIds);
+        const rows = selectedDoctorIds.map((doctor_id) => ({ doctor_id, institute_id: instituteId }));
+        const { error: linkError } = await supabase.from("doctor_institutes").insert(rows);
+        if (linkError) throw linkError;
       }
     },
     onSuccess: () => {
@@ -112,6 +119,7 @@ const AdminInstitutes = () => {
       qc.invalidateQueries({ queryKey: ["admin-institute-count"] });
       qc.invalidateQueries({ queryKey: ["public-institutes"] });
       qc.invalidateQueries({ queryKey: ["admin-all-doctors"] });
+      qc.invalidateQueries({ queryKey: ["admin-doctor-institutes"] });
       qc.invalidateQueries({ queryKey: ["admin-doctors"] });
       toast.success(editing ? "Unidade atualizada!" : "Unidade adicionada!");
       closeForm();
@@ -169,7 +177,7 @@ const AdminInstitutes = () => {
     setServicesList([...inst.services]);
     setNewService("");
     setImageUrl(inst.image_url || "");
-    setSelectedDoctorIds(allDoctors.filter((d) => d.institute_id === inst.id).map((d) => d.id));
+    setSelectedDoctorIds(doctorInstituteLinks.filter((l) => l.institute_id === inst.id).map((l) => l.doctor_id));
     setShowForm(true);
   };
 
@@ -449,17 +457,17 @@ const AdminInstitutes = () => {
                       return doc.name.toLowerCase().includes(q) || doc.specialty.toLowerCase().includes(q);
                     }}
                     renderOption={(doc) => {
-                      const assignedElsewhere = doc.institute_id && doc.institute_id !== editing?.id;
-                      const assignedInstitute = assignedElsewhere ? institutes.find((i) => i.id === doc.institute_id) : null;
+                      const docLinks = doctorInstituteLinks.filter((l) => l.doctor_id === doc.id && l.institute_id !== editing?.id);
+                      const assignedNames = docLinks.map((l) => institutes.find((i) => i.id === l.institute_id)?.name).filter(Boolean);
                       return (
                         <div className="flex items-center gap-2 flex-1 min-w-0">
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-medium truncate">{doc.name}</p>
                             <p className="text-xs text-muted-foreground">{doc.specialty}</p>
                           </div>
-                          {assignedInstitute && (
+                          {assignedNames.length > 0 && (
                             <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-full shrink-0">
-                              {assignedInstitute.name}
+                              {assignedNames.join(", ")}
                             </span>
                           )}
                         </div>

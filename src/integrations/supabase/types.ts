@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      doctor_institutes: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          id: string
+          institute_id: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          id?: string
+          institute_id: string
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          institute_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_institutes_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_institutes_institute_id_fkey"
+            columns: ["institute_id"]
+            isOneToOne: false
+            referencedRelation: "institutes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctors: {
         Row: {
           bio: string
