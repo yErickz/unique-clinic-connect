@@ -18,16 +18,6 @@ export function ExpandableAdminCard({ children, expandedContent, actions, classN
       className={`bg-card rounded-xl border border-border group hover:border-accent/30 hover:shadow-md transition-all relative overflow-hidden cursor-pointer ${className}`}
       onClick={() => setIsExpanded((prev) => !prev)}
     >
-      {/* Actions overlay */}
-      {actions && (
-        <div
-          className="absolute top-2 right-2 z-10 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {actions}
-        </div>
-      )}
-
       {/* Main content (always visible) */}
       <div className="relative">
         {children}
@@ -48,6 +38,16 @@ export function ExpandableAdminCard({ children, expandedContent, actions, classN
           >
             <div ref={contentRef} className="border-t border-border">
               {expandedContent}
+
+              {/* Actions inside expanded area */}
+              {actions && (
+                <div
+                  className="flex items-center justify-end gap-1 px-3 pb-3"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {actions}
+                </div>
+              )}
             </div>
           </motion.div>
         )}
