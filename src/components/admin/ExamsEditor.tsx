@@ -8,7 +8,6 @@ import { useState } from "react";
 interface Exam {
   name: string;
   price: string;
-  description?: string;
   category?: string;
   convenio?: boolean;
 }
@@ -49,7 +48,7 @@ const ExamsEditor = ({ value, onChange }: ExamsEditorProps) => {
   };
 
   const add = () => {
-    update([...exams, { name: "", price: "", description: "", category: "", convenio: false }]);
+    update([...exams, { name: "", price: "", category: "", convenio: false }]);
     setExpandedIndex(exams.length);
   };
 
@@ -103,10 +102,6 @@ const ExamsEditor = ({ value, onChange }: ExamsEditorProps) => {
                     {categories.map((cat) => <option key={cat} value={cat} />)}
                   </datalist>
                 )}
-              </div>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Descrição / Observação</label>
-                <Textarea placeholder="Ex: Necessário jejum de 8 horas" value={exam.description || ""} onChange={(e) => updateField(i, "description", e.target.value)} rows={2} className="text-xs" />
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
