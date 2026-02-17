@@ -78,7 +78,7 @@ const InstitutesPage = () => {
               >
                 <div className="h-44 overflow-hidden">
                   <img
-                    src={serviceImages[inst.slug] || cardiologiaImg}
+                    src={inst.image_url || serviceImages[inst.slug] || cardiologiaImg}
                     alt={inst.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
