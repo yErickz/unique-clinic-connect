@@ -15,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 218 50% 18%;
 
-    --primary: 218 51% 21%;
+    --primary: 218 58% 19%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 168 25% 96%;
@@ -46,14 +46,14 @@
     --sidebar-ring: 174 55% 42%;
 
     /* Custom tokens - Unique brand */
-    --hero-gradient: linear-gradient(135deg, hsl(218 51% 18%) 0%, hsl(218 51% 28%) 50%, hsl(165 42% 38%) 100%);
+    --hero-gradient: linear-gradient(135deg, hsl(218 51% 16%) 0%, hsl(218 51% 24%) 50%, hsl(174 55% 35%) 100%);
     --card-shadow: 0 2px 16px -2px hsl(218 50% 18% / 0.06);
     --card-shadow-hover: 0 16px 40px -8px hsl(218 50% 18% / 0.14);
     --glass-bg: hsl(0 0% 100% / 0.92);
     --whatsapp: 142 70% 45%;
     --whatsapp-hover: 142 70% 38%;
     --soft-green: 165 20% 97%;
-    --navy: 218 50% 18%;
+    --navy: 218 58% 19%;
     --teal: 174 55% 42%;
     --teal-light: 174 40% 95%;
   }
