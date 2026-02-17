@@ -102,7 +102,7 @@ const SortableSpaceItem = ({
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-foreground truncate">{space.label || "Novo espaço"}</span>
               <span className="text-[10px] bg-secondary text-secondary-foreground px-1.5 py-0.5 rounded shrink-0">
-                {space.span === "wide" ? "2 col" : "1 col"}
+                {space.span === "wide" ? "2 col" : space.span === "vertical" ? "2 row" : "1 col"}
               </span>
             </div>
             {space.description && (
@@ -182,6 +182,7 @@ const SortableSpaceItem = ({
               >
                 <option value="normal">Normal (1 coluna)</option>
                 <option value="wide">Largo (2 colunas)</option>
+                <option value="vertical">Vertical (2 linhas)</option>
               </select>
             </div>
           </div>

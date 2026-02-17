@@ -491,11 +491,11 @@ const Index = () => {
       {/* Depoimentos */}
       <TestimonialsSection />
 
-      {/* FAQ */}
-      <FaqSection />
-
       {/* Galeria da Clínica */}
       <ClinicGallerySection />
+
+      {/* FAQ */}
+      <FaqSection />
 
       {/* CTA Final */}
       <section className="relative overflow-hidden">

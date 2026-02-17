@@ -49,9 +49,14 @@ const ClinicGallerySection = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 auto-rows-[240px] gap-5 max-w-5xl mx-auto">
           {spaces.map((space, i) => {
-            const spanClass = space.span === "wide" ? "col-span-1 md:col-span-2 row-span-1" : "col-span-1 row-span-1";
+            const spanClass =
+              space.span === "wide"
+                ? "col-span-1 md:col-span-2 row-span-1"
+                : space.span === "vertical"
+                ? "col-span-1 row-span-2"
+                : "col-span-1 row-span-1";
             const gradient = gradients[i % gradients.length];
             const hasImage = !!space.image_url;
 
