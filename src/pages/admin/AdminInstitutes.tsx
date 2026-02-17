@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, Save, ExternalLink, Upload, X, ImageIcon, Building2, LayoutList, Type, LayoutGrid, Tag } from "lucide-react";
+import { Plus, Pencil, Trash2, Save, ExternalLink, Upload, X, ImageIcon, Building2, LayoutList, Type, LayoutGrid, Tag, Stethoscope } from "lucide-react";
+import { AsyncSelect } from "@/components/ui/async-select";
 import { toast } from "sonner";
 import ImageCropDialog from "@/components/admin/ImageCropDialog";
 import { ExpandableAdminCard } from "@/components/admin/ExpandableAdminCard";
@@ -414,43 +415,70 @@ const AdminInstitutes = () => {
                 {/* Doctor selector */}
                 <div>
                   <Label className="mb-2 block">Médicos que atendem nesta unidade</Label>
-                  <div className="space-y-1.5 max-h-48 overflow-y-auto rounded-lg border border-border p-2">
-                    {allDoctors.length === 0 ? (
-                      <p className="text-xs text-muted-foreground p-2">Nenhum médico cadastrado.</p>
-                    ) : (
-                      allDoctors.map((doc) => {
-                        const isSelected = selectedDoctorIds.includes(doc.id);
-                        const assignedElsewhere = doc.institute_id && doc.institute_id !== editing?.id;
-                        const assignedInstitute = assignedElsewhere ? institutes.find((i) => i.id === doc.institute_id) : null;
+                  {selectedDoctorIds.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {selectedDoctorIds.map((docId) => {
+                        const doc = allDoctors.find((d) => d.id === docId);
+                        if (!doc) return null;
                         return (
-                          <label
-                            key={doc.id}
-                            className={`flex items-center gap-3 rounded-lg px-3 py-2 cursor-pointer transition-colors ${isSelected ? "bg-accent/10 border border-accent/30" : "hover:bg-secondary border border-transparent"}`}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={() => {
-                                setSelectedDoctorIds((prev) =>
-                                  prev.includes(doc.id) ? prev.filter((id) => id !== doc.id) : [...prev, doc.id]
-                                );
-                              }}
-                              className="rounded border-border text-primary focus:ring-primary"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-foreground truncate">{doc.name}</p>
-                              <p className="text-xs text-muted-foreground">{doc.specialty}</p>
-                            </div>
-                            {assignedInstitute && !isSelected && (
-                              <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-full shrink-0">
-                                {assignedInstitute.name}
-                              </span>
-                            )}
-                          </label>
+                          <span key={docId} className="inline-flex items-center gap-1 bg-secondary text-foreground text-xs px-2.5 py-1 rounded-full">
+                            <Stethoscope size={12} className="text-muted-foreground" />
+                            {doc.name}
+                            <button
+                              type="button"
+                              onClick={() => setSelectedDoctorIds((prev) => prev.filter((id) => id !== docId))}
+                              className="hover:text-destructive transition-colors"
+                            >
+                              <X size={12} />
+                            </button>
+                          </span>
                         );
-                      })
-                    )}
-                  </div>
+                      })}
+                    </div>
+                  )}
+                  <AsyncSelect
+                    fetcher={async (query) => {
+                      const available = allDoctors.filter((d) => !selectedDoctorIds.includes(d.id));
+                      if (!query) return available;
+                      const q = query.toLowerCase();
+                      return available.filter((d) => d.name.toLowerCase().includes(q) || d.specialty.toLowerCase().includes(q));
+                    }}
+                    preload
+                    filterFn={(doc, query) => {
+                      const q = query.toLowerCase();
+                      return doc.name.toLowerCase().includes(q) || doc.specialty.toLowerCase().includes(q);
+                    }}
+                    renderOption={(doc) => {
+                      const assignedElsewhere = doc.institute_id && doc.institute_id !== editing?.id;
+                      const assignedInstitute = assignedElsewhere ? institutes.find((i) => i.id === doc.institute_id) : null;
+                      return (
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium truncate">{doc.name}</p>
+                            <p className="text-xs text-muted-foreground">{doc.specialty}</p>
+                          </div>
+                          {assignedInstitute && (
+                            <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-full shrink-0">
+                              {assignedInstitute.name}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    }}
+                    getOptionValue={(doc) => doc.id}
+                    getDisplayValue={(doc) => doc.name}
+                    value=""
+                    onChange={(docId) => {
+                      if (docId && !selectedDoctorIds.includes(docId)) {
+                        setSelectedDoctorIds((prev) => [...prev, docId]);
+                      }
+                    }}
+                    label="Médico"
+                    placeholder="Buscar médico..."
+                    width="100%"
+                    noResultsMessage="Nenhum médico encontrado."
+                    clearable={false}
+                  />
                   {selectedDoctorIds.length > 0 && (
                     <p className="text-xs text-muted-foreground mt-1.5">{selectedDoctorIds.length} médico(s) selecionado(s)</p>
                   )}
