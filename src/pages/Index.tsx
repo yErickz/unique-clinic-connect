@@ -1,11 +1,11 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Phone, CheckCircle, ArrowRight, Heart, Target, Eye, Users, MapPin, Clock, Mail, Stethoscope, Shield, Star, TestTube, Droplets, Activity, Pill, Dna } from "lucide-react";
+import { Phone, CheckCircle, ArrowRight, Heart, Target, Eye, Users, MapPin, Clock, Mail, Stethoscope, Shield, Star, TestTube, Droplets, Activity, Pill, Dna, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ServiceCard from "@/components/ServiceCard";
 import { institutes, convenios, getWhatsAppLink } from "@/data/mockData";
 import heroImage from "@/assets/hero-sabin-style.jpg";
 import FaqSection from "@/components/FaqSection";
-import { useRef } from "react";
+import { useRef, useState, useCallback } from "react";
 
 // Import service images
 import cardiologiaImg from "@/assets/services/cardiologia.jpg";
@@ -290,43 +290,68 @@ const Index = () => {
               Exames mais pesquisados
             </h2>
           </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
-            {[
-              { name: "Hemograma", price: "R$ 45,00" },
-              { name: "Glicemia", price: "R$ 30,00" },
-              { name: "Colesterol Total", price: "R$ 35,00" },
-              { name: "Hormônios (TSH)", price: "R$ 55,00" },
-              { name: "Função Renal", price: "R$ 40,00" },
-            ].map((exam, i) => (
-              <motion.div
-                key={exam.name}
-                initial={{ opacity: 0, y: 30, filter: "blur(4px)" }}
-                whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                whileHover={{ y: -6, transition: { duration: 0.3 } }}
-                className="bg-card border border-border/50 rounded-2xl p-6 card-shadow hover:card-shadow-hover hover:border-accent/30 transition-all duration-300 flex flex-col justify-between"
-              >
-                <div>
-                  <h3 className="font-bold text-foreground text-base uppercase mb-3">{exam.name}</h3>
-                  <span className="inline-block bg-accent text-accent-foreground text-xs font-semibold px-3 py-1 rounded-full mb-4">
-                    Coberto por convênios
-                  </span>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Particular a partir de</p>
-                  <p className="text-2xl font-bold text-foreground mb-4">{exam.price}</p>
-                  <a
-                    href={getWhatsAppLink(`Olá! Gostaria de saber mais sobre o exame de ${exam.name}.`)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-semibold text-accent hover:text-accent/80 inline-flex items-center gap-1 transition-colors"
+          <div className="relative">
+            <div className="overflow-x-auto scrollbar-hide scroll-smooth" id="exames-carousel">
+              <div className="flex gap-5" style={{ minWidth: "max-content" }}>
+                {[
+                  { name: "Hemograma", price: "R$ 45,00" },
+                  { name: "Glicemia", price: "R$ 30,00" },
+                  { name: "Colesterol Total", price: "R$ 35,00" },
+                  { name: "Hormônios (TSH)", price: "R$ 55,00" },
+                  { name: "Função Renal", price: "R$ 40,00" },
+                ].map((exam, i) => (
+                  <motion.div
+                    key={exam.name}
+                    initial={{ opacity: 0, y: 30, filter: "blur(4px)" }}
+                    whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    viewport={{ once: true, amount: 0.15 }}
+                    transition={{ delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    whileHover={{ y: -6, transition: { duration: 0.3 } }}
+                    className="bg-card border border-border/50 rounded-2xl p-6 card-shadow hover:card-shadow-hover hover:border-accent/30 transition-all duration-300 flex flex-col justify-between min-w-[220px] w-[220px] shrink-0"
                   >
-                    Saiba mais <ArrowRight className="w-4 h-4" />
-                  </a>
-                </div>
-              </motion.div>
-            ))}
+                    <div>
+                      <h3 className="font-bold text-foreground text-base uppercase mb-3">{exam.name}</h3>
+                      <span className="inline-block bg-accent text-accent-foreground text-xs font-semibold px-3 py-1 rounded-full mb-4">
+                        Coberto por convênios
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">Particular a partir de</p>
+                      <p className="text-2xl font-bold text-foreground mb-4">{exam.price}</p>
+                      <a
+                        href={getWhatsAppLink(`Olá! Gostaria de saber mais sobre o exame de ${exam.name}.`)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-semibold text-accent hover:text-accent/80 inline-flex items-center gap-1 transition-colors"
+                      >
+                        Saiba mais <ArrowRight className="w-4 h-4" />
+                      </a>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+            {/* Navigation arrows */}
+            <button
+              onClick={() => {
+                const el = document.getElementById("exames-carousel");
+                if (el) el.scrollBy({ left: -240, behavior: "smooth" });
+              }}
+              className="absolute -left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card border border-border shadow-md flex items-center justify-center hover:bg-muted transition-colors hidden md:flex z-10"
+              aria-label="Anterior"
+            >
+              <ChevronLeft className="w-5 h-5 text-foreground" />
+            </button>
+            <button
+              onClick={() => {
+                const el = document.getElementById("exames-carousel");
+                if (el) el.scrollBy({ left: 240, behavior: "smooth" });
+              }}
+              className="absolute -right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card border border-border shadow-md flex items-center justify-center hover:bg-muted transition-colors hidden md:flex z-10"
+              aria-label="Próximo"
+            >
+              <ChevronRight className="w-5 h-5 text-foreground" />
+            </button>
           </div>
           <motion.div
             initial={{ opacity: 0, y: 16 }}
