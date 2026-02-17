@@ -11,7 +11,8 @@ import {
   FileText,
   Image,
   LogOut,
-  ChevronLeft,
+  PanelLeftClose,
+  PanelLeft,
   ExternalLink,
 } from "lucide-react";
 import logoImg from "@/assets/logo-unique-navy-cropped.png";
@@ -44,9 +45,9 @@ const AdminLayout = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/30">
+      <div className="min-h-screen flex items-center justify-center bg-secondary/30">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-[3px] border-primary/20 border-t-primary rounded-full animate-spin" />
+          <div className="w-8 h-8 border-[3px] border-primary/20 border-t-primary rounded-full animate-spin" />
           <span className="text-sm text-muted-foreground">Carregando...</span>
         </div>
       </div>
@@ -56,11 +57,11 @@ const AdminLayout = () => {
   if (!user || !isAdmin) return null;
 
   return (
-    <div className="flex h-screen dark bg-background text-foreground">
+    <div className="flex h-screen bg-secondary/30">
       {/* Mobile Hamburger */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 p-2.5 rounded-xl bg-primary text-primary-foreground md:hidden shadow-lg"
+        className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-primary text-primary-foreground md:hidden shadow-md"
       >
         {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
@@ -68,43 +69,32 @@ const AdminLayout = () => {
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-foreground/40 backdrop-blur-sm z-30 md:hidden"
+          className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-30 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:relative z-40 h-full bg-[hsl(218_45%_11%)] text-white transition-all duration-300 flex flex-col ${
-          isCollapsed ? "w-[72px]" : "w-60"
+        className={`fixed md:relative z-40 h-full bg-card border-r border-border transition-all duration-300 flex flex-col ${
+          isCollapsed ? "w-16" : "w-56"
         } ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
-        {/* Logo */}
-        <div className={`flex items-center gap-3 border-b border-white/8 ${isCollapsed ? "px-3 py-4 justify-center" : "px-5 py-4"}`}>
-          <img
-            src={logoImg}
-            alt="Grupo Unique"
-            className={`shrink-0 brightness-0 invert ${isCollapsed ? "h-7 w-7 object-contain" : "h-7"}`}
-          />
+        {/* Header */}
+        <div className={`flex items-center border-b border-border ${isCollapsed ? "px-2 py-3 justify-center" : "px-4 py-3"}`}>
           {!isCollapsed && (
-            <span className="text-[11px] font-medium uppercase tracking-widest text-primary-foreground/50">Admin</span>
+            <img src={logoImg} alt="Grupo Unique" className="h-6 shrink-0" />
           )}
-
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden md:flex ml-auto p-1 rounded-md hover:bg-primary-foreground/10 transition-colors shrink-0"
+            className={`hidden md:flex p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors shrink-0 ${!isCollapsed ? "ml-auto" : ""}`}
           >
-            <ChevronLeft
-              size={16}
-              className={`transition-transform duration-300 text-primary-foreground/50 ${
-                isCollapsed ? "rotate-180" : ""
-              }`}
-            />
+            {isCollapsed ? <PanelLeft size={16} /> : <PanelLeftClose size={16} />}
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className={`flex-1 overflow-y-auto py-3 ${isCollapsed ? "px-2" : "px-3"} space-y-0.5`}>
+        <nav className={`flex-1 overflow-y-auto py-2 ${isCollapsed ? "px-1.5" : "px-2"} space-y-0.5`}>
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -113,57 +103,46 @@ const AdminLayout = () => {
                 to={item.to}
                 end={item.end}
                 className={({ isActive }) =>
-                  `w-full flex items-center gap-3 rounded-lg transition-all duration-150 ${
-                    isCollapsed ? "px-3 py-2.5 justify-center" : "px-3 py-2.5"
+                  `w-full flex items-center gap-2.5 rounded-lg transition-colors duration-150 text-[13px] ${
+                    isCollapsed ? "px-0 py-2 justify-center" : "px-3 py-2"
                   } ${
                     isActive
-                      ? "bg-primary-foreground/15 text-primary-foreground font-medium"
-                      : "text-primary-foreground/60 hover:bg-primary-foreground/8 hover:text-primary-foreground/90"
+                      ? "bg-primary text-primary-foreground font-medium"
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                   }`
                 }
               >
-                {({ isActive }) => (
-                  <>
-                    <Icon size={18} className="shrink-0" />
-                    {!isCollapsed && (
-                      <span className="text-[13px]">{item.label}</span>
-                    )}
-                    {isActive && !isCollapsed && (
-                      <div className="ml-auto w-1.5 h-1.5 rounded-full bg-accent" />
-                    )}
-                  </>
-                )}
+                <Icon size={17} className="shrink-0" />
+                {!isCollapsed && <span>{item.label}</span>}
               </RouterNavLink>
             );
           })}
         </nav>
 
-        {/* View Site Link */}
-        <div className={`${isCollapsed ? "px-2" : "px-3"} pb-2`}>
+        {/* Bottom */}
+        <div className={`border-t border-border ${isCollapsed ? "p-1.5" : "p-2"} space-y-0.5`}>
           <a
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className={`w-full flex items-center gap-2 rounded-lg px-3 py-2 text-primary-foreground/50 hover:text-primary-foreground/80 hover:bg-primary-foreground/5 transition-all text-[12px] ${isCollapsed ? "justify-center" : ""}`}
+            className={`w-full flex items-center gap-2 rounded-lg px-3 py-2 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors text-[12px] ${isCollapsed ? "px-0 justify-center" : ""}`}
           >
             <ExternalLink size={14} className="shrink-0" />
             {!isCollapsed && <span>Ver site</span>}
           </a>
-        </div>
 
-        {/* Footer */}
-        <div className={`border-t border-primary-foreground/10 ${isCollapsed ? "p-2" : "px-3 py-3"}`}>
           {!isCollapsed && (
-            <p className="text-[11px] text-primary-foreground/35 truncate mb-1.5 px-3">{user.email}</p>
+            <p className="text-[11px] text-muted-foreground truncate px-3 py-1">{user.email}</p>
           )}
+
           <button
             onClick={() => signOut().then(() => navigate("/admin/login"))}
-            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-primary-foreground/50 hover:bg-destructive/20 hover:text-destructive transition-all duration-150 ${
-              isCollapsed ? "justify-center" : ""
+            className={`w-full flex items-center gap-2 rounded-lg px-3 py-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors text-[13px] ${
+              isCollapsed ? "px-0 justify-center" : ""
             }`}
           >
-            <LogOut size={16} className="shrink-0" />
-            {!isCollapsed && <span className="text-[13px]">Sair</span>}
+            <LogOut size={15} className="shrink-0" />
+            {!isCollapsed && <span>Sair</span>}
           </button>
         </div>
       </aside>

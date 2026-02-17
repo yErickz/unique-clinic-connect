@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LogIn, AlertCircle, Lock } from "lucide-react";
+import { LogIn, AlertCircle } from "lucide-react";
 import logoImg from "@/assets/logo-unique-navy-cropped.png";
 
 const AdminLogin = () => {
@@ -29,21 +29,16 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center dark bg-background px-4">
+    <div className="min-h-screen flex items-center justify-center bg-secondary/30 px-4">
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="text-center mb-8">
-          <img src={logoImg} alt="Grupo Unique" className="h-10 mx-auto brightness-0 invert mb-6" />
-          <div className="inline-flex items-center gap-2 text-muted-foreground text-xs font-medium uppercase tracking-widest">
-            <Lock size={12} />
-            <span>Área restrita</span>
-          </div>
+          <img src={logoImg} alt="Grupo Unique" className="h-10 mx-auto mb-3" />
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Painel Administrativo</p>
         </div>
 
-        {/* Card */}
-        <div className="bg-card rounded-2xl p-7 border border-border/60">
-          <h1 className="text-lg font-bold mb-1">Entrar</h1>
-          <p className="text-xs text-muted-foreground mb-6">Acesse o painel administrativo</p>
+        <div className="bg-card rounded-xl p-6 border border-border card-shadow">
+          <h1 className="text-lg font-bold text-foreground mb-1">Entrar</h1>
+          <p className="text-xs text-muted-foreground mb-5">Acesse com suas credenciais</p>
 
           {error && (
             <div className="flex items-center gap-2 bg-destructive/10 text-destructive text-xs rounded-lg p-3 mb-4">
@@ -55,22 +50,18 @@ const AdminLogin = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="email" className="text-xs">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="admin@grupounique.com" className="mt-1.5 h-10 text-sm" />
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="admin@grupounique.com" className="mt-1 h-10 text-sm" />
             </div>
             <div>
               <Label htmlFor="password" className="text-xs">Senha</Label>
-              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" className="mt-1.5 h-10 text-sm" />
+              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" className="mt-1 h-10 text-sm" />
             </div>
-            <Button type="submit" className="w-full h-10 bg-accent hover:bg-accent/90 text-accent-foreground border-0 text-sm font-medium" disabled={loading}>
+            <Button type="submit" className="w-full h-10 hero-gradient border-0 text-primary-foreground text-sm font-medium" disabled={loading}>
               <LogIn className="w-4 h-4 mr-2" />
               {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
         </div>
-
-        <p className="text-center text-[11px] text-muted-foreground/40 mt-6">
-          Clínica Unique · Painel Administrativo
-        </p>
       </div>
     </div>
   );

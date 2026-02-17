@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ExternalLink, Save, Info } from "lucide-react";
+import { ExternalLink, Save, Info, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import GalleryEditor from "@/components/admin/GalleryEditor";
 
@@ -82,21 +82,24 @@ const AdminGallery = () => {
   return (
     <div className="max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Galeria de Fotos</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Gerencie os espaços exibidos na galeria da página inicial.
-          </p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center">
+            <ImageIcon className="w-[18px] h-[18px] text-accent" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Galeria de Fotos</h1>
+            <p className="text-xs text-muted-foreground">Gerencie os espaços da galeria</p>
+          </div>
         </div>
         <a
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors shrink-0"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
         >
-          <ExternalLink size={16} />
-          Visualizar Site
+          <ExternalLink size={14} />
+          Ver site
         </a>
       </div>
 

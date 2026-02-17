@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Pencil, ExternalLink, Save, X, Info, Search, ChevronUp } from "lucide-react";
+import { Pencil, ExternalLink, Save, X, Info, Search, ChevronUp, FileText } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import ExamsEditor from "@/components/admin/ExamsEditor";
@@ -189,21 +189,24 @@ const AdminContent = () => {
   return (
     <div className="max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Gerenciar Página Inicial</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Edite os textos de cada seção do site. Clique em <Pencil className="inline w-3.5 h-3.5 mx-0.5" /> para abrir o editor.
-          </p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center">
+            <FileText className="w-[18px] h-[18px] text-accent" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Conteúdo do Site</h1>
+            <p className="text-xs text-muted-foreground">Edite os textos de cada seção</p>
+          </div>
         </div>
         <a
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors shrink-0"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
         >
-          <ExternalLink size={16} />
-          Visualizar Site
+          <ExternalLink size={14} />
+          Ver site
         </a>
       </div>
 
