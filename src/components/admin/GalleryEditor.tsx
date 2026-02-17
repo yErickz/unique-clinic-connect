@@ -1,9 +1,10 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus, ChevronDown, ChevronUp, GripVertical, Upload, ImageIcon, X } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import ImageCropDialog from "@/components/admin/ImageCropDialog";
 import {
   DndContext,
   closestCenter,
@@ -46,14 +47,14 @@ interface SortableSpaceProps {
   onToggle: () => void;
   onUpdateField: (field: keyof GallerySpace, val: string) => void;
   onRemove: () => void;
-  onUploadImage: (file: File) => Promise<void>;
+  onSelectFile: (file: File) => void;
   onRemoveImage: () => void;
   isUploading: boolean;
 }
 
 const SortableSpaceItem = ({
   id, space, isExpanded, onToggle, onUpdateField, onRemove,
-  onUploadImage, onRemoveImage, isUploading,
+  onSelectFile, onRemoveImage, isUploading,
 }: SortableSpaceProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -67,7 +68,7 @@ const SortableSpaceItem = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      onUploadImage(file);
+      onSelectFile(file);
       e.target.value = "";
     }
   };
@@ -209,6 +210,7 @@ const GalleryEditor = ({ value, onChange }: GalleryEditorProps) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const [cropState, setCropState] = useState<{ index: number; imageSrc: string } | null>(null);
 
   let spaces: GallerySpace[] = [];
   try { spaces = JSON.parse(value || "[]"); } catch { spaces = []; }
@@ -228,15 +230,25 @@ const GalleryEditor = ({ value, onChange }: GalleryEditorProps) => {
     update(copy);
   };
 
-  const uploadImage = async (index: number, file: File) => {
+  const handleSelectFile = (index: number, file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropState({ index, imageSrc: reader.result as string });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropConfirm = useCallback(async (croppedBlob: Blob) => {
+    if (!cropState) return;
+    const { index } = cropState;
+    setCropState(null);
     setUploadingIndex(index);
     try {
-      const ext = file.name.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
 
       const { error: uploadError } = await supabase.storage
         .from("gallery")
-        .upload(fileName, file, { cacheControl: "3600", upsert: false });
+        .upload(fileName, croppedBlob, { cacheControl: "3600", upsert: false, contentType: "image/jpeg" });
 
       if (uploadError) throw uploadError;
 
@@ -251,7 +263,7 @@ const GalleryEditor = ({ value, onChange }: GalleryEditorProps) => {
     } finally {
       setUploadingIndex(null);
     }
-  };
+  }, [cropState, spaces, update]);
 
   const removeImage = async (index: number) => {
     const space = spaces[index];
@@ -322,7 +334,7 @@ const GalleryEditor = ({ value, onChange }: GalleryEditorProps) => {
               onToggle={() => toggle(i)}
               onUpdateField={(field, val) => updateField(i, field, val)}
               onRemove={() => remove(i)}
-              onUploadImage={(file) => uploadImage(i, file)}
+              onSelectFile={(file) => handleSelectFile(i, file)}
               onRemoveImage={() => removeImage(i)}
               isUploading={uploadingIndex === i}
             />
@@ -348,6 +360,15 @@ const GalleryEditor = ({ value, onChange }: GalleryEditorProps) => {
         <Plus size={14} />
         Adicionar Espaço
       </Button>
+
+      {/* Crop Dialog */}
+      <ImageCropDialog
+        open={!!cropState}
+        imageSrc={cropState?.imageSrc ?? ""}
+        aspect={16 / 9}
+        onClose={() => setCropState(null)}
+        onConfirm={handleCropConfirm}
+      />
     </div>
   );
 };
