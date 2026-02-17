@@ -7,6 +7,10 @@ const Popover = PopoverPrimitive.Root;
 
 const PopoverTrigger = PopoverPrimitive.Trigger;
 
+const PopoverAnchor = PopoverPrimitive.Anchor;
+
+const PopoverClose = PopoverPrimitive.Close;
+
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
@@ -26,4 +30,59 @@ const PopoverContent = React.forwardRef<
 ));
 PopoverContent.displayName = PopoverPrimitive.Content.displayName;
 
-export { Popover, PopoverTrigger, PopoverContent };
+function PopoverHeader({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      className={cn("flex items-center gap-3 border-b border-border p-4", className)}
+      {...props}
+    />
+  );
+}
+
+function PopoverTitle({ className, ...props }: React.ComponentProps<"p">) {
+  return (
+    <p
+      className={cn("text-sm font-medium leading-none", className)}
+      {...props}
+    />
+  );
+}
+
+function PopoverDescription({ className, ...props }: React.ComponentProps<"p">) {
+  return (
+    <p
+      className={cn("text-xs text-muted-foreground", className)}
+      {...props}
+    />
+  );
+}
+
+function PopoverBody({ children, className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div className={cn("p-2", className)} {...props}>
+      {children}
+    </div>
+  );
+}
+
+function PopoverFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      className={cn("border-t border-border p-4", className)}
+      {...props}
+    />
+  );
+}
+
+export {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverDescription,
+  PopoverFooter,
+  PopoverAnchor,
+  PopoverClose,
+};
