@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Pencil, ExternalLink, Save, X, Info, Search, ChevronUp, FileText } from "lucide-react";
+import { Pencil, ExternalLink, Save, X, Info, Search, ChevronUp, FileText, Home, InfoIcon, Stethoscope, FlaskConical, Building2, MapPin, Megaphone, HelpCircle, FileIcon, Phone, Settings } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import ExamsEditor from "@/components/admin/ExamsEditor";
@@ -13,19 +13,24 @@ import FaqEditor from "@/components/admin/FaqEditor";
 type Content = Tables<"site_content">;
 
 /* ── Section metadata ── */
-const sections: Record<string, { label: string; icon: string; description: string; keys: string[] }> = {
-  hero: { label: "Banner Principal", icon: "🏠", description: "Textos e destaques do topo do site", keys: ["hero_badge", "hero_title", "hero_subtitle", "hero_cta_primary", "hero_cta_secondary", "hero_stat_1", "hero_stat_2", "hero_stat_3", "hero_float_title", "hero_float_subtitle", "hero_float_badge"] },
-  about: { label: "Sobre Nós", icon: "ℹ️", description: "Missão, visão, valores e estatísticas", keys: ["about_label", "about_title", "about_text_1", "about_text_2", "about_mission", "about_vision", "about_values", "about_stat_1_value", "about_stat_1_label", "about_stat_2_value", "about_stat_2_label", "about_stat_3_value", "about_stat_3_label", "about_stat_4_value", "about_stat_4_label"] },
-  services: { label: "Especialidades", icon: "🩺", description: "Títulos da seção de especialidades", keys: ["services_label", "services_title", "services_subtitle"] },
-  exams: { label: "Exames", icon: "🧪", description: "Lista de exames disponíveis", keys: ["exams_title", "exams_data"] },
-  convenios: { label: "Convênios", icon: "🏥", description: "Convênios aceitos pela clínica", keys: ["convenios_label", "convenios_title", "convenios_subtitle", "convenios_list"] },
-  contact: { label: "Contato (Página Inicial)", icon: "📍", description: "Endereço, telefone e horário", keys: ["contact_label", "contact_title", "contact_address", "contact_phone", "contact_hours", "contact_email"] },
-  cta: { label: "Chamada para Ação", icon: "📢", description: "Seção que convida a agendar consulta", keys: ["cta_title", "cta_subtitle", "cta_button"] },
-  faq: { label: "Perguntas Frequentes", icon: "❓", description: "Perguntas e respostas do site", keys: ["faq_label", "faq_title", "faq_subtitle", "faq_data"] },
-  
-  footer: { label: "Rodapé", icon: "📄", description: "Textos do rodapé do site", keys: ["footer_description", "footer_copyright"] },
-  contact_page: { label: "Página de Contato", icon: "📞", description: "Textos da página dedicada de contato", keys: ["contact_page_label", "contact_page_title", "contact_page_subtitle", "contact_page_cta_title", "contact_page_cta_subtitle"] },
-  general: { label: "Configurações Gerais", icon: "⚙️", description: "WhatsApp e nome no cabeçalho", keys: ["whatsapp_number", "header_brand_name"] },
+const sectionIcons: Record<string, React.ElementType> = {
+  hero: Home, about: InfoIcon, services: Stethoscope, exams: FlaskConical,
+  convenios: Building2, contact: MapPin, cta: Megaphone, faq: HelpCircle,
+  footer: FileIcon, contact_page: Phone, general: Settings,
+};
+
+const sections: Record<string, { label: string; description: string; keys: string[] }> = {
+  hero: { label: "Banner Principal", description: "Textos e destaques do topo do site", keys: ["hero_badge", "hero_title", "hero_subtitle", "hero_cta_primary", "hero_cta_secondary", "hero_stat_1", "hero_stat_2", "hero_stat_3", "hero_float_title", "hero_float_subtitle", "hero_float_badge"] },
+  about: { label: "Sobre Nós", description: "Missão, visão, valores e estatísticas", keys: ["about_label", "about_title", "about_text_1", "about_text_2", "about_mission", "about_vision", "about_values", "about_stat_1_value", "about_stat_1_label", "about_stat_2_value", "about_stat_2_label", "about_stat_3_value", "about_stat_3_label", "about_stat_4_value", "about_stat_4_label"] },
+  services: { label: "Especialidades", description: "Títulos da seção de especialidades", keys: ["services_label", "services_title", "services_subtitle"] },
+  exams: { label: "Exames", description: "Lista de exames disponíveis", keys: ["exams_title", "exams_data"] },
+  convenios: { label: "Convênios", description: "Convênios aceitos pela clínica", keys: ["convenios_label", "convenios_title", "convenios_subtitle", "convenios_list"] },
+  contact: { label: "Contato (Página Inicial)", description: "Endereço, telefone e horário", keys: ["contact_label", "contact_title", "contact_address", "contact_phone", "contact_hours", "contact_email"] },
+  cta: { label: "Chamada para Ação", description: "Seção que convida a agendar consulta", keys: ["cta_title", "cta_subtitle", "cta_button"] },
+  faq: { label: "Perguntas Frequentes", description: "Perguntas e respostas do site", keys: ["faq_label", "faq_title", "faq_subtitle", "faq_data"] },
+  footer: { label: "Rodapé", description: "Textos do rodapé do site", keys: ["footer_description", "footer_copyright"] },
+  contact_page: { label: "Página de Contato", description: "Textos da página dedicada de contato", keys: ["contact_page_label", "contact_page_title", "contact_page_subtitle", "contact_page_cta_title", "contact_page_cta_subtitle"] },
+  general: { label: "Configurações Gerais", description: "WhatsApp e nome no cabeçalho", keys: ["whatsapp_number", "header_brand_name"] },
 };
 
 const keyLabels: Record<string, { label: string; hint?: string }> = {
@@ -59,7 +64,7 @@ const keyLabels: Record<string, { label: string; hint?: string }> = {
   services_title: { label: "Título" },
   services_subtitle: { label: "Subtítulo" },
   exams_title: { label: "Título" },
-  exams_data: { label: "Lista de exames", hint: "⚠️ Formato JSON — edite com cuidado" },
+  exams_data: { label: "Lista de exames", hint: "Formato JSON — edite com cuidado" },
   convenios_label: { label: "Etiqueta" },
   convenios_title: { label: "Título" },
   convenios_subtitle: { label: "Subtítulo" },
@@ -76,7 +81,7 @@ const keyLabels: Record<string, { label: string; hint?: string }> = {
   faq_label: { label: "Etiqueta" },
   faq_title: { label: "Título" },
   faq_subtitle: { label: "Subtítulo" },
-  faq_data: { label: "Perguntas e respostas", hint: "⚠️ Formato JSON — edite com cuidado" },
+  faq_data: { label: "Perguntas e respostas", hint: "Formato JSON — edite com cuidado" },
   footer_description: { label: "Descrição da clínica" },
   footer_copyright: { label: "Copyright" },
   contact_page_label: { label: "Etiqueta" },
@@ -243,7 +248,14 @@ const AdminContent = () => {
               >
                 {/* Card Header */}
                 <div className="p-5 flex items-start gap-3">
-                  <span className="text-2xl">{sec.icon}</span>
+                  {(() => {
+                    const SectionIcon = sectionIcons[sectionKey] || FileText;
+                    return (
+                      <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+                        <SectionIcon size={16} className="text-accent" />
+                      </div>
+                    );
+                  })()}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className="font-semibold text-foreground text-sm">{sec.label}</h3>

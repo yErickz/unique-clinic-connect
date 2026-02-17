@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ExternalLink, Save, Info, Image as ImageIcon } from "lucide-react";
+import { ExternalLink, Save, Info, Image as ImageIcon, Type, LayoutGrid } from "lucide-react";
 import { toast } from "sonner";
 import GalleryEditor from "@/components/admin/GalleryEditor";
 
@@ -113,7 +113,8 @@ const AdminGallery = () => {
           {/* Title fields */}
           <div className="bg-card rounded-xl border border-border p-5 space-y-4">
             <h2 className="font-semibold text-foreground text-sm flex items-center gap-2">
-              📝 Textos da Seção
+              <Type size={14} className="text-muted-foreground" />
+              Textos da Seção
             </h2>
             {GALLERY_KEYS.filter((k) => k !== "gallery_data").map((k) => {
               const item = contentByKey.get(k);
@@ -142,7 +143,8 @@ const AdminGallery = () => {
           {/* Gallery spaces editor */}
           <div className="bg-card rounded-xl border border-border p-5 space-y-4">
             <h2 className="font-semibold text-foreground text-sm flex items-center gap-2">
-              🖼️ Espaços da Galeria
+              <LayoutGrid size={14} className="text-muted-foreground" />
+              Espaços da Galeria
             </h2>
             <GalleryEditor
               value={drafts["gallery_data"] ?? contentByKey.get("gallery_data")?.value ?? "[]"}

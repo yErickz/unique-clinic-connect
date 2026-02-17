@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Save, ExternalLink, Upload, X, ImageIcon, Building2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Save, ExternalLink, Upload, X, ImageIcon, Building2, LayoutList, Type } from "lucide-react";
 import { toast } from "sonner";
 import ImageCropDialog from "@/components/admin/ImageCropDialog";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
@@ -236,8 +236,8 @@ const AdminInstitutes = () => {
 
       <Tabs defaultValue="list" className="w-full">
         <TabsList className="mb-6">
-          <TabsTrigger value="list">📋 Lista de Institutos</TabsTrigger>
-          <TabsTrigger value="page">📝 Textos da Página</TabsTrigger>
+          <TabsTrigger value="list" className="gap-1.5"><LayoutList size={14} /> Lista de Institutos</TabsTrigger>
+          <TabsTrigger value="page" className="gap-1.5"><Type size={14} /> Textos da Página</TabsTrigger>
         </TabsList>
 
         {/* ── Tab: Lista de Institutos ── */}
