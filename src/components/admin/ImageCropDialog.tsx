@@ -22,11 +22,12 @@ interface ImageCropDialogProps {
   open: boolean;
   imageSrc: string;
   aspect?: number;
+  outputFormat?: "image/jpeg" | "image/png";
   onClose: () => void;
   onConfirm: (croppedBlob: Blob) => void;
 }
 
-async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<Blob> {
+async function getCroppedImg(imageSrc: string, pixelCrop: Area, format: "image/jpeg" | "image/png" = "image/jpeg"): Promise<Blob> {
   const image = new Image();
   image.crossOrigin = "anonymous";
   await new Promise<void>((resolve, reject) => {
@@ -39,6 +40,10 @@ async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<Blob> {
   canvas.width = pixelCrop.width;
   canvas.height = pixelCrop.height;
   const ctx = canvas.getContext("2d")!;
+
+  if (format === "image/png") {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
 
   ctx.drawImage(
     image,
@@ -55,13 +60,13 @@ async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<Blob> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => (blob ? resolve(blob) : reject(new Error("Canvas toBlob failed"))),
-      "image/jpeg",
-      0.9,
+      format,
+      format === "image/jpeg" ? 0.9 : undefined,
     );
   });
 }
 
-const ImageCropDialog = ({ open, imageSrc, aspect: defaultAspect = 16 / 9, onClose, onConfirm }: ImageCropDialogProps) => {
+const ImageCropDialog = ({ open, imageSrc, aspect: defaultAspect = 16 / 9, outputFormat = "image/jpeg", onClose, onConfirm }: ImageCropDialogProps) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
@@ -77,7 +82,7 @@ const ImageCropDialog = ({ open, imageSrc, aspect: defaultAspect = 16 / 9, onClo
     if (!croppedAreaPixels) return;
     setIsProcessing(true);
     try {
-      const blob = await getCroppedImg(imageSrc, croppedAreaPixels);
+      const blob = await getCroppedImg(imageSrc, croppedAreaPixels, outputFormat);
       onConfirm(blob);
     } catch {
       // fallback: pass original

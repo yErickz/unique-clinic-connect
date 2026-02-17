@@ -250,6 +250,7 @@ const AdminConvenios = () => {
         open={!!cropState}
         imageSrc={cropState?.imageSrc ?? ""}
         aspect={1}
+        outputFormat="image/png"
         onClose={() => setCropState(null)}
         onConfirm={handleCropConfirm}
       />
