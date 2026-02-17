@@ -9,6 +9,7 @@ import {
   Building2,
   MessageSquareQuote,
   FileText,
+  Image,
   LogOut,
   ChevronLeft,
 } from "lucide-react";
@@ -19,6 +20,7 @@ const navItems = [
   { to: "/admin/medicos", icon: Users, label: "Médicos", end: false },
   { to: "/admin/institutos", icon: Building2, label: "Institutos", end: false },
   { to: "/admin/depoimentos", icon: MessageSquareQuote, label: "Depoimentos", end: false },
+  { to: "/admin/galeria", icon: Image, label: "Galeria", end: false },
   { to: "/admin/conteudo", icon: FileText, label: "Conteúdo", end: false },
 ];
 

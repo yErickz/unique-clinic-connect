@@ -22,7 +22,7 @@ const sections: Record<string, { label: string; icon: string; description: strin
   contact: { label: "Contato (Página Inicial)", icon: "📍", description: "Endereço, telefone e horário", keys: ["contact_label", "contact_title", "contact_address", "contact_phone", "contact_hours", "contact_email"] },
   cta: { label: "Chamada para Ação", icon: "📢", description: "Seção que convida a agendar consulta", keys: ["cta_title", "cta_subtitle", "cta_button"] },
   faq: { label: "Perguntas Frequentes", icon: "❓", description: "Perguntas e respostas do site", keys: ["faq_label", "faq_title", "faq_subtitle", "faq_data"] },
-  gallery: { label: "Galeria de Fotos", icon: "🖼️", description: "Títulos da seção de fotos", keys: ["gallery_label", "gallery_title", "gallery_subtitle"] },
+  
   footer: { label: "Rodapé", icon: "📄", description: "Textos do rodapé do site", keys: ["footer_description", "footer_copyright"] },
   contact_page: { label: "Página de Contato", icon: "📞", description: "Textos da página dedicada de contato", keys: ["contact_page_label", "contact_page_title", "contact_page_subtitle", "contact_page_cta_title", "contact_page_cta_subtitle"] },
   general: { label: "Configurações Gerais", icon: "⚙️", description: "WhatsApp e nome no cabeçalho", keys: ["whatsapp_number", "header_brand_name"] },
@@ -77,9 +77,6 @@ const keyLabels: Record<string, { label: string; hint?: string }> = {
   faq_title: { label: "Título" },
   faq_subtitle: { label: "Subtítulo" },
   faq_data: { label: "Perguntas e respostas", hint: "⚠️ Formato JSON — edite com cuidado" },
-  gallery_label: { label: "Etiqueta" },
-  gallery_title: { label: "Título" },
-  gallery_subtitle: { label: "Subtítulo" },
   footer_description: { label: "Descrição da clínica" },
   footer_copyright: { label: "Copyright" },
   contact_page_label: { label: "Etiqueta" },

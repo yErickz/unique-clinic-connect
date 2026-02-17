@@ -1,17 +1,30 @@
 import { motion } from "framer-motion";
-import { Building2, Stethoscope, TestTube, Armchair, Monitor } from "lucide-react";
+import { Building2, Stethoscope, TestTube, Armchair, Monitor, Heart, Activity, Baby, Bed, Pill, type LucideIcon } from "lucide-react";
 import { useSiteContent } from "@/hooks/useSiteContent";
 
-const spaces = [
-  { icon: Building2, label: "Recepção", description: "Ambiente amplo e acolhedor", span: "col-span-1 md:col-span-2 row-span-1", gradient: "from-primary/15 to-accent/10" },
-  { icon: Stethoscope, label: "Consultório", description: "Equipamentos modernos", span: "col-span-1 row-span-1", gradient: "from-accent/15 to-primary/10" },
-  { icon: TestTube, label: "Laboratório", description: "Resultados em até 24h", span: "col-span-1 row-span-1", gradient: "from-primary/10 to-accent/15" },
-  { icon: Armchair, label: "Sala de Espera", description: "Conforto e tranquilidade", span: "col-span-1 row-span-1", gradient: "from-accent/10 to-primary/15" },
-  { icon: Monitor, label: "Centro de Diagnóstico", description: "Tecnologia de ponta", span: "col-span-1 md:col-span-2 row-span-1", gradient: "from-primary/15 to-accent/10" },
+const iconMap: Record<string, LucideIcon> = {
+  Building2, Stethoscope, TestTube, Armchair, Monitor, Heart, Activity, Baby, Bed, Pill,
+};
+
+const defaultSpaces = [
+  { icon: "Building2", label: "Recepção", description: "Ambiente amplo e acolhedor", span: "wide" },
+  { icon: "Stethoscope", label: "Consultório", description: "Equipamentos modernos", span: "normal" },
+  { icon: "TestTube", label: "Laboratório", description: "Resultados em até 24h", span: "normal" },
+  { icon: "Armchair", label: "Sala de Espera", description: "Conforto e tranquilidade", span: "normal" },
+  { icon: "Monitor", label: "Centro de Diagnóstico", description: "Tecnologia de ponta", span: "wide" },
+];
+
+const gradients = [
+  "from-primary/15 to-accent/10",
+  "from-accent/15 to-primary/10",
+  "from-primary/10 to-accent/15",
+  "from-accent/10 to-primary/15",
+  "from-primary/15 to-accent/10",
 ];
 
 const ClinicGallerySection = () => {
-  const { c } = useSiteContent();
+  const { c, cJson } = useSiteContent();
+  const spaces = cJson<{ icon: string; label: string; description: string; span: string }[]>("gallery_data", defaultSpaces);
 
   return (
     <section className="py-20">
@@ -34,24 +47,30 @@ const ClinicGallerySection = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
-          {spaces.map((space, i) => (
-            <motion.div
-              key={space.label}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className={`${space.span} group relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br ${space.gradient} cursor-default`}
-            >
-              <div className="flex flex-col items-center justify-center text-center p-10 min-h-[180px] transition-transform duration-300 group-hover:scale-[1.03]">
-                <div className="w-14 h-14 rounded-2xl bg-card/80 border border-border flex items-center justify-center mb-4 shadow-sm">
-                  <space.icon className="w-7 h-7 text-primary" />
+          {spaces.map((space, i) => {
+            const Icon = iconMap[space.icon] || Building2;
+            const spanClass = space.span === "wide" ? "col-span-1 md:col-span-2 row-span-1" : "col-span-1 row-span-1";
+            const gradient = gradients[i % gradients.length];
+
+            return (
+              <motion.div
+                key={`${space.label}-${i}`}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className={`${spanClass} group relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br ${gradient} cursor-default`}
+              >
+                <div className="flex flex-col items-center justify-center text-center p-10 min-h-[180px] transition-transform duration-300 group-hover:scale-[1.03]">
+                  <div className="w-14 h-14 rounded-2xl bg-card/80 border border-border flex items-center justify-center mb-4 shadow-sm">
+                    <Icon className="w-7 h-7 text-primary" />
+                  </div>
+                  <h3 className="font-bold text-foreground text-lg mb-1">{space.label}</h3>
+                  <p className="text-sm text-muted-foreground">{space.description}</p>
                 </div>
-                <h3 className="font-bold text-foreground text-lg mb-1">{space.label}</h3>
-                <p className="text-sm text-muted-foreground">{space.description}</p>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
 
         <motion.p

@@ -23,6 +23,7 @@ import AdminDoctors from "./pages/admin/AdminDoctors";
 import AdminInstitutes from "./pages/admin/AdminInstitutes";
 import AdminTestimonials from "./pages/admin/AdminTestimonials";
 import AdminContent from "./pages/admin/AdminContent";
+import AdminGallery from "./pages/admin/AdminGallery";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const App = () => (
               <Route path="medicos" element={<AdminDoctors />} />
               <Route path="institutos" element={<AdminInstitutes />} />
               <Route path="depoimentos" element={<AdminTestimonials />} />
+              <Route path="galeria" element={<AdminGallery />} />
               <Route path="conteudo" element={<AdminContent />} />
             </Route>
 
