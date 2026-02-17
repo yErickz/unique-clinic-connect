@@ -5,16 +5,53 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Pencil, Trash2, Users, X, Save, LayoutGrid, LayoutList, Stethoscope, BadgeCheck, Upload, User } from "lucide-react";
+import { Plus, Pencil, Trash2, Users, X, Save, LayoutGrid, LayoutList, Stethoscope, BadgeCheck, Upload, User, GripVertical } from "lucide-react";
 import { toast } from "sonner";
 import { ExpandableAdminCard } from "@/components/admin/ExpandableAdminCard";
 import ImageCropDialog from "@/components/admin/ImageCropDialog";
+import {
+  DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragOverlay, type DragEndEvent, type DragStartEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
 type Doctor = Tables<"doctors">;
 
 const emptyDoctor: Partial<TablesInsert<"doctors">> = {
   name: "", specialty: "", crm: "", bio: "",
+};
+
+// Sortable row for drag-and-drop
+const SortableDoctorRow = ({ doc, onEdit, onDelete }: { doc: Doctor; onEdit: (d: Doctor) => void; onDelete: (id: string) => void }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: doc.id });
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 };
+  return (
+    <div ref={setNodeRef} style={style} className="bg-card rounded-xl border border-border p-4 flex items-center justify-between group hover:border-accent/30 transition-colors">
+      <div className="flex items-center gap-3 min-w-0">
+        <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground shrink-0 touch-none">
+          <GripVertical size={16} />
+        </button>
+        {doc.photo_url ? (
+          <img src={doc.photo_url} alt={doc.name} className="w-9 h-9 rounded-full object-cover shrink-0 border border-border" />
+        ) : (
+          <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-muted-foreground shrink-0">
+            {doc.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+          </div>
+        )}
+        <div className="min-w-0">
+          <p className="font-medium text-sm text-foreground">{doc.name}</p>
+          <p className="text-xs text-muted-foreground">{doc.specialty} · CRM {doc.crm}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onEdit(doc)}><Pencil className="w-3.5 h-3.5" /></Button>
+        <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover este médico?")) onDelete(doc.id); }}><Trash2 className="w-3.5 h-3.5" /></Button>
+      </div>
+    </div>
+  );
 };
 
 const AdminDoctors = () => {
@@ -93,6 +130,38 @@ const AdminDoctors = () => {
       toast.success("Médico removido!");
     },
   });
+
+  const reorderMutation = useMutation({
+    mutationFn: async (reordered: Doctor[]) => {
+      for (let i = 0; i < reordered.length; i++) {
+        await supabase.from("doctors").update({ display_order: i }).eq("id", reordered[i].id);
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-doctors"] });
+    },
+    onError: () => toast.error("Erro ao reordenar."),
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const handleDragStart = (event: DragStartEvent) => setActiveId(String(event.active.id));
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveId(null);
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = doctors.findIndex((d) => d.id === active.id);
+    const newIndex = doctors.findIndex((d) => d.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+    const reordered = arrayMove([...doctors], oldIndex, newIndex);
+    // Optimistic update
+    qc.setQueryData(["admin-doctors"], reordered);
+    reorderMutation.mutate(reordered);
+  };
 
   const closeForm = () => { setShowForm(false); setEditing(null); setForm(emptyDoctor); setPhotoUrl(""); };
 
@@ -278,29 +347,37 @@ const AdminDoctors = () => {
           <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" /> Carregando...
         </div>
       ) : viewMode === "list" ? (
-          <div className="space-y-2">
-            {doctors.map((doc) => (
-              <div key={doc.id} className="bg-card rounded-xl border border-border p-4 flex items-center justify-between group hover:border-accent/30 transition-colors">
-                <div className="flex items-center gap-3 min-w-0">
-                  {doc.photo_url ? (
-                    <img src={doc.photo_url} alt={doc.name} className="w-9 h-9 rounded-full object-cover shrink-0 border border-border" />
-                  ) : (
-                    <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-muted-foreground shrink-0">
-                      {doc.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
-                    </div>
-                  )}
-                  <div className="min-w-0">
-                    <p className="font-medium text-sm text-foreground">{doc.name}</p>
-                    <p className="text-xs text-muted-foreground">{doc.specialty} · CRM {doc.crm}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openEdit(doc)}><Pencil className="w-3.5 h-3.5" /></Button>
-                  <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover este médico?")) deleteMutation.mutate(doc.id); }}><Trash2 className="w-3.5 h-3.5" /></Button>
-                </div>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            <SortableContext items={doctors.map((d) => d.id)} strategy={verticalListSortingStrategy}>
+              <div className="space-y-2">
+                {doctors.map((doc) => (
+                  <SortableDoctorRow key={doc.id} doc={doc} onEdit={openEdit} onDelete={(id) => { if (confirm("Remover este médico?")) deleteMutation.mutate(id); }} />
+                ))}
               </div>
-            ))}
-          </div>
+            </SortableContext>
+            <DragOverlay dropAnimation={null}>
+              {activeId ? (() => {
+                const doc = doctors.find((d) => d.id === activeId);
+                if (!doc) return null;
+                return (
+                  <div className="bg-card rounded-xl border border-accent/30 p-4 flex items-center gap-3 shadow-lg opacity-90">
+                    <GripVertical size={16} className="text-muted-foreground" />
+                    {doc.photo_url ? (
+                      <img src={doc.photo_url} alt={doc.name} className="w-9 h-9 rounded-full object-cover border border-border" />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-muted-foreground">
+                        {doc.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-medium text-sm text-foreground">{doc.name}</p>
+                      <p className="text-xs text-muted-foreground">{doc.specialty}</p>
+                    </div>
+                  </div>
+                );
+              })() : null}
+            </DragOverlay>
+          </DndContext>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {doctors.map((doc) => {
