@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Save, ExternalLink, Upload, X, ImageIcon, Building2, LayoutList, Type } from "lucide-react";
 import { toast } from "sonner";
 import ImageCropDialog from "@/components/admin/ImageCropDialog";
@@ -18,7 +17,6 @@ const empty: Partial<TablesInsert<"institutes">> = {
   name: "", slug: "", category: "", description: "", icon: "Heart", services: [],
 };
 
-/* ── Page content keys ── */
 const pageFields = [
   { key: "institutes_page_label", label: "Etiqueta", hint: "Ex: Especialidades" },
   { key: "institutes_page_title", label: "Título da Página" },
@@ -30,7 +28,7 @@ const pageFields = [
 
 const AdminInstitutes = () => {
   const qc = useQueryClient();
-  const [open, setOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Institute | null>(null);
   const [form, setForm] = useState(empty);
   const [servicesText, setServicesText] = useState("");
@@ -82,14 +80,13 @@ const AdminInstitutes = () => {
       qc.invalidateQueries({ queryKey: ["admin-institute-count"] });
       qc.invalidateQueries({ queryKey: ["public-institutes"] });
       toast.success(editing ? "Instituto atualizado!" : "Instituto adicionado!");
-      closeDialog();
+      closeForm();
     },
     onError: () => toast.error("Erro ao salvar instituto."),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      // Clean up image
       const inst = institutes.find((i) => i.id === id);
       if (inst?.image_url) {
         const path = inst.image_url.split("/gallery/")[1];
@@ -122,8 +119,8 @@ const AdminInstitutes = () => {
     onError: () => toast.error("Erro ao salvar."),
   });
 
-  const closeDialog = () => {
-    setOpen(false);
+  const closeForm = () => {
+    setShowForm(false);
     setEditing(null);
     setForm(empty);
     setServicesText("");
@@ -135,7 +132,15 @@ const AdminInstitutes = () => {
     setForm({ name: inst.name, slug: inst.slug, category: inst.category, description: inst.description, icon: inst.icon });
     setServicesText(inst.services.join(", "));
     setImageUrl(inst.image_url || "");
-    setOpen(true);
+    setShowForm(true);
+  };
+
+  const openNew = () => {
+    setEditing(null);
+    setForm(empty);
+    setServicesText("");
+    setImageUrl("");
+    setShowForm(true);
   };
 
   const set = (key: string, val: string) => setForm((f) => ({ ...f, [key]: val }));
@@ -153,18 +158,15 @@ const AdminInstitutes = () => {
     setCropState(null);
     setIsUploading(true);
     try {
-      // Remove old image if replacing
       if (imageUrl) {
         const oldPath = imageUrl.split("/gallery/")[1];
         if (oldPath) await supabase.storage.from("gallery").remove([oldPath]);
       }
-
       const fileName = `institutes/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
       const { error: uploadError } = await supabase.storage
         .from("gallery")
         .upload(fileName, croppedBlob, { cacheControl: "3600", upsert: false, contentType: "image/jpeg" });
       if (uploadError) throw uploadError;
-
       const { data: { publicUrl } } = supabase.storage.from("gallery").getPublicUrl(fileName);
       setImageUrl(publicUrl);
       toast.success("Foto enviada!");
@@ -203,7 +205,6 @@ const AdminInstitutes = () => {
         return { id: item.id, value: newValue };
       })
       .filter(Boolean) as { id: string; value: string }[];
-
     if (updates.length === 0) {
       toast.info("Nenhuma alteração detectada.");
       return;
@@ -240,128 +241,117 @@ const AdminInstitutes = () => {
           <TabsTrigger value="page" className="gap-1.5"><Type size={14} /> Textos da Página</TabsTrigger>
         </TabsList>
 
-        {/* ── Tab: Lista de Institutos ── */}
         <TabsContent value="list">
-          <div className="flex justify-end mb-4">
-            <Dialog open={open} onOpenChange={(v) => { if (!v) closeDialog(); else setOpen(true); }}>
-              <DialogTrigger asChild>
-                <Button className="hero-gradient border-0 text-primary-foreground">
-                  <Plus className="w-4 h-4 mr-2" /> Adicionar
+          {/* Add button */}
+          {!showForm && (
+            <div className="flex justify-end mb-4">
+              <Button className="hero-gradient border-0 text-primary-foreground" onClick={openNew}>
+                <Plus className="w-4 h-4 mr-2" /> Adicionar
+              </Button>
+            </div>
+          )}
+
+          {/* Inline Form */}
+          {showForm && (
+            <div className="bg-card rounded-xl border border-accent/30 p-5 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-semibold text-foreground">{editing ? "Editar Instituto" : "Novo Instituto"}</h2>
+                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={closeForm}>
+                  <X className="w-4 h-4" />
                 </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>{editing ? "Editar Instituto" : "Novo Instituto"}</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-4">
-                  {/* Image upload */}
-                  <div>
-                    <Label className="mb-2 block">Foto de Capa</Label>
-                    {imageUrl ? (
-                      <div className="relative inline-block">
-                        <img src={imageUrl} alt="Capa" className="w-full h-40 rounded-lg object-cover border border-border" />
-                        <button
-                          type="button"
-                          onClick={removeImage}
-                          className="absolute top-1.5 right-1.5 p-1 rounded-full bg-destructive text-destructive-foreground shadow-md hover:bg-destructive/90"
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    ) : (
+              </div>
+              <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-4">
+                {/* Image upload */}
+                <div>
+                  <Label className="mb-2 block">Foto de Capa</Label>
+                  {imageUrl ? (
+                    <div className="relative inline-block">
+                      <img src={imageUrl} alt="Capa" className="w-full h-40 rounded-lg object-cover border border-border" />
                       <button
                         type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={isUploading}
-                        className="w-full h-32 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                        onClick={removeImage}
+                        className="absolute top-1.5 right-1.5 p-1 rounded-full bg-destructive text-destructive-foreground shadow-md hover:bg-destructive/90"
                       >
-                        {isUploading ? (
-                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
-                        ) : (
-                          <>
-                            <Upload size={20} />
-                            <span className="text-xs">Clique para enviar uma foto</span>
-                          </>
-                        )}
+                        <X size={14} />
                       </button>
-                    )}
-                    <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
-                    {imageUrl && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="mt-2 gap-1.5"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={isUploading}
-                      >
-                        <Upload size={14} />
-                        {isUploading ? "Enviando..." : "Trocar foto"}
-                      </Button>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                      className="w-full h-32 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {isUploading ? (
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+                      ) : (
+                        <>
+                          <Upload size={20} />
+                          <span className="text-xs">Clique para enviar uma foto</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                  <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
+                  {imageUrl && (
+                    <Button type="button" variant="outline" size="sm" className="mt-2 gap-1.5" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
+                      <Upload size={14} />
+                      {isUploading ? "Enviando..." : "Trocar foto"}
+                    </Button>
+                  )}
+                </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div><Label>Nome</Label><Input value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} required /></div>
-                    <div><Label>Slug</Label><Input value={form.slug ?? ""} onChange={(e) => set("slug", e.target.value)} required placeholder="cardiologia" /></div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div><Label>Categoria</Label><Input value={form.category ?? ""} onChange={(e) => set("category", e.target.value)} /></div>
-                    <div><Label>Ícone</Label><Input value={form.icon ?? "Heart"} onChange={(e) => set("icon", e.target.value)} placeholder="Heart" /></div>
-                  </div>
-                  <div><Label>Descrição</Label><Textarea value={form.description ?? ""} onChange={(e) => set("description", e.target.value)} rows={3} /></div>
-                  <div><Label>Serviços (separados por vírgula)</Label><Input value={servicesText} onChange={(e) => setServicesText(e.target.value)} placeholder="Exame 1, Exame 2" /></div>
-                  <div className="flex justify-end gap-2">
-                    <Button type="button" variant="outline" onClick={closeDialog}>Cancelar</Button>
-                    <Button type="submit" disabled={saveMutation.isPending || isUploading}>{saveMutation.isPending ? "Salvando..." : "Salvar"}</Button>
-                  </div>
-                </form>
-              </DialogContent>
-            </Dialog>
-          </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div><Label>Nome</Label><Input value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} required /></div>
+                  <div><Label>Slug</Label><Input value={form.slug ?? ""} onChange={(e) => set("slug", e.target.value)} required placeholder="cardiologia" /></div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div><Label>Categoria</Label><Input value={form.category ?? ""} onChange={(e) => set("category", e.target.value)} /></div>
+                  <div><Label>Ícone</Label><Input value={form.icon ?? "Heart"} onChange={(e) => set("icon", e.target.value)} placeholder="Heart" /></div>
+                </div>
+                <div><Label>Descrição</Label><Textarea value={form.description ?? ""} onChange={(e) => set("description", e.target.value)} rows={3} /></div>
+                <div><Label>Serviços (separados por vírgula)</Label><Input value={servicesText} onChange={(e) => setServicesText(e.target.value)} placeholder="Exame 1, Exame 2" /></div>
+                <div className="flex justify-end gap-2 pt-2 border-t border-border">
+                  <Button type="button" variant="outline" size="sm" onClick={closeForm}>Cancelar</Button>
+                  <Button type="submit" size="sm" disabled={saveMutation.isPending || isUploading} className="gap-1.5">
+                    <Save size={14} />
+                    {saveMutation.isPending ? "Salvando..." : "Salvar"}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          )}
 
           {isLoading ? (
             <p className="text-muted-foreground">Carregando...</p>
           ) : (
-            <div className="bg-card rounded-2xl border border-border overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-secondary/50">
-                  <tr>
-                    <th className="text-left p-3 font-medium text-muted-foreground">Foto</th>
-                    <th className="text-left p-3 font-medium text-muted-foreground">Nome</th>
-                    <th className="text-left p-3 font-medium text-muted-foreground">Categoria</th>
-                    <th className="text-left p-3 font-medium text-muted-foreground">Serviços</th>
-                    <th className="text-right p-3 font-medium text-muted-foreground">Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {institutes.map((inst) => (
-                    <tr key={inst.id} className="border-t border-border hover:bg-secondary/20 transition-colors">
-                      <td className="p-3">
-                        {inst.image_url ? (
-                          <img src={inst.image_url} alt={inst.name} className="w-12 h-8 rounded object-cover" />
-                        ) : (
-                          <div className="w-12 h-8 rounded bg-muted flex items-center justify-center">
-                            <ImageIcon size={14} className="text-muted-foreground" />
-                          </div>
-                        )}
-                      </td>
-                      <td className="p-3 font-medium text-foreground">{inst.name}</td>
-                      <td className="p-3 text-muted-foreground">{inst.category}</td>
-                      <td className="p-3 text-muted-foreground">{inst.services.length}</td>
-                      <td className="p-3 text-right">
-                        <Button size="sm" variant="ghost" onClick={() => openEdit(inst)}><Pencil className="w-4 h-4" /></Button>
-                        <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(inst.id); }}><Trash2 className="w-4 h-4" /></Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="space-y-2">
+              {institutes.map((inst) => (
+                <div key={inst.id} className="bg-card rounded-xl border border-border p-4 flex items-center justify-between group hover:border-accent/30 transition-colors">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {inst.image_url ? (
+                      <img src={inst.image_url} alt={inst.name} className="w-12 h-9 rounded-lg object-cover shrink-0" />
+                    ) : (
+                      <div className="w-12 h-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                        <ImageIcon size={14} className="text-muted-foreground" />
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm text-foreground">{inst.name}</p>
+                      <p className="text-xs text-muted-foreground">{inst.category} · {inst.services.length} serviços</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openEdit(inst)}><Pencil className="w-3.5 h-3.5" /></Button>
+                    <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(inst.id); }}><Trash2 className="w-3.5 h-3.5" /></Button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </TabsContent>
 
-        {/* ── Tab: Textos da Página ── */}
+        {/* Tab: Textos da Página */}
         <TabsContent value="page">
           <div className="bg-card rounded-xl border border-border p-6 max-w-2xl">
             <div className="flex items-center justify-between mb-6">
@@ -426,7 +416,7 @@ const AdminInstitutes = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Crop Dialog */}
+      {/* Crop Dialog - keeping this as it's not a modal form, it's a utility */}
       <ImageCropDialog
         open={!!cropState}
         imageSrc={cropState?.imageSrc ?? ""}

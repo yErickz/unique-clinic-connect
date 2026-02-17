@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, Users } from "lucide-react";
+import { Plus, Pencil, Trash2, Users, X, Save } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
@@ -19,7 +18,7 @@ const emptyDoctor: Partial<TablesInsert<"doctors">> = {
 
 const AdminDoctors = () => {
   const qc = useQueryClient();
-  const [open, setOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Doctor | null>(null);
   const [form, setForm] = useState(emptyDoctor);
 
@@ -54,7 +53,7 @@ const AdminDoctors = () => {
       qc.invalidateQueries({ queryKey: ["admin-doctors"] });
       qc.invalidateQueries({ queryKey: ["admin-doctor-count"] });
       toast.success(editing ? "Médico atualizado!" : "Médico adicionado!");
-      closeDialog();
+      closeForm();
     },
     onError: () => toast.error("Erro ao salvar médico."),
   });
@@ -71,12 +70,18 @@ const AdminDoctors = () => {
     },
   });
 
-  const closeDialog = () => { setOpen(false); setEditing(null); setForm(emptyDoctor); };
+  const closeForm = () => { setShowForm(false); setEditing(null); setForm(emptyDoctor); };
 
   const openEdit = (doc: Doctor) => {
     setEditing(doc);
     setForm({ name: doc.name, slug: doc.slug, specialty: doc.specialty, crm: doc.crm, bio: doc.bio, institute_id: doc.institute_id });
-    setOpen(true);
+    setShowForm(true);
+  };
+
+  const openNew = () => {
+    setEditing(null);
+    setForm(emptyDoctor);
+    setShowForm(true);
   };
 
   const set = (key: string, val: string | null) => setForm((f) => ({ ...f, [key]: val }));
@@ -94,42 +99,52 @@ const AdminDoctors = () => {
             <p className="text-xs text-muted-foreground">{doctors.length} cadastrados</p>
           </div>
         </div>
-        <Dialog open={open} onOpenChange={(v) => { if (!v) closeDialog(); else setOpen(true); }}>
-          <DialogTrigger asChild>
-            <Button size="sm" className="hero-gradient border-0 text-primary-foreground gap-1.5">
-              <Plus className="w-4 h-4" /> Adicionar
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-lg">
-            <DialogHeader><DialogTitle>{editing ? "Editar Médico" : "Novo Médico"}</DialogTitle></DialogHeader>
-            <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div><Label>Nome</Label><Input value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} required /></div>
-                <div><Label>Slug</Label><Input value={form.slug ?? ""} onChange={(e) => set("slug", e.target.value)} required placeholder="dr-nome" /></div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><Label>Especialidade</Label><Input value={form.specialty ?? ""} onChange={(e) => set("specialty", e.target.value)} required /></div>
-                <div><Label>CRM</Label><Input value={form.crm ?? ""} onChange={(e) => set("crm", e.target.value)} required /></div>
-              </div>
-              <div>
-                <Label>Instituto</Label>
-                <Select value={form.institute_id ?? "none"} onValueChange={(v) => set("institute_id", v === "none" ? null : v)}>
-                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Nenhum</SelectItem>
-                    {institutes.map((i) => <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div><Label>Bio</Label><Textarea value={form.bio ?? ""} onChange={(e) => set("bio", e.target.value)} rows={3} /></div>
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={closeDialog}>Cancelar</Button>
-                <Button type="submit" disabled={saveMutation.isPending}>{saveMutation.isPending ? "Salvando..." : "Salvar"}</Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+        {!showForm && (
+          <Button size="sm" className="hero-gradient border-0 text-primary-foreground gap-1.5" onClick={openNew}>
+            <Plus className="w-4 h-4" /> Adicionar
+          </Button>
+        )}
       </div>
+
+      {/* Inline Form */}
+      {showForm && (
+        <div className="bg-card rounded-xl border border-accent/30 p-5 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-foreground">{editing ? "Editar Médico" : "Novo Médico"}</h2>
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={closeForm}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+          <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div><Label>Nome</Label><Input value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} required /></div>
+              <div><Label>Slug</Label><Input value={form.slug ?? ""} onChange={(e) => set("slug", e.target.value)} required placeholder="dr-nome" /></div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div><Label>Especialidade</Label><Input value={form.specialty ?? ""} onChange={(e) => set("specialty", e.target.value)} required /></div>
+              <div><Label>CRM</Label><Input value={form.crm ?? ""} onChange={(e) => set("crm", e.target.value)} required /></div>
+            </div>
+            <div>
+              <Label>Instituto</Label>
+              <Select value={form.institute_id ?? "none"} onValueChange={(v) => set("institute_id", v === "none" ? null : v)}>
+                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Nenhum</SelectItem>
+                  {institutes.map((i) => <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div><Label>Bio</Label><Textarea value={form.bio ?? ""} onChange={(e) => set("bio", e.target.value)} rows={3} /></div>
+            <div className="flex justify-end gap-2 pt-2 border-t border-border">
+              <Button type="button" variant="outline" size="sm" onClick={closeForm}>Cancelar</Button>
+              <Button type="submit" size="sm" disabled={saveMutation.isPending} className="gap-1.5">
+                <Save className="w-3.5 h-3.5" />
+                {saveMutation.isPending ? "Salvando..." : "Salvar"}
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* List */}
       {isLoading ? (

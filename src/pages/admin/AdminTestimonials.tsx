@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, Trash2, Star, MessageSquareQuote, Eye, EyeOff } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, MessageSquareQuote, Eye, EyeOff, X, Save } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
@@ -19,7 +18,7 @@ const empty: Partial<TablesInsert<"testimonials">> = {
 
 const AdminTestimonials = () => {
   const qc = useQueryClient();
-  const [open, setOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Testimonial | null>(null);
   const [form, setForm] = useState(empty);
 
@@ -46,7 +45,7 @@ const AdminTestimonials = () => {
       qc.invalidateQueries({ queryKey: ["admin-testimonials"] });
       qc.invalidateQueries({ queryKey: ["admin-testimonial-count"] });
       toast.success(editing ? "Depoimento atualizado!" : "Depoimento adicionado!");
-      closeDialog();
+      closeForm();
     },
     onError: () => toast.error("Erro ao salvar."),
   });
@@ -74,12 +73,18 @@ const AdminTestimonials = () => {
     },
   });
 
-  const closeDialog = () => { setOpen(false); setEditing(null); setForm(empty); };
+  const closeForm = () => { setShowForm(false); setEditing(null); setForm(empty); };
 
   const openEdit = (t: Testimonial) => {
     setEditing(t);
     setForm({ quote: t.quote, patient_initials: t.patient_initials, specialty: t.specialty, rating: t.rating, is_published: t.is_published });
-    setOpen(true);
+    setShowForm(true);
+  };
+
+  const openNew = () => {
+    setEditing(null);
+    setForm(empty);
+    setShowForm(true);
   };
 
   const set = (key: string, val: any) => setForm((f) => ({ ...f, [key]: val }));
@@ -100,38 +105,48 @@ const AdminTestimonials = () => {
             <p className="text-xs text-muted-foreground">{published} publicados · {draft} rascunhos</p>
           </div>
         </div>
-        <Dialog open={open} onOpenChange={(v) => { if (!v) closeDialog(); else setOpen(true); }}>
-          <DialogTrigger asChild>
-            <Button size="sm" className="hero-gradient border-0 text-primary-foreground gap-1.5">
-              <Plus className="w-4 h-4" /> Adicionar
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-lg">
-            <DialogHeader><DialogTitle>{editing ? "Editar Depoimento" : "Novo Depoimento"}</DialogTitle></DialogHeader>
-            <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-4">
-              <div><Label>Depoimento</Label><Textarea value={form.quote ?? ""} onChange={(e) => set("quote", e.target.value)} required rows={3} /></div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><Label>Iniciais do Paciente</Label><Input value={form.patient_initials ?? ""} onChange={(e) => set("patient_initials", e.target.value)} required placeholder="M.S." /></div>
-                <div><Label>Especialidade</Label><Input value={form.specialty ?? ""} onChange={(e) => set("specialty", e.target.value)} required /></div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Avaliação (1-5)</Label>
-                  <Input type="number" min={1} max={5} value={form.rating ?? 5} onChange={(e) => set("rating", parseInt(e.target.value))} />
-                </div>
-                <div className="flex items-center gap-2 pt-6">
-                  <Switch checked={!!form.is_published} onCheckedChange={(v) => set("is_published", v)} />
-                  <Label>Publicado</Label>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={closeDialog}>Cancelar</Button>
-                <Button type="submit" disabled={saveMutation.isPending}>{saveMutation.isPending ? "Salvando..." : "Salvar"}</Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+        {!showForm && (
+          <Button size="sm" className="hero-gradient border-0 text-primary-foreground gap-1.5" onClick={openNew}>
+            <Plus className="w-4 h-4" /> Adicionar
+          </Button>
+        )}
       </div>
+
+      {/* Inline Form */}
+      {showForm && (
+        <div className="bg-card rounded-xl border border-accent/30 p-5 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-foreground">{editing ? "Editar Depoimento" : "Novo Depoimento"}</h2>
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={closeForm}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+          <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-4">
+            <div><Label>Depoimento</Label><Textarea value={form.quote ?? ""} onChange={(e) => set("quote", e.target.value)} required rows={3} /></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div><Label>Iniciais do Paciente</Label><Input value={form.patient_initials ?? ""} onChange={(e) => set("patient_initials", e.target.value)} required placeholder="M.S." /></div>
+              <div><Label>Especialidade</Label><Input value={form.specialty ?? ""} onChange={(e) => set("specialty", e.target.value)} required /></div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label>Avaliação (1-5)</Label>
+                <Input type="number" min={1} max={5} value={form.rating ?? 5} onChange={(e) => set("rating", parseInt(e.target.value))} />
+              </div>
+              <div className="flex items-center gap-2 pt-6">
+                <Switch checked={!!form.is_published} onCheckedChange={(v) => set("is_published", v)} />
+                <Label>Publicado</Label>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 pt-2 border-t border-border">
+              <Button type="button" variant="outline" size="sm" onClick={closeForm}>Cancelar</Button>
+              <Button type="submit" size="sm" disabled={saveMutation.isPending} className="gap-1.5">
+                <Save className="w-3.5 h-3.5" />
+                {saveMutation.isPending ? "Salvando..." : "Salvar"}
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* List */}
       {isLoading ? (
