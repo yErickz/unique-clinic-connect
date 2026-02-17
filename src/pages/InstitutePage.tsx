@@ -2,20 +2,48 @@ import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Phone, CheckCircle, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import DoctorCard from "@/components/DoctorCard";
-import { institutes, doctors, getWhatsAppLink } from "@/data/mockData";
+import { getWhatsAppLink } from "@/data/mockData";
 
 const InstitutePage = () => {
   const { id } = useParams();
-  const institute = institutes.find((i) => i.id === id);
-  const instituteDoctors = doctors.filter((d) => d.instituteId === id);
+
+  const { data: institute, isLoading } = useQuery({
+    queryKey: ["public-institute", id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("institutes").select("*").eq("slug", id!).maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
+
+  const { data: instituteDoctors = [] } = useQuery({
+    queryKey: ["public-institute-doctors", institute?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("doctors").select("*").eq("institute_id", institute!.id).order("display_order");
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!institute?.id,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-32">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   if (!institute) {
     return (
       <div className="min-h-screen flex items-center justify-center pt-32">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-2">Instituto não encontrado</h1>
-          <Link to="/" className="text-primary hover:underline text-sm">Voltar ao início</Link>
+          <Link to="/institutos" className="text-primary hover:underline text-sm">Voltar aos institutos</Link>
         </div>
       </div>
     );
@@ -24,8 +52,8 @@ const InstitutePage = () => {
   return (
     <main className="pt-32 pb-20">
       <div className="container mx-auto px-4">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8">
-          <ArrowLeft className="w-4 h-4" /> Voltar para Início
+        <Link to="/institutos" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8">
+          <ArrowLeft className="w-4 h-4" /> Voltar para Institutos
         </Link>
 
         <div className="grid lg:grid-cols-3 gap-10">
@@ -40,38 +68,42 @@ const InstitutePage = () => {
             </motion.div>
 
             {/* Serviços */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="mb-12"
-            >
-              <h2 className="text-xl font-semibold text-foreground mb-5">Serviços e Exames</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {institute.services.map((service) => (
-                  <div key={service} className="flex items-center gap-3 bg-secondary/50 rounded-xl p-4">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <CheckCircle className="w-4 h-4 text-primary" />
+            {institute.services.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="mb-12"
+              >
+                <h2 className="text-xl font-semibold text-foreground mb-5">Serviços e Exames</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {institute.services.map((service) => (
+                    <div key={service} className="flex items-center gap-3 bg-secondary/50 rounded-xl p-4">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <CheckCircle className="w-4 h-4 text-primary" />
+                      </div>
+                      <span className="text-sm font-medium text-foreground">{service}</span>
                     </div>
-                    <span className="text-sm font-medium text-foreground">{service}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
 
             {/* Médicos */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <h2 className="text-xl font-semibold text-foreground mb-5">Corpo Clínico</h2>
-              <div className="grid grid-cols-1 gap-4">
-                {instituteDoctors.map((doc, i) => (
-                  <DoctorCard key={doc.id} doctor={doc} index={i} />
-                ))}
-              </div>
-            </motion.div>
+            {instituteDoctors.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <h2 className="text-xl font-semibold text-foreground mb-5">Corpo Clínico</h2>
+                <div className="grid grid-cols-1 gap-4">
+                  {instituteDoctors.map((doc, i) => (
+                    <DoctorCard key={doc.id} doctor={{ id: doc.slug, name: doc.name, specialty: doc.specialty, crm: doc.crm, bio: doc.bio, instituteId: doc.institute_id || "", photo: doc.photo_url || undefined }} index={i} />
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </div>
 
           {/* Sidebar */}
