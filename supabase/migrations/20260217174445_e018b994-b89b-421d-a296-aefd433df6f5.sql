@@ -1,0 +1,3 @@
+INSERT INTO public.site_content (key, value)
+VALUES ('gallery_data', '[{"icon":"Building2","label":"Recepção","description":"Ambiente amplo e acolhedor","span":"wide"},{"icon":"Stethoscope","label":"Consultório","description":"Equipamentos modernos","span":"normal"},{"icon":"TestTube","label":"Laboratório","description":"Resultados em até 24h","span":"normal"},{"icon":"Armchair","label":"Sala de Espera","description":"Conforto e tranquilidade","span":"normal"},{"icon":"Monitor","label":"Centro de Diagnóstico","description":"Tecnologia de ponta","span":"wide"}]')
+ON CONFLICT (key) DO NOTHING;
