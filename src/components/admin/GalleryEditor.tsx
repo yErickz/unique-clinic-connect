@@ -1,7 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Trash2, Plus, ChevronDown, ChevronUp, GripVertical, Upload, ImageIcon, X } from "lucide-react";
+import { Trash2, Plus, ChevronDown, ChevronUp, GripVertical, Upload, ImageIcon, X, Eye, EyeOff } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
+import GalleryPreview from "@/components/admin/GalleryPreview";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import ImageCropDialog from "@/components/admin/ImageCropDialog";
@@ -210,6 +211,7 @@ const SortableSpaceItem = ({
 const GalleryEditor = ({ value, onChange }: GalleryEditorProps) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const [cropState, setCropState] = useState<{ index: number; imageSrc: string } | null>(null);
 
@@ -324,6 +326,19 @@ const GalleryEditor = ({ value, onChange }: GalleryEditorProps) => {
 
   return (
     <div className="space-y-2">
+      <div className="flex justify-end mb-1">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={() => setShowPreview((v) => !v)}
+        >
+          {showPreview ? <EyeOff size={14} /> : <Eye size={14} />}
+          {showPreview ? "Ocultar preview" : "Visualizar"}
+        </Button>
+      </div>
+
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <SortableContext items={spaceIds} strategy={verticalListSortingStrategy}>
           {spaces.map((space, i) => (
@@ -361,6 +376,8 @@ const GalleryEditor = ({ value, onChange }: GalleryEditorProps) => {
         <Plus size={14} />
         Adicionar Espaço
       </Button>
+
+      {showPreview && <GalleryPreview spaces={spaces} />}
 
       {/* Crop Dialog */}
       <ImageCropDialog
