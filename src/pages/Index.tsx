@@ -338,7 +338,13 @@ const Index = () => {
             <button
               onClick={() => {
                 const el = document.getElementById("exames-carousel");
-                if (el) el.scrollBy({ left: -240, behavior: "smooth" });
+                if (el) {
+                  if (el.scrollLeft <= 0) {
+                    el.scrollTo({ left: el.scrollWidth, behavior: "smooth" });
+                  } else {
+                    el.scrollBy({ left: -240, behavior: "smooth" });
+                  }
+                }
               }}
               className="absolute -left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card border border-border shadow-md items-center justify-center hover:bg-muted transition-colors z-10 hidden md:!flex"
               aria-label="Anterior"
@@ -348,7 +354,14 @@ const Index = () => {
             <button
               onClick={() => {
                 const el = document.getElementById("exames-carousel");
-                if (el) el.scrollBy({ left: 240, behavior: "smooth" });
+                if (el) {
+                  const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 10;
+                  if (atEnd) {
+                    el.scrollTo({ left: 0, behavior: "smooth" });
+                  } else {
+                    el.scrollBy({ left: 240, behavior: "smooth" });
+                  }
+                }
               }}
               className="absolute -right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card border border-border shadow-md items-center justify-center hover:bg-muted transition-colors z-10 hidden md:!flex"
               aria-label="Próximo"
