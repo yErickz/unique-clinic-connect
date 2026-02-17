@@ -5,6 +5,8 @@ import ServiceCard from "@/components/ServiceCard";
 import { institutes, convenios, getWhatsAppLink } from "@/data/mockData";
 import heroImage from "@/assets/hero-sabin-style.jpg";
 import FaqSection from "@/components/FaqSection";
+import TestimonialsSection from "@/components/TestimonialsSection";
+import ClinicGallerySection from "@/components/ClinicGallerySection";
 import { useRef, useState, useCallback } from "react";
 
 // Import service images
@@ -476,8 +478,14 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Depoimentos */}
+      <TestimonialsSection />
+
       {/* FAQ */}
       <FaqSection />
+
+      {/* Galeria da Clínica */}
+      <ClinicGallerySection />
 
       {/* CTA Final */}
       <section className="relative overflow-hidden">
