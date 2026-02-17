@@ -70,6 +70,7 @@ const Index = () => {
     { name: "Ferro Sérico", price: "R$ 38,00" },
   ]);
 
+  const conveniosData = cJson<{ name: string; logo_url?: string }[]>("convenios_data", []);
   const conveniosList = c("convenios_list", "Bradesco Saúde,Vale").split(",").map(s => s.trim()).filter(Boolean);
 
   const aboutStats = [
@@ -414,21 +415,25 @@ const Index = () => {
             </h2>
             <p className="text-muted-foreground">{c("convenios_subtitle", "Também atendemos de forma particular.")}</p>
           </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl mx-auto">
-            {conveniosList.map((conv, i) => (
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 max-w-4xl mx-auto">
+            {(conveniosData.length > 0 ? conveniosData : conveniosList.map(name => ({ name, logo_url: '' }))).map((conv, i) => (
               <motion.div
-                key={conv}
+                key={conv.name}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                whileHover={{ scale: 1.03, y: -3, transition: { duration: 0.2 } }}
-                className="bg-card border border-border rounded-2xl p-6 card-shadow hover:border-accent hover:card-shadow-hover transition-all cursor-default text-center"
+                whileHover={{ scale: 1.05, y: -3, transition: { duration: 0.2 } }}
+                className="bg-card border border-border rounded-2xl p-6 card-shadow hover:border-accent hover:card-shadow-hover transition-all cursor-default flex flex-col items-center justify-center min-w-[160px]"
               >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                   <Shield className="w-6 h-6 text-primary" />
-                 </div>
-                <span className="font-semibold text-foreground">{conv}</span>
+                {conv.logo_url ? (
+                  <img src={conv.logo_url} alt={conv.name} className="h-16 max-w-[140px] object-contain mb-3" />
+                ) : (
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                    <Shield className="w-6 h-6 text-primary" />
+                  </div>
+                )}
+                <span className="font-semibold text-foreground text-sm">{conv.name}</span>
               </motion.div>
             ))}
             <motion.div
@@ -436,13 +441,13 @@ const Index = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              whileHover={{ scale: 1.03, y: -3, transition: { duration: 0.2 } }}
-              className="bg-secondary/60 border border-border/50 rounded-2xl p-6 card-shadow hover:card-shadow-hover transition-all cursor-default text-center"
+              whileHover={{ scale: 1.05, y: -3, transition: { duration: 0.2 } }}
+              className="bg-secondary/60 border border-border/50 rounded-2xl p-6 card-shadow hover:card-shadow-hover transition-all cursor-default flex flex-col items-center justify-center min-w-[160px]"
             >
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
                 <Heart className="w-6 h-6 text-primary" />
               </div>
-              <span className="font-semibold text-foreground">Particular</span>
+              <span className="font-semibold text-foreground text-sm">Particular</span>
             </motion.div>
           </div>
         </div>

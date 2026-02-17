@@ -24,6 +24,7 @@ import AdminInstitutes from "./pages/admin/AdminInstitutes";
 import AdminTestimonials from "./pages/admin/AdminTestimonials";
 import AdminContent from "./pages/admin/AdminContent";
 import AdminGallery from "./pages/admin/AdminGallery";
+import AdminConvenios from "./pages/admin/AdminConvenios";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,7 @@ const App = () => (
               <Route path="institutos" element={<AdminInstitutes />} />
               <Route path="depoimentos" element={<AdminTestimonials />} />
               <Route path="galeria" element={<AdminGallery />} />
+              <Route path="convenios" element={<AdminConvenios />} />
               <Route path="conteudo" element={<AdminContent />} />
             </Route>
 
