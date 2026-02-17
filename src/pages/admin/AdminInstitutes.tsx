@@ -323,9 +323,9 @@ const AdminInstitutes = () => {
                   <Label>Nome</Label>
                   <Input value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} required />
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div><Label>Categoria</Label><Input value={form.category ?? ""} onChange={(e) => set("category", e.target.value)} placeholder="Ex: Clínica, Cirúrgica" /></div>
-                  <div><Label>Ícone</Label><Input value={form.icon ?? "Heart"} onChange={(e) => set("icon", e.target.value)} placeholder="Heart" /></div>
+                <div>
+                  <Label>Categoria</Label>
+                  <Input value={form.category ?? ""} onChange={(e) => set("category", e.target.value)} placeholder="Ex: Clínica, Cirúrgica" />
                 </div>
                 <div><Label>Descrição</Label><Textarea value={form.description ?? ""} onChange={(e) => set("description", e.target.value)} rows={3} /></div>
 
