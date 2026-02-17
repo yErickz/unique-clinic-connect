@@ -284,23 +284,19 @@ const Index = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="mb-14"
+            className="mb-10"
           >
-            <span className="text-accent text-sm font-semibold uppercase tracking-wider">Laboratório</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2 mb-3">
-              Exames Mais Escolhidos
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+              Exames mais pesquisados
             </h2>
-            <p className="text-muted-foreground max-w-xl">
-              Resultados rápidos e precisos para os exames que você mais precisa.
-            </p>
           </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
             {[
-              { icon: Droplets, name: "Hemograma", desc: "Avaliação completa das células sanguíneas para detecção de infecções, anemias e outras condições." },
-              { icon: Activity, name: "Glicemia", desc: "Medição do nível de açúcar no sangue, essencial para diagnóstico e controle do diabetes." },
-              { icon: Heart, name: "Colesterol", desc: "Análise do perfil lipídico para avaliar riscos cardiovasculares e orientar prevenção." },
-              { icon: Dna, name: "Hormônios", desc: "Dosagem hormonal para avaliação da tireoide, fertilidade e equilíbrio metabólico." },
-              { icon: TestTube, name: "Função Renal", desc: "Análise de creatinina e ureia para avaliar o funcionamento dos rins." },
+              { name: "Hemograma", price: "R$ 45,00" },
+              { name: "Glicemia", price: "R$ 30,00" },
+              { name: "Colesterol Total", price: "R$ 35,00" },
+              { name: "Hormônios (TSH)", price: "R$ 55,00" },
+              { name: "Função Renal", price: "R$ 40,00" },
             ].map((exam, i) => (
               <motion.div
                 key={exam.name}
@@ -309,13 +305,26 @@ const Index = () => {
                 viewport={{ once: true, amount: 0.15 }}
                 transition={{ delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 whileHover={{ y: -6, transition: { duration: 0.3 } }}
-                className="bg-card border border-border/50 rounded-2xl p-6 card-shadow hover:card-shadow-hover hover:border-accent/30 transition-all duration-300 text-center"
+                className="bg-card border border-border/50 rounded-2xl p-6 card-shadow hover:card-shadow-hover hover:border-accent/30 transition-all duration-300 flex flex-col justify-between"
               >
-                <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-4">
-                  <exam.icon className="w-7 h-7 text-accent" />
+                <div>
+                  <h3 className="font-bold text-foreground text-base uppercase mb-3">{exam.name}</h3>
+                  <span className="inline-block bg-accent text-accent-foreground text-xs font-semibold px-3 py-1 rounded-full mb-4">
+                    Coberto por convênios
+                  </span>
                 </div>
-                <h3 className="font-semibold text-foreground text-base mb-2">{exam.name}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{exam.desc}</p>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Particular a partir de</p>
+                  <p className="text-2xl font-bold text-foreground mb-4">{exam.price}</p>
+                  <a
+                    href={getWhatsAppLink(`Olá! Gostaria de saber mais sobre o exame de ${exam.name}.`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold text-accent hover:text-accent/80 inline-flex items-center gap-1 transition-colors"
+                  >
+                    Saiba mais <ArrowRight className="w-4 h-4" />
+                  </a>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -323,12 +332,15 @@ const Index = () => {
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mt-10"
+            className="mt-8"
           >
-            <a href={getWhatsAppLink("Olá! Gostaria de agendar um exame laboratorial.")}>
-              <Button className="hero-gradient border-0 text-primary-foreground rounded-full px-8 group">
-                <Phone className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" /> Agendar Exame
-              </Button>
+            <a
+              href={getWhatsAppLink("Olá! Gostaria de ver mais exames disponíveis.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-semibold text-accent hover:text-accent/80 inline-flex items-center gap-1 transition-colors"
+            >
+              Ver mais exames <ArrowRight className="w-4 h-4" />
             </a>
           </motion.div>
         </div>
