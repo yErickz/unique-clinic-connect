@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Users, Plus, Trash2, Loader2, ShieldCheck, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +42,7 @@ const fetchAdminUsers = async (): Promise<AdminUser[]> => {
 };
 
 const AdminUsers = () => {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [email, setEmail] = useState("");
@@ -133,6 +135,17 @@ const AdminUsers = () => {
           <Plus size={16} />
           Adicionar
         </Button>
+      </div>
+
+      {/* Logged-in user */}
+      <div className="rounded-xl border border-primary/20 bg-primary/5 px-5 py-4 flex items-center gap-3">
+        <div className="flex items-center justify-center h-9 w-9 rounded-full bg-primary/15 text-primary shrink-0">
+          <ShieldCheck size={16} />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-medium truncate">{user?.email}</p>
+          <p className="text-[11px] text-muted-foreground">Conectado agora como administrador</p>
+        </div>
       </div>
 
       {/* Add user form */}
