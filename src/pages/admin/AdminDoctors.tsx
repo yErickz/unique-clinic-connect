@@ -71,11 +71,7 @@ const AdminDoctors = () => {
     },
   });
 
-  const closeDialog = () => {
-    setOpen(false);
-    setEditing(null);
-    setForm(emptyDoctor);
-  };
+  const closeDialog = () => { setOpen(false); setEditing(null); setForm(emptyDoctor); };
 
   const openEdit = (doc: Doctor) => {
     setEditing(doc);
@@ -83,36 +79,30 @@ const AdminDoctors = () => {
     setOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    saveMutation.mutate(form);
-  };
-
   const set = (key: string, val: string | null) => setForm((f) => ({ ...f, [key]: val }));
 
   return (
     <div>
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-            <Users className="w-5 h-5 text-accent" />
+          <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center">
+            <Users className="w-[18px] h-[18px] text-accent" />
           </div>
           <div>
-            <h1 className="text-xl font-bold">Médicos</h1>
+            <h1 className="text-xl font-bold text-foreground">Médicos</h1>
             <p className="text-xs text-muted-foreground">{doctors.length} cadastrados</p>
           </div>
         </div>
         <Dialog open={open} onOpenChange={(v) => { if (!v) closeDialog(); else setOpen(true); }}>
           <DialogTrigger asChild>
-            <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground border-0 gap-1.5">
+            <Button size="sm" className="hero-gradient border-0 text-primary-foreground gap-1.5">
               <Plus className="w-4 h-4" /> Adicionar
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>{editing ? "Editar Médico" : "Novo Médico"}</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <DialogHeader><DialogTitle>{editing ? "Editar Médico" : "Novo Médico"}</DialogTitle></DialogHeader>
+            <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div><Label>Nome</Label><Input value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} required /></div>
                 <div><Label>Slug</Label><Input value={form.slug ?? ""} onChange={(e) => set("slug", e.target.value)} required placeholder="dr-nome" /></div>
@@ -127,9 +117,7 @@ const AdminDoctors = () => {
                   <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Nenhum</SelectItem>
-                    {institutes.map((i) => (
-                      <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>
-                    ))}
+                    {institutes.map((i) => <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -143,38 +131,27 @@ const AdminDoctors = () => {
         </Dialog>
       </div>
 
+      {/* List */}
       {isLoading ? (
-        <div className="flex items-center gap-3 py-12 justify-center text-muted-foreground">
-          <div className="w-5 h-5 border-2 border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
-          Carregando...
+        <div className="flex items-center gap-2 py-12 justify-center text-sm text-muted-foreground">
+          <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" /> Carregando...
         </div>
       ) : (
         <div className="space-y-2">
           {doctors.map((doc) => (
-            <div
-              key={doc.id}
-              className="bg-card rounded-xl border border-border/60 p-4 flex items-center justify-between hover:border-border transition-colors group"
-            >
-              <div className="flex items-center gap-4 min-w-0">
-                <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center text-sm font-bold text-muted-foreground shrink-0">
+            <div key={doc.id} className="bg-card rounded-xl border border-border p-4 flex items-center justify-between group hover:border-accent/30 transition-colors">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-muted-foreground shrink-0">
                   {doc.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-medium text-sm">{doc.name}</p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs text-muted-foreground">{doc.specialty}</span>
-                    <span className="text-xs text-muted-foreground/40">•</span>
-                    <span className="text-xs text-muted-foreground">CRM {doc.crm}</span>
-                  </div>
+                  <p className="font-medium text-sm text-foreground">{doc.name}</p>
+                  <p className="text-xs text-muted-foreground">{doc.specialty} · CRM {doc.crm}</p>
                 </div>
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => openEdit(doc)}>
-                  <Pencil className="w-3.5 h-3.5" />
-                </Button>
-                <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover este médico?")) deleteMutation.mutate(doc.id); }}>
-                  <Trash2 className="w-3.5 h-3.5" />
-                </Button>
+                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openEdit(doc)}><Pencil className="w-3.5 h-3.5" /></Button>
+                <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover este médico?")) deleteMutation.mutate(doc.id); }}><Trash2 className="w-3.5 h-3.5" /></Button>
               </div>
             </div>
           ))}

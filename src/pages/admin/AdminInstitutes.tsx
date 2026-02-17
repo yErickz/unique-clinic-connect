@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Save, ExternalLink, Upload, X, ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, Save, ExternalLink, Upload, X, ImageIcon, Building2 } from "lucide-react";
 import { toast } from "sonner";
 import ImageCropDialog from "@/components/admin/ImageCropDialog";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
@@ -214,18 +214,23 @@ const AdminInstitutes = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Institutos</h1>
-          <p className="text-sm text-muted-foreground mt-1">Gerencie os institutos e os textos da página pública.</p>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center">
+            <Building2 className="w-[18px] h-[18px] text-accent" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Institutos</h1>
+            <p className="text-xs text-muted-foreground">{institutes.length} cadastrados</p>
+          </div>
         </div>
         <a
           href="/institutos"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors shrink-0"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
         >
-          <ExternalLink size={16} />
-          Visualizar Página
+          <ExternalLink size={14} />
+          Ver página
         </a>
       </div>
 
