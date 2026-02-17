@@ -1,8 +1,8 @@
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Trash2, Plus, ChevronDown, ChevronUp, Check } from "lucide-react";
 import { useState } from "react";
 
 interface Exam {
@@ -26,6 +26,8 @@ const formatCurrency = (raw: string): string => {
 
 const ExamsEditor = ({ value, onChange }: ExamsEditorProps) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [newCategoryFor, setNewCategoryFor] = useState<number | null>(null);
+  const [newCategoryName, setNewCategoryName] = useState("");
 
   let exams: Exam[] = [];
   try { exams = JSON.parse(value || "[]"); } catch { exams = []; }
@@ -96,11 +98,62 @@ const ExamsEditor = ({ value, onChange }: ExamsEditorProps) => {
               </div>
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Categoria</label>
-                <Input placeholder="Ex: Sangue, Imagem, Urina..." value={exam.category || ""} onChange={(e) => updateField(i, "category", e.target.value)} list="exam-categories" />
-                {categories.length > 0 && (
-                  <datalist id="exam-categories">
-                    {categories.map((cat) => <option key={cat} value={cat} />)}
-                  </datalist>
+                {newCategoryFor === i ? (
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Nome da nova categoria"
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                      autoFocus
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="shrink-0 gap-1"
+                      disabled={!newCategoryName.trim()}
+                      onClick={() => {
+                        updateField(i, "category", newCategoryName.trim());
+                        setNewCategoryFor(null);
+                        setNewCategoryName("");
+                      }}
+                    >
+                      <Check size={14} />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="shrink-0"
+                      onClick={() => { setNewCategoryFor(null); setNewCategoryName(""); }}
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                ) : (
+                  <Select
+                    value={exam.category || ""}
+                    onValueChange={(val) => {
+                      if (val === "__new__") {
+                        setNewCategoryFor(i);
+                        setNewCategoryName("");
+                      } else if (val === "__none__") {
+                        updateField(i, "category", "");
+                      } else {
+                        updateField(i, "category", val);
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma categoria" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat} value={cat!}>{cat}</SelectItem>
+                      ))}
+                      <SelectItem value="__new__">+ Nova categoria...</SelectItem>
+                      <SelectItem value="__none__">Sem categoria</SelectItem>
+                    </SelectContent>
+                  </Select>
                 )}
               </div>
               <div className="flex items-center justify-between">
