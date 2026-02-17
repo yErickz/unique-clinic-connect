@@ -9,7 +9,14 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ZoomIn, RotateCw } from "lucide-react";
+
+const ASPECT_OPTIONS = [
+  { label: "16:9", value: 16 / 9 },
+  { label: "4:3", value: 4 / 3 },
+  { label: "1:1", value: 1 },
+] as const;
 
 interface ImageCropDialogProps {
   open: boolean;
@@ -54,10 +61,11 @@ async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<Blob> {
   });
 }
 
-const ImageCropDialog = ({ open, imageSrc, aspect = 16 / 9, onClose, onConfirm }: ImageCropDialogProps) => {
+const ImageCropDialog = ({ open, imageSrc, aspect: defaultAspect = 16 / 9, onClose, onConfirm }: ImageCropDialogProps) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
+  const [aspect, setAspect] = useState(defaultAspect);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -104,6 +112,26 @@ const ImageCropDialog = ({ open, imageSrc, aspect = 16 / 9, onClose, onConfirm }
         </div>
 
         <div className="space-y-3 pt-2">
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted-foreground shrink-0">Proporção</span>
+            <ToggleGroup
+              type="single"
+              value={String(aspect)}
+              onValueChange={(v) => v && setAspect(Number(v))}
+              className="gap-1"
+            >
+              {ASPECT_OPTIONS.map((opt) => (
+                <ToggleGroupItem
+                  key={opt.label}
+                  value={String(opt.value)}
+                  size="sm"
+                  className="text-xs px-3"
+                >
+                  {opt.label}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
           <div className="flex items-center gap-3">
             <ZoomIn size={16} className="text-muted-foreground shrink-0" />
             <span className="text-xs text-muted-foreground w-10 shrink-0">Zoom</span>
