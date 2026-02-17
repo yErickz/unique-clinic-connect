@@ -6,9 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Pencil, Trash2, Star, MessageSquareQuote, Eye, EyeOff, X, Save, LayoutGrid, LayoutList, Calendar } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, MessageSquareQuote, Eye, EyeOff, X, Save, LayoutGrid, LayoutList, Calendar, GripVertical } from "lucide-react";
 import { toast } from "sonner";
 import { ExpandableAdminCard } from "@/components/admin/ExpandableAdminCard";
+import {
+  DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragOverlay, type DragEndEvent, type DragStartEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
 type Testimonial = Tables<"testimonials">;
@@ -17,17 +24,63 @@ const empty: Partial<TablesInsert<"testimonials">> = {
   quote: "", patient_initials: "", specialty: "", rating: 5, is_published: false,
 };
 
+const SortableTestimonialRow = ({ t, onEdit, onDelete, onTogglePublish }: {
+  t: Testimonial;
+  onEdit: (t: Testimonial) => void;
+  onDelete: (id: string) => void;
+  onTogglePublish: (id: string, published: boolean) => void;
+}) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: t.id });
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 };
+  return (
+    <div ref={setNodeRef} style={style} className="bg-card rounded-xl border border-border p-4 group hover:border-accent/30 transition-colors">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
+          <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground shrink-0 touch-none mt-1">
+            <GripVertical size={16} />
+          </button>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="font-semibold text-sm text-foreground">{t.patient_initials}</span>
+              <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">{t.specialty}</span>
+              {t.is_published ? (
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full"><Eye size={10} /> Publicado</span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-secondary px-2 py-0.5 rounded-full"><EyeOff size={10} /> Rascunho</span>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">"{t.quote}"</p>
+            <div className="flex items-center gap-0.5 mt-2">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className={`w-3 h-3 ${i < t.rating ? "fill-accent text-accent" : "text-border"}`} />
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onTogglePublish(t.id, !t.is_published)}>
+            {t.is_published ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+          </Button>
+          <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onEdit(t)}><Pencil className="w-3.5 h-3.5" /></Button>
+          <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) onDelete(t.id); }}><Trash2 className="w-3.5 h-3.5" /></Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AdminTestimonials = () => {
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Testimonial | null>(null);
   const [form, setForm] = useState(empty);
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   const { data: testimonials = [], isLoading } = useQuery({
     queryKey: ["admin-testimonials"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("testimonials").select("*").order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("testimonials").select("*").order("display_order");
       if (error) throw error;
       return data;
     },
@@ -39,7 +92,7 @@ const AdminTestimonials = () => {
         const { error } = await supabase.from("testimonials").update(d).eq("id", editing.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("testimonials").insert(d as TablesInsert<"testimonials">);
+        const { error } = await supabase.from("testimonials").insert({ ...d, display_order: testimonials.length } as TablesInsert<"testimonials">);
         if (error) throw error;
       }
     },
@@ -74,6 +127,34 @@ const AdminTestimonials = () => {
       toast.success("Status atualizado!");
     },
   });
+
+  const reorderMutation = useMutation({
+    mutationFn: async (reordered: Testimonial[]) => {
+      for (let i = 0; i < reordered.length; i++) {
+        await supabase.from("testimonials").update({ display_order: i }).eq("id", reordered[i].id);
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-testimonials"] }),
+    onError: () => toast.error("Erro ao reordenar."),
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const handleDragStart = (event: DragStartEvent) => setActiveId(String(event.active.id));
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveId(null);
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = testimonials.findIndex((t) => t.id === active.id);
+    const newIndex = testimonials.findIndex((t) => t.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+    const reordered = arrayMove([...testimonials], oldIndex, newIndex);
+    qc.setQueryData(["admin-testimonials"], reordered);
+    reorderMutation.mutate(reordered);
+  };
 
   const closeForm = () => { setShowForm(false); setEditing(null); setForm(empty); };
 
@@ -166,38 +247,36 @@ const AdminTestimonials = () => {
           <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" /> Carregando...
         </div>
       ) : viewMode === "list" ? (
-        <div className="space-y-2">
-          {testimonials.map((t) => (
-            <div key={t.id} className="bg-card rounded-xl border border-border p-4 group hover:border-accent/30 transition-colors">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <span className="font-semibold text-sm text-foreground">{t.patient_initials}</span>
-                    <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">{t.specialty}</span>
-                    {t.is_published ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full"><Eye size={10} /> Publicado</span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-secondary px-2 py-0.5 rounded-full"><EyeOff size={10} /> Rascunho</span>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">"{t.quote}"</p>
-                  <div className="flex items-center gap-0.5 mt-2">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={`w-3 h-3 ${i < t.rating ? "fill-accent text-accent" : "text-border"}`} />
-                    ))}
-                  </div>
-                </div>
-                <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => togglePublish.mutate({ id: t.id, published: !t.is_published })}>
-                    {t.is_published ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                  </Button>
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openEdit(t)}><Pencil className="w-3.5 h-3.5" /></Button>
-                  <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => { if (confirm("Remover?")) deleteMutation.mutate(t.id); }}><Trash2 className="w-3.5 h-3.5" /></Button>
-                </div>
-              </div>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+          <SortableContext items={testimonials.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-2">
+              {testimonials.map((t) => (
+                <SortableTestimonialRow
+                  key={t.id}
+                  t={t}
+                  onEdit={openEdit}
+                  onDelete={(id) => deleteMutation.mutate(id)}
+                  onTogglePublish={(id, pub) => togglePublish.mutate({ id, published: pub })}
+                />
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+          <DragOverlay dropAnimation={null}>
+            {activeId ? (() => {
+              const t = testimonials.find((x) => x.id === activeId);
+              if (!t) return null;
+              return (
+                <div className="bg-card rounded-xl border border-accent/30 p-4 shadow-lg opacity-90 flex items-center gap-3">
+                  <GripVertical size={16} className="text-muted-foreground" />
+                  <div>
+                    <span className="font-semibold text-sm text-foreground">{t.patient_initials}</span>
+                    <p className="text-xs text-muted-foreground line-clamp-1">"{t.quote}"</p>
+                  </div>
+                </div>
+              );
+            })() : null}
+          </DragOverlay>
+        </DndContext>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {testimonials.map((t) => (
