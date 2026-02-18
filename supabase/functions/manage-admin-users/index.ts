@@ -15,6 +15,63 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
+    // Parse body early for bootstrap action
+    const body = await req.json().catch(() => ({}));
+    const action = body.action;
+
+    // BOOTSTRAP: create first admin without auth (only if no admins exist)
+    if (action === "bootstrap") {
+      const bootstrapToken = Deno.env.get("BOOTSTRAP_TOKEN");
+      if (!bootstrapToken || body.token !== bootstrapToken) {
+        return new Response(JSON.stringify({ error: "Token inválido" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Check if any admin already exists
+      const { data: existingAdmins } = await supabase
+        .from("user_roles")
+        .select("id")
+        .eq("role", "admin")
+        .limit(1);
+
+      if (existingAdmins && existingAdmins.length > 0) {
+        return new Response(
+          JSON.stringify({ error: "Já existe um administrador. Use o painel para adicionar mais." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const { email, password } = body;
+      if (!email || !password) {
+        return new Response(
+          JSON.stringify({ error: "Email e senha são obrigatórios" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const { data: newUser, error: createErr } = await supabase.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+      });
+
+      if (createErr) {
+        return new Response(
+          JSON.stringify({ error: createErr.message }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      await supabase.from("user_roles").insert({ user_id: newUser.user.id, role: "admin" });
+
+      return new Response(
+        JSON.stringify({ success: true, email: newUser.user.email }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Verify caller is admin
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
@@ -46,10 +103,6 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    // Parse body - all actions come via POST from supabase.functions.invoke
-    const body = await req.json().catch(() => ({}));
-    const action = body.action;
 
     // LIST admin users
     if (action === "list") {
