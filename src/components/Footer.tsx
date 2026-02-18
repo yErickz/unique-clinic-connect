@@ -102,9 +102,10 @@ const Footer = () => {
       <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.3 }} className="border-t border-background/10">
         <div className="container mx-auto px-4 py-5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs opacity-50">
           <span>© {new Date().getFullYear()} {c("footer_copyright", "Clínica Unique. Todos os direitos reservados.")}</span>
-          <div className="flex gap-6">
+          <div className="flex gap-6 items-center">
             <a href="#" className="hover:opacity-100 transition-opacity">Política de Privacidade</a>
             <a href="#" className="hover:opacity-100 transition-opacity">Termos de Uso</a>
+            <Link to="/admin/login" className="hover:opacity-100 transition-opacity">Painel</Link>
           </div>
         </div>
       </motion.div>
